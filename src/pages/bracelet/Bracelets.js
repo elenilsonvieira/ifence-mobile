@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -60,6 +61,7 @@ const Bracelets = () => {
         text: 'Excluir',
         onPress: () => {
           // eslint-disable-next-line no-shadow
+          braceletService.delete(item.id);
           setBracelets(bracelets => {
             return bracelets.filter((value, index) => value !== item);
           });

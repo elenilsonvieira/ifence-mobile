@@ -1,0 +1,41 @@
+# Gradle
+/build/
+/packages/react-native-gradle-plugin/build/
+/ReactAndroid/build/
+/ReactAndroid/.cxx/
+/ReactAndroid/gradle/
+/ReactAndroid/gradlew
+/ReactAndroid/gradlew.bat
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
+/template/android/app/build/
+/template/android/build/
+
+# Android Studio
+.project
+.settings
+.classpath
+
+# Watchman
+.watchmanconfig
+
+# Android
+.idea
+.gradle
+local.properties
+*.iml
+/android/
+
+# Node
+node_modules
+*.log
+.nvm
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
+
+# Visual studio
+.vscode
+.vs

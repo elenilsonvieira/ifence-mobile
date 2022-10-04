@@ -26,7 +26,7 @@ export default function Routes() {
         <>
         {
         state.loading ?
-            <div>LOADING</div> :
+            <></> :
             state.isAuthenticated ?
                 <AppRoutes /> :
                 <OnboardingRoutes />

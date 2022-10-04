@@ -53,7 +53,6 @@ export default class AuthenticationService extends ApiService {
         const user = await this.getLoggedUser();
         const token = await this.getToken();
         
-        console.log("Token: " + token);
         if(!user || !token){
             return false;
         }
