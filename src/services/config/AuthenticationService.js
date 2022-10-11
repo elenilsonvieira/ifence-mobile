@@ -1,7 +1,7 @@
 import ApiService, {LOGGED_USER, TOKEN} from "./ApiService";
 import StorageService from "./StorageService";
 
-export default class AuthenticationApiService extends ApiService {
+export default class AuthenticationService extends ApiService {
 
     constructor(){
         super('');
@@ -30,8 +30,8 @@ export default class AuthenticationApiService extends ApiService {
         }
     }
 
-    isTokenValid(token){
-        return this.post('/isTokenValid', token);
+    isValidToken(token){
+        return this.post('/isValidToken', token);
     }
 
     logout(){
@@ -50,9 +50,9 @@ export default class AuthenticationApiService extends ApiService {
     }
 
     async isAuthenticated(){
-        const user = this.getLoggedUser();
-        const token = this.getToken();
-
+        const user = await this.getLoggedUser();
+        const token = await this.getToken();
+        
         if(!user || !token){
             return false;
         }
@@ -61,9 +61,12 @@ export default class AuthenticationApiService extends ApiService {
             "token": token
         };
 
-        const response = await this.isTokenValid(tokenDTO);
-        return response.data;
+        try {
+            const response = await this.isValidToken(tokenDTO);
+            return response.data.valid;
+        } catch (error) {
+            return false;
+        }
     }
 
 }
-

@@ -5,10 +5,8 @@ import StorageService from "./StorageService";
 export const LOGGED_USER = 'loggedUser';
 export const TOKEN = 'token';
 
-const baseURL = process.env.REACT_APP_API_URL;
-
 export const httpClient = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "https://ifence-api.herokuapp.com/api",
     withCredentials: true,
 });
 
@@ -18,11 +16,11 @@ export default class ApiService {
         this.endpoint = endpoint;
         
         this.storageService = new StorageService();
-        const token = this.storageService.getItem(TOKEN);
-        this.registerToken(token);
+        this.registerToken();
     }
-
-    registerToken(token){
+    
+    async registerToken(){
+        const token = await this.storageService.getItem(TOKEN);
         if(token){
             httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
         }        
@@ -49,7 +47,11 @@ export default class ApiService {
     }
 
     buildUrl(url){
-        return `${this.endpoint}${url}`;
+        if (url) {
+            return `${this.endpoint}${url}`;
+        } else {
+            return `${this.endpoint}`;
+        }
     }
 
 }

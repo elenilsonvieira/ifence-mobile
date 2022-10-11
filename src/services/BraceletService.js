@@ -1,9 +1,10 @@
-import ApiService from "./ApiService";
 
-export default class UserApiService extends ApiService {
+import ApiService from "./config/ApiService";
+
+export default class BraceletService extends ApiService {
 
     constructor(){
-        super('/user');
+        super('/bracelets');
     }
 
     create(object){
@@ -22,5 +23,8 @@ export default class UserApiService extends ApiService {
         return this.get(`${params}`);
     }
 
-}
+    findAll(){
+        return this.get();
+    }
 
+}
