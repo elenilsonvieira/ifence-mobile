@@ -50,7 +50,22 @@ export default function AppRoutes() {
 
   return (
     <Tab.Navigator
-          tabBarOptions={{
+        screenOptions={
+            {
+                tabBarShowLabel: false,
+                tabBarLabelStyle: {
+                    fontSize: 14,
+                    bottom: 8,
+                },
+                tabBarStyle: [
+                    {
+                        display: 'flex'
+                    },
+                    null
+                ]
+            }
+        }
+        /*tabBarOptions={{
               labelStyle: {
                   fontSize: 14,
                   bottom: 8
@@ -59,7 +74,7 @@ export default function AppRoutes() {
                   height: 70
               },
               showLabel: false,
-          }}
+          }}*/
       >
           <Tab.Screen
               name="bracelets"
