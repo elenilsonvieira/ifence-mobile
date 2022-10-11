@@ -1,6 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Bracelets from "../pages/bracelet/bracelets";
+import Fences from '../pages/fence/fences';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,13 @@ export default function AppRoutes() {
             title: "Lista de pulseiras"
           }}
         />
+          <Stack.Screen
+              name='fences'
+              component={Fences}
+              options={{
+                  title: "Lista de cercas"
+              }}
+          />
       </Stack.Navigator>
     )
 }
