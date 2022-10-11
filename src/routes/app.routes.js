@@ -7,6 +7,7 @@ import Bracelets from "../pages/bracelet/bracelets";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
 import Locations from "../pages/locations/locations";
+import Fences from '../pages/fence/fences';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,6 +89,15 @@ export default function AppRoutes() {
                   })
               }
           />
+        <Tab.Screen
+            name="fences"
+            component={Fences}
+            options={({route}) => ({
+                tabBarIcon: ({color}) => renderIcon('fence', 'red'),
+                tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
+                title: "Cercas"
+            })}
+        />
           <Tab.Screen
               name="location"
               component={Locations}
