@@ -8,19 +8,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import FenceBraceletService from '../../services/FenceBraceletService';
 import FenceService from '../../services/FenceService';
 import AuthenticationService from '../../services/config/AuthenticationService';
 
-const Fences = () => {
+const FenceBracelet = () => {
+  const fenceBraceletService = new FenceBraceletService();
   const fenceService = new FenceService();
 
-  const [text, setText] = useState('');
-  const [radius, setRadius] = useState(0.0);
-  const [latitude, setLatitude] = useState(0.0);
-  const [longitude, setLongitude] = useState(0.0);
-  const [startTime, setStartTime] = useState('12:00');
-  const [endTime, setEndTime] = useState('18:00');
-
+  const [fenceID, setFenceID] = useState();
+  const [braceletID, setBraceletID] = useState();
   const [fences, setFences] = useState([]);
 
   useEffect(() => {
@@ -32,7 +29,7 @@ const Fences = () => {
     setText('');
     setLatitude(0.0)
     setLongitude(0.0)
-    setRadius(0.0)
+    setBraceletID(0.0)
     setStartTime('12:00')
     setEndTime('18:00')
     //setBracelets([...bracelets, bracelet]);
@@ -57,7 +54,7 @@ const Fences = () => {
       },
       startTime: startTime,
       endTime: endTime,
-      radius: radius
+      radius: braceletID
     };
 
     fenceService.create(fence)
@@ -120,48 +117,20 @@ const Fences = () => {
       <View style={styles.register}>
         <TextInput
           style={styles.input}
-          placeholder="Nome da cerca"
-          onChangeText={value => setText(value)}
-          value={text}
+          placeholder="ID da cerca"
+          onChangeText={value => setFenceID(value)}
+          value={fenceID}
+          keyboardType='numeric'
         />
 
         <TextInput
             style={styles.input}
             placeholder="Latitude"
-            onChangeText={value => setLatitude(value)}
-            value={latitude}
+            onChangeText={value => setBraceletID(value)}
+            value={braceletID}
             keyboardType='numeric'
         />
 
-        <TextInput
-            style={styles.input}
-            placeholder="Longitude"
-            onChangeText={value => setLongitude(value)}
-            value={longitude}
-            keyboardType='numeric'
-        />
-
-        <TextInput
-            style={styles.input}
-            placeholder="Raio"
-            onChangeText={value => setRadius(value)}
-            value={radius}
-            keyboardType='numeric'
-        />
-
-        <TextInput
-            style={styles.input}
-            placeholder="12:00"
-            onChangeText={value => setStartTime(value)}
-            value={startTime}
-        />
-
-        <TextInput
-            style={styles.input}
-            placeholder="18:00"
-            onChangeText={value => setEndTime(value)}
-            value={endTime}
-        />
         <TouchableOpacity style={styles.button} onPress={onPressHandler}>
           <Text style={styles.text}>Registrar</Text>
         </TouchableOpacity>
@@ -267,4 +236,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Fences;
+export default FenceBracelet;
