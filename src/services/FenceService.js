@@ -35,10 +35,8 @@ export default class FenceService extends ApiService {
         return this.get('', config);
     }
 
-/*
     findAll(){
         return this.get();
     }
-*/
 
 }

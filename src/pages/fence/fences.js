@@ -15,6 +15,12 @@ const Fences = () => {
   const fenceService = new FenceService();
 
   const [text, setText] = useState('');
+  const [radius, setRadius] = useState(0.0);
+  const [latitude, setLatitude] = useState(0.0);
+  const [longitude, setLongitude] = useState(0.0);
+  const [startTime, setStartTime] = useState('12:00');
+  const [endTime, setEndTime] = useState('18:00');
+
   const [fences, setFences] = useState([]);
 
   useEffect(() => {
@@ -22,14 +28,16 @@ const Fences = () => {
   }, []);
 
   const onPressHandler = () => {
-    const fence = {
-      id: Date.now(),
-      name: text,
-    };
-
     registerFences();
     setText('');
-    setBracelets([...bracelets, bracelet]);
+    setLatitude(0.0)
+    setLongitude(0.0)
+    setRadius(0.0)
+    setStartTime('12:00')
+    setEndTime('18:00')
+    //setBracelets([...bracelets, bracelet]);
+
+    getFences();
   };
 
   const getFences = () => {
@@ -41,10 +49,18 @@ const Fences = () => {
       });
   };
   const registerFences = async () => {
-    const fenc = {
-      "name": text
-    }
-    fenceService.create(fenc)
+    const fence = {
+      name: text,
+      coordinate: {
+        latitude: latitude,
+        longitude: longitude
+      },
+      startTime: startTime,
+      endTime: endTime,
+      radius: radius
+    };
+
+    fenceService.create(fence)
       .then( response =>
         {
             console.log("Response " + response.data.content);
@@ -104,9 +120,47 @@ const Fences = () => {
       <View style={styles.register}>
         <TextInput
           style={styles.input}
-          placeholder="Praça da Matriz"
+          placeholder="Nome da cerca"
           onChangeText={value => setText(value)}
           value={text}
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="Latitude"
+            onChangeText={value => setLatitude(value)}
+            value={latitude}
+            keyboardType='numeric'
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="Longitude"
+            onChangeText={value => setLongitude(value)}
+            value={longitude}
+            keyboardType='numeric'
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="Raio"
+            onChangeText={value => setRadius(value)}
+            value={radius}
+            keyboardType='numeric'
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="12:00"
+            onChangeText={value => setStartTime(value)}
+            value={startTime}
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="18:00"
+            onChangeText={value => setEndTime(value)}
+            value={endTime}
         />
         <TouchableOpacity style={styles.button} onPress={onPressHandler}>
           <Text style={styles.text}>Registrar</Text>
