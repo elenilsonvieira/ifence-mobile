@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import SelectBracelet from '../../components/select-bracelet/select-bracelet';
 import AlarmService from '../../services/AlarmService';
+import { convertDateToString } from '../../utils/DateUtil';
 
 import styles from './styles';
 
@@ -23,11 +24,11 @@ function Alarms(props) {
     const getAll = () => {
         if (!selected) {
             var today = new Date();
-            var priorDate = new Date(new Date().setDate(today.getDate() - 90));
+            var priorDate = new Date(new Date().setDate(today.getDate() - 30));
     
             const request = {
-                startDate: priorDate.toLocaleString(),
-                endDate: today.toLocaleString(),
+                startDate: convertDateToString(priorDate),
+                endDate: convertDateToString(today),
                 sort: "location.creationDate,DESC"
             }
             alarmService.findHistoryByPeriod(request)
