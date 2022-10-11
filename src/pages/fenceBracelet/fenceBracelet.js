@@ -26,8 +26,8 @@ const FenceBracelet = () => {
 
   const registerFenceBracelet = async () => {
     const fenceBracelet = {
-      fenceId: fenceID,
-      braceletId: braceletID
+      fence: fenceID,
+      bracelet: braceletID
     };
 
     fenceBraceletService.save(fenceBracelet)

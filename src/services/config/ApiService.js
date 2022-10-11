@@ -14,21 +14,25 @@ export default class ApiService {
 
     constructor(endpoint){
         this.endpoint = endpoint;
-        
+
         this.storageService = new StorageService();
         this.registerToken();
     }
-    
+
     async registerToken(){
         const token = await this.storageService.getItem(TOKEN);
         if(token){
             httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        }        
+        }
     }
 
     post(url, params){
         url = this.buildUrl(url);
         return httpClient.post(url, params);
+    }
+    post(url, body, params){
+        url = this.buildUrl(url);
+        return httpClient.post(url, body, {params: params});
     }
 
     put(url, params){
