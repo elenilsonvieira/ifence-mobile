@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import FenceBraceletService from '../../services/FenceBraceletService';
 import FenceService from '../../services/FenceService';
-import AuthenticationService from '../../services/config/AuthenticationService';
 
 const FenceBracelet = () => {
   const fenceBraceletService = new FenceBraceletService();
@@ -18,46 +17,20 @@ const FenceBracelet = () => {
 
   const [fenceID, setFenceID] = useState();
   const [braceletID, setBraceletID] = useState();
-  const [fences, setFences] = useState([]);
-
-  useEffect(() => {
-    getFences();
-  }, []);
 
   const onPressHandler = () => {
-    registerFences();
-    setText('');
-    setLatitude(0.0)
-    setLongitude(0.0)
-    setBraceletID(0.0)
-    setStartTime('12:00')
-    setEndTime('18:00')
-    //setBracelets([...bracelets, bracelet]);
-
-    getFences();
+    registerFenceBracelet();
+    setFenceID();
+    setBraceletID();
   };
 
-  const getFences = () => {
-    fenceService.findAll()
-      .then(response => {
-        setFences(response.data.content);
-      }).catch( error => {
-        console.log(error);
-      });
-  };
-  const registerFences = async () => {
-    const fence = {
-      name: text,
-      coordinate: {
-        latitude: latitude,
-        longitude: longitude
-      },
-      startTime: startTime,
-      endTime: endTime,
-      radius: braceletID
+  const registerFenceBracelet = async () => {
+    const fenceBracelet = {
+      fenceId: fenceID,
+      braceletId: braceletID
     };
 
-    fenceService.create(fence)
+    fenceBraceletService.save(fenceBracelet)
       .then( response =>
         {
             console.log("Response " + response.data.content);
@@ -66,51 +39,6 @@ const FenceBracelet = () => {
       console.log(error.response);
     });
   }
-
-  const deleteFence = item => {
-    Alert.alert('Cuidado', `Gostaria de excluir a cerca ${item.name}?`, [
-      {text: 'Cancelar'},
-      {
-        text: 'Excluir',
-        onPress: () => {
-          // eslint-disable-next-line no-shadow
-          fenceService.delete(item.id);
-          setFences(fences => {
-            return fences.filter((value, index) => value !== item);
-          });
-        },
-      },
-    ]);
-  };
-
-  const listFences = () => {
-    return (
-      <FlatList
-        data={fences}
-        renderItem={({item}) => (
-          // eslint-disable-next-line react-native/no-inline-styles
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={styles.item} key={item.id}>
-              <Text style={styles.text_item}>{item.name}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => deleteFence(item)}>
-              <Text style={styles.text}>Excluir</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    );
-  };
-
-  const firstBracelet = () => {
-    return (
-      <View style={styles.register}>
-        <Text style={styles.text}>Cadastre a primeira cerca:</Text>
-      </View>
-    );
-  };
 
   const formRegisterFence = () => {
     return (
@@ -125,7 +53,7 @@ const FenceBracelet = () => {
 
         <TextInput
             style={styles.input}
-            placeholder="Latitude"
+            placeholder="ID da pulseira"
             onChangeText={value => setBraceletID(value)}
             value={braceletID}
             keyboardType='numeric'
@@ -138,31 +66,13 @@ const FenceBracelet = () => {
     );
   };
 
-  const logoutButton = () => {
-    return (
-      <View>
-        <TouchableOpacity style={styles.button} onPress={logout}>
-          <Text style={styles.text}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const logout = () => {
-    const auth = new AuthenticationService();
-
-    auth.logout();
-  }
-
   return (
     <View style={styles.body}>
       <View style={styles.header}>
-        <Text style={styles.text_header}>Lista de cercas</Text>
+        <Text style={styles.text_header}>Cercas e pulseiras</Text>
       </View>
       <View style={styles.body}>
-        {fences.length > 0 ? listFences() : firstBracelet()}
         {formRegisterFence()}
-        {logoutButton()}
       </View>
     </View>
   );
