@@ -1,6 +1,6 @@
-import {ApiService} from "./config/ApiService";
+import ApiService from "./config/ApiService";
 
-export default class FenceApiService extends ApiService{
+export default class FenceBraceletService extends ApiService{
     constructor(){
         super('/fences');
     }
