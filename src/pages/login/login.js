@@ -20,6 +20,8 @@ export default function Login(props) {
         authenticationService.login(email, password)
         .then(response => {
             props.navigation.navigate("login");
+        }).catch((error) => {
+            console.log(error);
         })
     }
 

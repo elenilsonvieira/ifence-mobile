@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import SelectBracelet from '../../components/select-bracelet/select-bracelet';
 import LocationService from '../../services/LocationService';
+import { convertDateToString } from '../../utils/DateUtil';
 
 import styles from './styles';
 
@@ -34,11 +35,11 @@ function Locations() {
           });
     } else {
       var today = new Date();
-      var priorDate = new Date(new Date().setDate(today.getDate() - 90));
+      var priorDate = new Date(new Date().setDate(today.getDate() - 30));
 
       const request = {
-          startDate: priorDate.toLocaleString(),
-          endDate: today.toLocaleString(),
+          startDate: convertDateToString(priorDate),
+          endDate: convertDateToString(today),
           sort: "creationDate,DESC"
       }
       locationService.findHistoryByPeriod(request)

@@ -3,12 +3,12 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Bracelets from "../pages/bracelet/bracelets";
-import Alarms from "../pages/alarms/alarms";
-import Alarm from "../pages/alarm/alarm";
 import Locations from "../pages/locations/locations";
 import Fences from '../pages/fence/fences';
 import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
+import Bracelets from "../pages/bracelet/bracelets";
+import Alarms from "../pages/alarms/alarms";
+import Alarm from "../pages/alarm/alarm";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,7 +42,7 @@ export default function AppRoutes() {
 
   function renderIcon(name, color) {
     return (
-        <Icon
+        <Icon 
             name={name}
             size={36}
             color={color}
