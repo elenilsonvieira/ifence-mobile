@@ -1,10 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
-  FlatList,
-  StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
