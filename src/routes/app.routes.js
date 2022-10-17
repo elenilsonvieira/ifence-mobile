@@ -6,7 +6,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
 import Fences from '../pages/fence/fences';
 import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
-import Bracelets from "../pages/bracelets/bracelets";
+import BraceletsList from "../pages/bracelets/braceletsList";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
 import BraceletEdit from "../pages/braceletEdit/braceletEdit";
@@ -40,14 +40,14 @@ function BraceletStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='bracelets'
-        component={Bracelets}
+        name="braceletsList"
+        component={BraceletsList}
         options={{
           title: "Lista de pulseira"
         }}
       />
       <Stack.Screen
-        name="bracelet"
+        name="braceletEdit"
         component={BraceletEdit}
         options={{
           title: "Pulseira"
@@ -59,8 +59,8 @@ function BraceletStack() {
 
 export default function AppRoutes() {
   function getTabBarVisibility(route) {
-    const focusedRoute = getFocusedRouteNameFromRoute(route) ?? 'bracelets'
-    return focusedRoute === 'bracelets'
+    const focusedRoute = getFocusedRouteNameFromRoute(route) ?? 'braceletsList'
+    return focusedRoute === 'braceletsList'
   }
 
   function renderIcon(name, color) {

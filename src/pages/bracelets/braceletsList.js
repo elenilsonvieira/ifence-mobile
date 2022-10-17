@@ -6,7 +6,7 @@ import BraceletService from "../../services/BraceletService";
 
 import styles from "./styles";
 
-const Bracelets = ({ navigation }) => {
+const BraceletsList = ({ navigation }) => {
   const braceletService = new BraceletService();
 
   const [bracelets, setBracelets] = useState([]);
@@ -46,7 +46,7 @@ const Bracelets = ({ navigation }) => {
   };
 
   function onPressHandler(item) {
-    navigation.navigate("bracelet", {
+    navigation.navigate("braceletEdit", {
       item: item,
     });
   }
@@ -100,4 +100,4 @@ const Bracelets = ({ navigation }) => {
   );
 };
 
-export default Bracelets;
+export default BraceletsList;
