@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import FloatingButton from "../../components/floating-button/floationg-button";
+import FloatingButton from "../../components/floating-button/floating-button";
 import BraceletService from "../../services/BraceletService";
 
 import styles from "./styles";

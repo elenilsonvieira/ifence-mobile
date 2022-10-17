@@ -9,7 +9,7 @@ import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
 import Bracelets from "../pages/bracelets/bracelets";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
-import Bracelet from "../pages/bracelet/Bracelet";
+import BraceletEdit from "../pages/braceletEdit/braceletEdit";
 import Profile from "../pages/profile/Profile";
 
 const Stack = createNativeStackNavigator();
@@ -48,7 +48,7 @@ function BraceletStack() {
       />
       <Stack.Screen
         name="bracelet"
-        component={Bracelet}
+        component={BraceletEdit}
         options={{
           title: "Pulseira"
         }}
