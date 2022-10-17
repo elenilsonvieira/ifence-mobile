@@ -6,9 +6,11 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
 import Fences from '../pages/fence/fences';
 import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
-import Bracelets from "../pages/bracelet/bracelets";
+import Bracelets from "../pages/bracelets/bracelets";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
+import Bracelet from "../pages/bracelet/Bracelet";
+import Profile from "../pages/profile/Profile";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,6 +30,27 @@ function AlarmStack() {
         component={Alarm}
         options={{
           title: "Alarme"
+        }}
+      />
+  </Stack.Navigator>
+  )
+}
+
+function BraceletStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name='bracelets'
+        component={Bracelets}
+        options={{
+          title: "Lista de pulseira"
+        }}
+      />
+      <Stack.Screen
+        name="bracelet"
+        component={Bracelet}
+        options={{
+          title: "Pulseira"
         }}
       />
   </Stack.Navigator>
@@ -80,13 +103,13 @@ export default function AppRoutes() {
       >
           <Tab.Screen
               name="bracelets"
-              component={Bracelets}
+              component={BraceletStack}
 
               options={({route}) => ({
                       tabBarIcon: ({color}) =>
                         renderIcon('home', color),
                       tabBarStyle: { display: getTabBarVisibility(route) ? 'flex' : 'none'},
-                      title: "Lista de pulseiras"
+                      headerShown: false,
                   })
               }
           />
@@ -125,6 +148,15 @@ export default function AppRoutes() {
               options={{
                   tabBarIcon: ({color}) =>
                     renderIcon('bell', color),
+                    headerShown: false,
+              }}
+          />
+          <Tab.Screen
+              name="profile"
+              component={Profile}
+              options={{
+                  tabBarIcon: ({color}) =>
+                    renderIcon('account', color),
                     headerShown: false,
               }}
           />

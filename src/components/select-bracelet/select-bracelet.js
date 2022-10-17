@@ -32,6 +32,8 @@ function SelectBracelet(props) {
                 setSelected={props.setSelected} 
                 data={data} 
                 onSelect={props.onSelect} 
+                inputStyles={{color: '#000000'}}
+                dropdownTextStyles={{color: '#000000'}}
             />
         </View>
     );
