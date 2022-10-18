@@ -72,8 +72,7 @@ function FenceCreateEdit(props) {
                       placeholder="Latitude"
                       placeholderTextColor="#808080" 
                       onChangeText={value => setLatitude(value)}
-                      value={latitude}
-                      
+                      value={`${latitude ? latitude : ''}`}
                       keyboardType='numeric'
                   />
 
@@ -82,7 +81,7 @@ function FenceCreateEdit(props) {
                       placeholder="Longitude"
                       placeholderTextColor="#808080" 
                       onChangeText={value => setLongitude(value)}
-                      value={longitude}
+                      value={`${longitude ? longitude : ''}`}
                       keyboardType='numeric'
                   />
 
@@ -91,7 +90,7 @@ function FenceCreateEdit(props) {
                       placeholder="Raio"
                       placeholderTextColor="#808080" 
                       onChangeText={value => setRadius(value)}
-                      value={radius}
+                      value={`${radius ? radius : ''}`}
                       keyboardType='numeric'
                   />
 
