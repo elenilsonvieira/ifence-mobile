@@ -5,7 +5,7 @@ export const fenceStyles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         paddingTop: 22,
-        alignItems: 'center',
+        alignItems: 'stretch',
         justifyContent: 'space-between'
     },
     body: {
