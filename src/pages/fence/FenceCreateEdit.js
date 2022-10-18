@@ -1,23 +1,60 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import FenceService from '../../services/FenceService';
 import {fenceStyles} from './fenceStyles';
 
-const FenceCreateEdit = () => {
+function FenceCreateEdit(props) {
   const fenceService = new FenceService();
 
   const [fence, setFence] = useState();
 
   const [name, setName] = useState('');
   const [radius, setRadius] = useState(0.0);
+  const [coordinate, setCoordinate] = useState();
   const [latitude, setLatitude] = useState(0.0);
   const [longitude, setLongitude] = useState(0.0);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
+
+  useEffect(() => {
+      if(props.route.params.item){
+          setFence(props.route.params.item);
+          setName(props.route.params.item.name);
+          setCoordinate(props.route.params.item.coordinate);
+          setLatitude(props.route.params.item.coordinate.latitude);
+          setLongitude(props.route.params.item.coordinate.longitude);
+          setStartTime(props.route.params.item.startTime);
+          setEndTime(props.route.params.item.endTime);
+      }
+  }, [props]);
+
   const onPressHandler = () => {
-    registerFences();
-    setText('');
+      const fenc = {
+          id: fence ? fence.id : undefined,
+          name: name,
+          coordinate: {
+              latitude: latitude,
+              longitude: longitude
+          },
+          startTime: startTime,
+          endTime: endTime,
+          radius: radius
+      };
+
+      try {
+          if (fence) {
+              updateFence(fenc);
+          } else {
+              createFence(fenc);
+          }
+          props.navigation.goBack();
+      } catch (error) {
+          console.log(error);
+      }
+
+    createFence();
+    setName('');
     setLatitude(0.0)
     setLongitude(0.0)
     setRadius(0.0)
@@ -25,9 +62,10 @@ const FenceCreateEdit = () => {
     setEndTime('18:00')
   };
 
-  const registerFences = async () => {
+  const createFence = async (fenc) => {
+/*
     const fence = {
-      name: text,
+      name: name,
       coordinate: {
         latitude: latitude,
         longitude: longitude
@@ -36,8 +74,9 @@ const FenceCreateEdit = () => {
       endTime: endTime,
       radius: radius
     };
+*/
 
-    fenceService.create(fence)
+    await fenceService.create(fenc)
       .then( response =>
         {
             console.log("Response " + response.data.content);
@@ -47,7 +86,32 @@ const FenceCreateEdit = () => {
     });
   }
 
-  return (
+    const updateFence = async (fenc) => {
+        /*
+            const fence = {
+              name: name,
+              coordinate: {
+                latitude: latitude,
+                longitude: longitude
+              },
+              startTime: startTime,
+              endTime: endTime,
+              radius: radius
+            };
+        */
+
+        await fenceService.update(fenc.id, fenc)
+            .then( response =>
+                {
+                    console.log("Response " + response.data.content);
+                }
+            ).catch( error => {
+                console.log(error.response);
+            });
+    }
+
+
+    return (
       <View style={fenceStyles.container}>
           <Text style={fenceStyles.title}>
               {fence ? "Edição de cerca" : "Criação de cerca"}
