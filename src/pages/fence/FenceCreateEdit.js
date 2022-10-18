@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {ScrollView, Switch, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DropdownFenceBracelet from "../../components/fence-bracelet/DropdownFenceBracelet";
 import FenceBraceletService from "../../services/FenceBraceletService";
 import FenceService from "../../services/FenceService";
@@ -19,6 +19,12 @@ function FenceCreateEdit(props) {
   const [finishTime, setfinishTime] = useState("");
   const [bracelets, setBracelets] = useState([]);
 
+  const [isActive, setIsActive] = useState();
+  const toggleSwitch = () => {
+    setIsActive(prevState => !prevState);
+    // fenceService.statusActive(props.route.params.item);
+  }
+
   useEffect(() => {
     if (props.route.params.item) {
       setFence(props.route.params.item);
@@ -29,6 +35,7 @@ function FenceCreateEdit(props) {
       setfinishTime(props.route.params.item.finishTime);
       setRadius(props.route.params.item.radius);
       setBracelets(props.route.params.item.bracelets.map((brac) => brac.id));
+      setIsActive(props.route.params.item.active);
     }
   }, [props]);
 
@@ -70,74 +77,96 @@ function FenceCreateEdit(props) {
     } catch (error) {
       console.log(error);
     }
+
+    fenceService.statusActive(fenc.id, {active: isActive})
+        .then(response => {
+              console.log('Response ' + response.data.content);
+            }
+        ).catch(error => {
+      console.log(error.response);
+    })
   };
 
   return (
-    <View style={fenceStyles.container}>
-      <Text style={fenceStyles.title}>
-        {fence ? "Edição de cerca" : "Criação de cerca"}
-      </Text>
-      <View style={fenceStyles.body}>
-        <DropdownFenceBracelet value={bracelets} setValue={setBracelets} />
-        <View style={fenceStyles.register}>
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="Nome da cerca"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setName(value)}
-            value={name}
-          />
+      <View style={fenceStyles.container}>
+        <Text style={fenceStyles.title}>
+          {fence ? "Edição de cerca" : "Criação de cerca"}
+        </Text>
+        <View style={fenceStyles.body}>
+          <DropdownFenceBracelet value={bracelets} setValue={setBracelets} />
+          <View style={fenceStyles.toggle}>
+            <Text>Ativar pulseira: </Text>
+            <Switch
+                disabled={bracelets.length == 0 ? true : false}
+                trackColor={{false: "#767577", true: "#81b0ff"}}
+                thumbColor={isActive ? "#f5dd4b" : "#f4f3f4"}
+                onValueChange={toggleSwitch}
+                value={isActive}
+            />
+          </View>
 
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="Latitude"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setLatitude(value)}
-            value={`${latitude ? latitude : ""}`}
-            keyboardType="numeric"
-          />
+          {/*{bracelets.length > 0 ? renderSwitch() : <Text>"Vincule uma pulseira"</Text>}*/}
+          <ScrollView>
+            <View style={fenceStyles.register}>
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="Nome da cerca"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setName(value)}
+                  value={name}
+              />
 
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="Longitude"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setLongitude(value)}
-            value={`${longitude ? longitude : ""}`}
-            keyboardType="numeric"
-          />
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="Latitude"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setLatitude(value)}
+                  value={`${latitude ? latitude : ""}`}
+                  keyboardType="numeric"
+              />
 
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="Raio"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setRadius(value)}
-            value={`${radius ? radius : ""}`}
-            keyboardType="numeric"
-          />
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="Longitude"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setLongitude(value)}
+                  value={`${longitude ? longitude : ""}`}
+                  keyboardType="numeric"
+              />
 
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="12:00"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setStartTime(value)}
-            value={startTime}
-          />
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="Raio"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setRadius(value)}
+                  value={`${radius ? radius : ""}`}
+                  keyboardType="numeric"
+              />
 
-          <TextInput
-            style={fenceStyles.input}
-            placeholder="18:00"
-            placeholderTextColor="#808080"
-            onChangeText={(value) => setfinishTime(value)}
-            value={finishTime}
-          />
-          <TouchableOpacity style={fenceStyles.button} onPress={onPressHandler}>
-            <Text style={fenceStyles.text}>
-              {fence ? "SALVAR" : "REGISTRAR"}
-            </Text>
-          </TouchableOpacity>
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="12:00"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setStartTime(value)}
+                  value={startTime}
+              />
+
+              <TextInput
+                  style={fenceStyles.input}
+                  placeholder="18:00"
+                  placeholderTextColor="#808080"
+                  onChangeText={(value) => setfinishTime(value)}
+                  value={finishTime}
+              />
+              <TouchableOpacity style={fenceStyles.button} onPress={onPressHandler}>
+                <Text style={fenceStyles.text}>
+                  {fence ? "SALVAR" : "REGISTRAR"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
         </View>
       </View>
-    </View>
   );
 }
 

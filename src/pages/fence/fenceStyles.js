@@ -20,6 +20,12 @@ export const fenceStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    toggle: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        justifyContent: 'space-evenly',
+        marginBottom: 10,
+    },
     header: {
         backgroundColor: '#00ff00',
         justifyContent: 'center',
@@ -76,6 +82,7 @@ export const fenceStyles = StyleSheet.create({
         color: '#000000',
         fontSize: 28,
         fontWeight: 'bold',
-        paddingBottom: 24
+        paddingBottom: 24,
+        alignItems: 'center',
     },
 });
