@@ -4,7 +4,7 @@ const alarmStyles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'flex-start'
   },
   itemInfo: {
