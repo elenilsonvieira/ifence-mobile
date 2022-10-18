@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FloatingButton from "../../components/floating-button/floating-button";
 import BraceletService from "../../services/BraceletService";
 
-import styles from "./styles";
+import braceletsStyles from "./braceletsStyles";
 
 const BraceletsList = ({ navigation }) => {
   const braceletService = new BraceletService();
@@ -55,20 +55,20 @@ const BraceletsList = ({ navigation }) => {
       <FlatList
         data={bracelets}
         renderItem={({ item }) => (
-          // eslint-disable-next-line react-native/no-inline-styles
+          // eslint-disable-next-line react-native/no-inline-braceletsStyles
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
-              style={styles.item}
+              style={braceletsStyles.item}
               key={item.id}
               onPress={() => onPressHandler(item)}
             >
-              <Text style={styles.text_item}>{item.name}</Text>
+              <Text style={braceletsStyles.text_item}>{item.name}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.deleteButton}
+              style={braceletsStyles.deleteButton}
               onPress={() => deleteBracelete(item)}
             >
-              <Text style={styles.text}>Excluir</Text>
+              <Text style={braceletsStyles.text}>Excluir</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -78,18 +78,18 @@ const BraceletsList = ({ navigation }) => {
 
   const firstBracelet = () => {
     return (
-      <View style={styles.register}>
-        <Text style={styles.text}>Cadastre a primeira pulseira:</Text>
+      <View style={braceletsStyles.register}>
+        <Text style={braceletsStyles.text}>Cadastre a primeira pulseira:</Text>
       </View>
     );
   };
 
   return (
-    <View style={styles.body}>
-      <View style={styles.header}>
-        <Text style={styles.text_header}>Lista de pulseiras</Text>
+    <View style={braceletsStyles.body}>
+      <View style={braceletsStyles.header}>
+        <Text style={braceletsStyles.text_header}>Lista de pulseiras</Text>
       </View>
-      <View style={styles.body}>
+      <View style={braceletsStyles.body}>
         {bracelets.length > 0 ? listBracelets() : firstBracelet()}
           <FloatingButton 
             onPress={() => onPressHandler()}

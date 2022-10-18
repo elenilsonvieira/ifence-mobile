@@ -6,8 +6,7 @@ import {
   View,
 } from "react-native";
 import BraceletService from "../../services/BraceletService";
-
-import styles from "./styles";
+import braceletsStyles from './braceletsStyles';
 
 function BraceletEdit(props) {
   const braceletService = new BraceletService();
@@ -42,22 +41,22 @@ function BraceletEdit(props) {
 };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View style={braceletsStyles.container}>
+      <Text style={braceletsStyles.title}>
         {bracelet ? "Edição de pulseira" : "Criação de pulseira"}
       </Text>
-      <View style={styles.formContent}>
-        <Text style={styles.text}>Nome da pulseira</Text>
+      <View style={braceletsStyles.formContent}>
+        <Text style={braceletsStyles.text}>Nome da pulseira</Text>
         <TextInput
-          style={styles.input}
+          style={braceletsStyles.input}
           placeholder="Pulseira da fulana"
           placeholderTextColor="#808080" 
           onChangeText={(value) => setName(value)}
           value={name}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={onPressHandler}>
-        <Text style={styles.text}>{bracelet ? "SALVAR" : "REGISTRAR"}</Text>
+      <TouchableOpacity style={braceletsStyles.button} onPress={onPressHandler}>
+        <Text style={braceletsStyles.text}>{bracelet ? "SALVAR" : "REGISTRAR"}</Text>
       </TouchableOpacity>
     </View>
   );

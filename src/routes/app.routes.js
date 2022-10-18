@@ -8,9 +8,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
 import FencesList from '../pages/fence/fencesList';
 import BraceletsList from "../pages/bracelets/braceletsList";
-import Alarms from "../pages/alarms/alarms";
-import Alarm from "../pages/alarm/alarm";
-import BraceletEdit from "../pages/braceletEdit/braceletEdit";
+import AlarmsList from "../pages/alarms/alarmsList";
+import AlarmInfo from "../pages/alarms/alarmInfo";
+import BraceletEdit from "../pages/bracelets/braceletEdit";
 import Profile from "../pages/profile/Profile";
 import FenceCreateEdit from '../pages/fence/FenceCreateEdit';
 
@@ -23,14 +23,14 @@ function AlarmStack() {
       <Stack.Navigator>
         <Stack.Screen
           name='alarms'
-          component={Alarms}
+          component={AlarmsList}
           options={{
             title: "Histórico de Alarme"
           }}
         />
         <Stack.Screen
           name="alarm"
-          component={Alarm}
+          component={AlarmInfo}
           options={{
             title: "Alarme"
           }}
