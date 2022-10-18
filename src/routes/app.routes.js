@@ -7,7 +7,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
 import FencesList from '../pages/fence/fencesList';
-import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
 import BraceletsList from "../pages/bracelets/braceletsList";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
@@ -121,16 +120,6 @@ export default function AppRoutes() {
                 ]
             }
         }
-        /*tabBarOptions={{
-              labelStyle: {
-                  fontSize: 14,
-                  bottom: 8
-              },
-              style: {
-                  height: 70
-              },
-              showLabel: false,
-          }}*/
       >
           <Tab.Screen
               name="bracelets"
@@ -151,15 +140,6 @@ export default function AppRoutes() {
                 tabBarIcon: ({color}) => renderIcon('fence', color),
                 tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
                 headerShown: false,
-            })}
-        />
-        <Tab.Screen
-            name="fenceBracelet"
-            component={FenceBracelet}
-            options={({route}) => ({
-                tabBarIcon: ({color}) => renderIcon('fence', color),
-                tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
-                title: "Cerca e pulseira"
             })}
         />
           <Tab.Screen
