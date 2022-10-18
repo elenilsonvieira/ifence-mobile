@@ -2,6 +2,8 @@ import React from "react";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from '@react-navigation/native';
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
 import FencesList from '../pages/fence/fencesList';
@@ -18,65 +20,71 @@ const Tab = createBottomTabNavigator();
 
 function AlarmStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name='alarms'
-        component={Alarms}
-        options={{
-          title: "Histórico de Alarme"
-        }}
-      />
-      <Stack.Screen
-        name="alarm"
-        component={Alarm}
-        options={{
-          title: "Alarme"
-        }}
-      />
-  </Stack.Navigator>
+    <NavigationContainer independent={true}>
+      <Stack.Navigator>
+        <Stack.Screen
+          name='alarms'
+          component={Alarms}
+          options={{
+            title: "Histórico de Alarme"
+          }}
+        />
+        <Stack.Screen
+          name="alarm"
+          component={Alarm}
+          options={{
+            title: "Alarme"
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 
 function BraceletStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="braceletsList"
-        component={BraceletsList}
-        options={{
-          title: "Lista de pulseira"
-        }}
-      />
-      <Stack.Screen
-        name="braceletEdit"
-        component={BraceletEdit}
-        options={{
-          title: "Pulseira"
-        }}
-      />
-  </Stack.Navigator>
+    <NavigationContainer independent={true} >
+      <Stack.Navigator>
+        <Stack.Screen
+          name="braceletsList"
+          component={BraceletsList}
+          options={{
+            title: "Lista de pulseira"
+          }}
+        />
+        <Stack.Screen
+          name="braceletEdit"
+          component={BraceletEdit}
+          options={{
+            title: "Pulseira"
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 
 function FenceStack() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen
-                name="fencesList"
-                component={FencesList}
-                options={{
-                    title: "Lista de cercas"
-                }}
-            />
-            <Stack.Screen
-                name="fenceCreatEdit"
-                component={FenceCreateEdit}
-                options={{
-                    title: "Criação/Edição de cerca"
-                }}
-            />
-        </Stack.Navigator>
-    )
+  return (
+    <NavigationContainer independent={true} >
+      <Stack.Navigator>
+          <Stack.Screen
+              name="fencesList"
+              component={FencesList}
+              options={{
+                  title: "Lista de cercas"
+              }}
+          />
+          <Stack.Screen
+              name="fenceCreatEdit"
+              component={FenceCreateEdit}
+              options={{
+                  title: "Criação/Edição de cerca"
+              }}
+          />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 }
 
 
@@ -140,7 +148,7 @@ export default function AppRoutes() {
             name="fences"
             component={FenceStack}
             options={({route}) => ({
-                tabBarIcon: ({color}) => renderIcon('fence', 'red'),
+                tabBarIcon: ({color}) => renderIcon('fence', color),
                 tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
                 headerShown: false,
             })}
@@ -149,7 +157,7 @@ export default function AppRoutes() {
             name="fenceBracelet"
             component={FenceBracelet}
             options={({route}) => ({
-                tabBarIcon: ({color}) => renderIcon('fence', 'red'),
+                tabBarIcon: ({color}) => renderIcon('fence', color),
                 tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
                 title: "Cerca e pulseira"
             })}

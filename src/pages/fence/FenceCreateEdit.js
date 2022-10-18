@@ -9,27 +9,25 @@ function FenceCreateEdit(props) {
   const [fence, setFence] = useState();
 
   const [name, setName] = useState('');
-  const [radius, setRadius] = useState(0.0);
-  const [coordinate, setCoordinate] = useState();
-  const [latitude, setLatitude] = useState(0.0);
-  const [longitude, setLongitude] = useState(0.0);
+  const [radius, setRadius] = useState();
+  const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState();
   const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-
+  const [finishTime, setfinishTime] = useState('');
 
   useEffect(() => {
       if(props.route.params.item){
           setFence(props.route.params.item);
           setName(props.route.params.item.name);
-          setCoordinate(props.route.params.item.coordinate);
           setLatitude(props.route.params.item.coordinate.latitude);
           setLongitude(props.route.params.item.coordinate.longitude);
           setStartTime(props.route.params.item.startTime);
-          setEndTime(props.route.params.item.endTime);
+          setfinishTime(props.route.params.item.finishTime);
+          setRadius(props.route.params.item.radius);
       }
   }, [props]);
 
-  const onPressHandler = () => {
+  const onPressHandler = async () => {
       const fenc = {
           id: fence ? fence.id : undefined,
           name: name,
@@ -38,78 +36,21 @@ function FenceCreateEdit(props) {
               longitude: longitude
           },
           startTime: startTime,
-          endTime: endTime,
+          finishTime: finishTime,
           radius: radius
       };
 
       try {
           if (fence) {
-              updateFence(fenc);
-          } else {
-              createFence(fenc);
+                await fenceService.update(fenc.id, fenc);
+            } else {
+                await fenceService.create(fenc);
           }
           props.navigation.goBack();
       } catch (error) {
           console.log(error);
       }
-
-    createFence();
-    setName('');
-    setLatitude(0.0)
-    setLongitude(0.0)
-    setRadius(0.0)
-    setStartTime('12:00')
-    setEndTime('18:00')
-  };
-
-  const createFence = async (fenc) => {
-/*
-    const fence = {
-      name: name,
-      coordinate: {
-        latitude: latitude,
-        longitude: longitude
-      },
-      startTime: startTime,
-      endTime: endTime,
-      radius: radius
     };
-*/
-
-    await fenceService.create(fenc)
-      .then( response =>
-        {
-            console.log("Response " + response.data.content);
-        }
-    ).catch( error => {
-      console.log(error.response);
-    });
-  }
-
-    const updateFence = async (fenc) => {
-        /*
-            const fence = {
-              name: name,
-              coordinate: {
-                latitude: latitude,
-                longitude: longitude
-              },
-              startTime: startTime,
-              endTime: endTime,
-              radius: radius
-            };
-        */
-
-        await fenceService.update(fenc.id, fenc)
-            .then( response =>
-                {
-                    console.log("Response " + response.data.content);
-                }
-            ).catch( error => {
-                console.log(error.response);
-            });
-    }
-
 
     return (
       <View style={fenceStyles.container}>
@@ -121,6 +62,7 @@ function FenceCreateEdit(props) {
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="Nome da cerca"
+                      placeholderTextColor="#808080" 
                       onChangeText={value => setName(value)}
                       value={name}
                   />
@@ -128,14 +70,17 @@ function FenceCreateEdit(props) {
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="Latitude"
+                      placeholderTextColor="#808080" 
                       onChangeText={value => setLatitude(value)}
                       value={latitude}
+                      
                       keyboardType='numeric'
                   />
 
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="Longitude"
+                      placeholderTextColor="#808080" 
                       onChangeText={value => setLongitude(value)}
                       value={longitude}
                       keyboardType='numeric'
@@ -144,6 +89,7 @@ function FenceCreateEdit(props) {
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="Raio"
+                      placeholderTextColor="#808080" 
                       onChangeText={value => setRadius(value)}
                       value={radius}
                       keyboardType='numeric'
@@ -152,6 +98,7 @@ function FenceCreateEdit(props) {
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="12:00"
+                      placeholderTextColor="#808080" 
                       onChangeText={value => setStartTime(value)}
                       value={startTime}
                   />
@@ -159,8 +106,9 @@ function FenceCreateEdit(props) {
                   <TextInput
                       style={fenceStyles.input}
                       placeholder="18:00"
-                      onChangeText={value => setEndTime(value)}
-                      value={endTime}
+                      placeholderTextColor="#808080" 
+                      onChangeText={value => setfinishTime(value)}
+                      value={finishTime}
                   />
                   <TouchableOpacity style={fenceStyles.button} onPress={onPressHandler}>
                       <Text style={fenceStyles.text}>{fence ? "SALVAR" : "REGISTRAR"}</Text>

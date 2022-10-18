@@ -12,7 +12,6 @@ const BraceletsList = ({ navigation }) => {
   const [bracelets, setBracelets] = useState([]);
 
   useEffect(() => {
-    getBracelets();
     navigation.addListener("focus", () => {
       getBracelets();
     });

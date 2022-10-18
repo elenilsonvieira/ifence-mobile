@@ -8,33 +8,13 @@ import FloatingButton from '../../components/floating-button/floating-button';
 const FencesList = ({navigation}) => {
   const fenceService = new FenceService();
 
-  const [text, setText] = useState('');
-  const [radius, setRadius] = useState(0.0);
-  const [latitude, setLatitude] = useState(0.0);
-  const [longitude, setLongitude] = useState(0.0);
-  const [startTime, setStartTime] = useState('12:00');
-  const [endTime, setEndTime] = useState('18:00');
-
   const [fences, setFences] = useState([]);
 
   useEffect(() => {
-    getFences();
+    navigation.addListener("focus", () => {
+      getFences();
+    });
   }, []);
-
-/*
-  const onPressHandler = () => {
-    registerFences();
-    setText('');
-    setLatitude(0.0)
-    setLongitude(0.0)
-    setRadius(0.0)
-    setStartTime('12:00')
-    setEndTime('18:00')
-    //setBracelets([...bracelets, bracelet]);
-
-    getFences();
-  };
-*/
 
   const getFences = () => {
     fenceService.findAll()
@@ -44,27 +24,6 @@ const FencesList = ({navigation}) => {
         console.log(error);
       });
   };
-  const registerFences = async () => {
-    const fence = {
-      name: name,
-      coordinate: {
-        latitude: latitude,
-        longitude: longitude
-      },
-      startTime: startTime,
-      endTime: endTime,
-      radius: radius
-    };
-
-    fenceService.create(fence)
-      .then( response =>
-        {
-            console.log("Response " + response.data.content);
-        }
-    ).catch( error => {
-      console.log(error.response);
-    });
-  }
 
   const deleteFence = item => {
     Alert.alert('Cuidado', `Gostaria de excluir a cerca ${item.name}?`, [
@@ -82,9 +41,9 @@ const FencesList = ({navigation}) => {
   };
 
     function onPressHandler(item) {
-        navigation.navigate("fenceCreatEdit", {
-            item: item,
-        });
+      navigation.navigate("fenceCreatEdit", {
+          item: item,
+      });
     }
 
 
