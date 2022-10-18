@@ -16,7 +16,7 @@ export default class FenceService extends ApiService {
     }
 
     statusActive(id, object){
-        return this.patch(`/${id}`, object);
+        return this.patch(`/${id}/setStatus`, null, object);
     }
 
     delete(id){

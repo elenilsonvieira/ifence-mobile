@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import FloatingButton from "../../components/floating-button/floationg-button";
+import FloatingButton from "../../components/floating-button/floating-button";
 import BraceletService from "../../services/BraceletService";
 
 import styles from "./styles";
 
-const Bracelets = ({ navigation }) => {
+const BraceletsList = ({ navigation }) => {
   const braceletService = new BraceletService();
 
   const [bracelets, setBracelets] = useState([]);
 
   useEffect(() => {
-    getBracelets();
     navigation.addListener("focus", () => {
       getBracelets();
     });
@@ -46,7 +45,7 @@ const Bracelets = ({ navigation }) => {
   };
 
   function onPressHandler(item) {
-    navigation.navigate("bracelet", {
+    navigation.navigate("braceletEdit", {
       item: item,
     });
   }
@@ -100,4 +99,4 @@ const Bracelets = ({ navigation }) => {
   );
 };
 
-export default Bracelets;
+export default BraceletsList;

@@ -26,10 +26,6 @@ export default class ApiService {
         }
     }
 
-    post(url, params){
-        url = this.buildUrl(url);
-        return httpClient.post(url, params);
-    }
     post(url, body, params){
         url = this.buildUrl(url);
         return httpClient.post(url, body, {params: params});
@@ -45,9 +41,9 @@ export default class ApiService {
         return httpClient.delete(url);
     }
 
-    patch(url){
+    patch(url, body, params){
         url = this.buildUrl(url);
-        return httpClient.patch(url);
+        return httpClient.patch(url, body, {params: params});
     }
 
     get(url){

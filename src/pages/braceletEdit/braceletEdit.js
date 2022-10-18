@@ -9,7 +9,7 @@ import BraceletService from "../../services/BraceletService";
 
 import styles from "./styles";
 
-function Bracelet(props) {
+function BraceletEdit(props) {
   const braceletService = new BraceletService();
 
   const [bracelet, setBracelet] = useState();
@@ -63,4 +63,4 @@ function Bracelet(props) {
   );
 }
 
-export default Bracelet;
+export default BraceletEdit;
