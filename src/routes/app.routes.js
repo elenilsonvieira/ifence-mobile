@@ -4,13 +4,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Locations from "../pages/locations/locations";
-import Fences from '../pages/fence/fences';
+import FencesList from '../pages/fence/fencesList';
 import FenceBracelet from '../pages/fenceBracelet/fenceBracelet';
 import BraceletsList from "../pages/bracelets/braceletsList";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
 import BraceletEdit from "../pages/braceletEdit/braceletEdit";
 import Profile from "../pages/profile/Profile";
+import FenceCreateEdit from '../pages/fence/FenceCreateEdit';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,6 +57,28 @@ function BraceletStack() {
   </Stack.Navigator>
   )
 }
+
+function FenceStack() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="fencesList"
+                component={FencesList}
+                options={{
+                    title: "Lista de cercas"
+                }}
+            />
+            <Stack.Screen
+                name="fenceCreatEdit"
+                component={FenceCreateEdit}
+                options={{
+                    title: "Criação/Edição de cerca"
+                }}
+            />
+        </Stack.Navigator>
+    )
+}
+
 
 export default function AppRoutes() {
   function getTabBarVisibility(route) {
@@ -115,11 +138,11 @@ export default function AppRoutes() {
           />
         <Tab.Screen
             name="fences"
-            component={Fences}
+            component={FenceStack}
             options={({route}) => ({
                 tabBarIcon: ({color}) => renderIcon('fence', 'red'),
                 tabBarStyle: {display: getTabBarVisibility(route) ? 'flex' : 'none'},
-                title: "Cercas"
+                headerShown: false,
             })}
         />
         <Tab.Screen

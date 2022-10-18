@@ -1,6 +1,13 @@
 import {StyleSheet} from 'react-native';
 
-export const styles = StyleSheet.create({
+export const fenceStyles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        flex: 1,
+        paddingTop: 22,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
     body: {
         flex: 1,
         flexDirection: 'column',
@@ -64,5 +71,11 @@ export const styles = StyleSheet.create({
         backgroundColor: '#037272',
         padding: 10,
         borderRadius: 8,
+    },
+    title: {
+        color: '#000000',
+        fontSize: 28,
+        fontWeight: 'bold',
+        paddingBottom: 24
     },
 });
