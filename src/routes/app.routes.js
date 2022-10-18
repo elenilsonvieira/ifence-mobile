@@ -10,7 +10,7 @@ import FencesList from '../pages/fence/fencesList';
 import BraceletsList from "../pages/bracelets/braceletsList";
 import Alarms from "../pages/alarms/alarms";
 import Alarm from "../pages/alarm/alarm";
-import BraceletEdit from "../pages/braceletEdit/braceletEdit";
+import BraceletEdit from "../pages/bracelets/braceletEdit";
 import Profile from "../pages/profile/Profile";
 import FenceCreateEdit from '../pages/fence/FenceCreateEdit';
 
