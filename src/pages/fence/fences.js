@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, FlatList, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import FenceService from '../../services/FenceService';
-import AuthenticationService from '../../services/config/AuthenticationService';
 import {styles} from './styles';
 
 const Fences = () => {
@@ -162,22 +161,6 @@ const Fences = () => {
     );
   };
 
-  const logoutButton = () => {
-    return (
-      <View>
-        <TouchableOpacity style={styles.button} onPress={logout}>
-          <Text style={styles.text}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const logout = () => {
-    const auth = new AuthenticationService();
-
-    auth.logout();
-  }
-
   return (
     <View style={styles.body}>
       <View style={styles.header}>
@@ -186,7 +169,6 @@ const Fences = () => {
       <View style={styles.body}>
         {fences.length > 0 ? listFences() : firstBracelet()}
         {formRegisterFence()}
-        {logoutButton()}
       </View>
     </View>
   );
