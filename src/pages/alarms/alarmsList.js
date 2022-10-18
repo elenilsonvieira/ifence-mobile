@@ -9,9 +9,9 @@ import SelectBracelet from '../../components/select-bracelet/select-bracelet';
 import AlarmService from '../../services/AlarmService';
 import { convertDateToString } from '../../utils/DateUtil';
 
-import styles from './styles';
+import alarmStyles from './alarmStyles';
 
-function Alarms(props) {
+function AlarmsList(props) {
     const alarmService = new AlarmService();
 
     const [alarmList, setAlarmList] = useState([]);
@@ -70,7 +70,7 @@ function Alarms(props) {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={alarmStyles.container}>
             <SelectBracelet
                 setSelected={setSelected}
                 onSelect={getAll}
@@ -79,8 +79,8 @@ function Alarms(props) {
                 data={alarmList}
                 renderItem={({item}) => (
                     <TouchableOpacity onPress={ () => navigateToAlarmPage(item)}>
-                        <View style={styles.item} key={item.id}>
-                            <Text style={[styles.row, item.seen ? styles.alarmSeen : styles.alarmNotSeen]}>{item.location.bracelet.name}</Text>
+                        <View style={alarmStyles.itemList} key={item.id}>
+                            <Text style={[alarmStyles.row, item.seen ? alarmStyles.alarmSeen : alarmStyles.alarmNotSeen]}>{item.location.bracelet.name}</Text>
                         </View>
                     </TouchableOpacity>
                 )}
@@ -89,4 +89,4 @@ function Alarms(props) {
     );
 }
 
-export default Alarms;
+export default AlarmsList;
