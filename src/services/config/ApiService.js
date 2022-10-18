@@ -26,10 +26,6 @@ export default class ApiService {
         }
     }
 
-    post(url, params){
-        url = this.buildUrl(url);
-        return httpClient.post(url, params);
-    }
     post(url, body, params){
         url = this.buildUrl(url);
         return httpClient.post(url, body, {params: params});

@@ -1,123 +1,143 @@
-import React, {useEffect, useState} from 'react';
-import {Text, TextInput, TouchableOpacity, View,} from 'react-native';
-import FenceService from '../../services/FenceService';
-import {fenceStyles} from './fenceStyles';
+import React, { useEffect, useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import DropdownFenceBracelet from "../../components/fence-bracelet/DropdownFenceBracelet";
+import FenceBraceletService from "../../services/FenceBraceletService";
+import FenceService from "../../services/FenceService";
+import { fenceStyles } from "./fenceStyles";
 
 function FenceCreateEdit(props) {
   const fenceService = new FenceService();
+  const fenceBraceletService = new FenceBraceletService();
 
   const [fence, setFence] = useState();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [radius, setRadius] = useState();
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
-  const [startTime, setStartTime] = useState('');
-  const [finishTime, setfinishTime] = useState('');
+  const [startTime, setStartTime] = useState("");
+  const [finishTime, setfinishTime] = useState("");
+  const [bracelets, setBracelets] = useState([]);
 
   useEffect(() => {
-      if(props.route.params.item){
-          setFence(props.route.params.item);
-          setName(props.route.params.item.name);
-          setLatitude(props.route.params.item.coordinate.latitude);
-          setLongitude(props.route.params.item.coordinate.longitude);
-          setStartTime(props.route.params.item.startTime);
-          setfinishTime(props.route.params.item.finishTime);
-          setRadius(props.route.params.item.radius);
-      }
+    if (props.route.params.item) {
+      setFence(props.route.params.item);
+      setName(props.route.params.item.name);
+      setLatitude(props.route.params.item.coordinate.latitude);
+      setLongitude(props.route.params.item.coordinate.longitude);
+      setStartTime(props.route.params.item.startTime);
+      setfinishTime(props.route.params.item.finishTime);
+      setRadius(props.route.params.item.radius);
+      setBracelets(props.route.params.item.bracelets.map((brac) => brac.id));
+    }
   }, [props]);
 
   const onPressHandler = async () => {
-      const fenc = {
-          id: fence ? fence.id : undefined,
-          name: name,
-          coordinate: {
-              latitude: latitude,
-              longitude: longitude
-          },
-          startTime: startTime,
-          finishTime: finishTime,
-          radius: radius
-      };
-
-      try {
-          if (fence) {
-                await fenceService.update(fenc.id, fenc);
-            } else {
-                await fenceService.create(fenc);
-          }
-          props.navigation.goBack();
-      } catch (error) {
-          console.log(error);
-      }
+    const fenc = {
+      id: fence ? fence.id : undefined,
+      name: name,
+      coordinate: {
+        latitude: latitude,
+        longitude: longitude,
+      },
+      startTime: startTime,
+      finishTime: finishTime,
+      radius: radius,
     };
 
-    return (
-      <View style={fenceStyles.container}>
-          <Text style={fenceStyles.title}>
-              {fence ? "Edição de cerca" : "Criação de cerca"}
-          </Text>
-          <View style={fenceStyles.body}>
-              <View style={fenceStyles.register}>
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="Nome da cerca"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setName(value)}
-                      value={name}
-                  />
+    try {
+      var response;
+      if (fence) {
+        response = await fenceService.update(fenc.id, fenc);
+        response.data.bracelets.forEach((braceletID) => {
+          const fenceBracelet = {
+            fence: response.data.id,
+            bracelet: braceletID.id,
+          };
+          fenceBraceletService.delete(fenceBracelet);
+        });
+      } else {
+        response = await fenceService.create(fenc);
+      }
+      bracelets.forEach((braceletID) => {
+        const fenceBracelet = {
+          fence: response.data.id,
+          bracelet: braceletID,
+        };
+        fenceBraceletService.save(fenceBracelet);
+      });
+      props.navigation.goBack();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="Latitude"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setLatitude(value)}
-                      value={`${latitude ? latitude : ''}`}
-                      keyboardType='numeric'
-                  />
+  return (
+    <View style={fenceStyles.container}>
+      <Text style={fenceStyles.title}>
+        {fence ? "Edição de cerca" : "Criação de cerca"}
+      </Text>
+      <View style={fenceStyles.body}>
+        <DropdownFenceBracelet value={bracelets} setValue={setBracelets} />
+        <View style={fenceStyles.register}>
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="Nome da cerca"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setName(value)}
+            value={name}
+          />
 
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="Longitude"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setLongitude(value)}
-                      value={`${longitude ? longitude : ''}`}
-                      keyboardType='numeric'
-                  />
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="Latitude"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setLatitude(value)}
+            value={`${latitude ? latitude : ""}`}
+            keyboardType="numeric"
+          />
 
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="Raio"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setRadius(value)}
-                      value={`${radius ? radius : ''}`}
-                      keyboardType='numeric'
-                  />
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="Longitude"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setLongitude(value)}
+            value={`${longitude ? longitude : ""}`}
+            keyboardType="numeric"
+          />
 
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="12:00"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setStartTime(value)}
-                      value={startTime}
-                  />
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="Raio"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setRadius(value)}
+            value={`${radius ? radius : ""}`}
+            keyboardType="numeric"
+          />
 
-                  <TextInput
-                      style={fenceStyles.input}
-                      placeholder="18:00"
-                      placeholderTextColor="#808080" 
-                      onChangeText={value => setfinishTime(value)}
-                      value={finishTime}
-                  />
-                  <TouchableOpacity style={fenceStyles.button} onPress={onPressHandler}>
-                      <Text style={fenceStyles.text}>{fence ? "SALVAR" : "REGISTRAR"}</Text>
-                  </TouchableOpacity>
-              </View>
-          </View>
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="12:00"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setStartTime(value)}
+            value={startTime}
+          />
+
+          <TextInput
+            style={fenceStyles.input}
+            placeholder="18:00"
+            placeholderTextColor="#808080"
+            onChangeText={(value) => setfinishTime(value)}
+            value={finishTime}
+          />
+          <TouchableOpacity style={fenceStyles.button} onPress={onPressHandler}>
+            <Text style={fenceStyles.text}>
+              {fence ? "SALVAR" : "REGISTRAR"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-
-
+    </View>
   );
 }
 

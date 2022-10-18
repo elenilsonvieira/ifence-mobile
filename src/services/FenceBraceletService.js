@@ -10,6 +10,6 @@ export default class FenceBraceletService extends ApiService{
     }
 
     delete(config){
-        return super.delete('/removeBracelet', config);
+        return super.delete('/removeBracelet', {}, config);
     }
 }
