@@ -46,7 +46,7 @@ const FencesList = ({navigation}) => {
   };
   const registerFences = async () => {
     const fence = {
-      name: text,
+      name: name,
       coordinate: {
         latitude: latitude,
         longitude: longitude

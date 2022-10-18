@@ -8,7 +8,7 @@ const FenceCreateEdit = () => {
 
   const [fence, setFence] = useState();
 
-  const [text, setText] = useState('');
+  const [name, setName] = useState('');
   const [radius, setRadius] = useState(0.0);
   const [latitude, setLatitude] = useState(0.0);
   const [longitude, setLongitude] = useState(0.0);
