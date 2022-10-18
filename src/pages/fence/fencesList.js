@@ -72,7 +72,6 @@ const FencesList = ({navigation}) => {
       {
         text: 'Excluir',
         onPress: () => {
-          // eslint-disable-next-line no-shadow
           fenceService.delete(item.id);
           setFences(fences => {
             return fences.filter((value, index) => value !== item);
@@ -90,24 +89,27 @@ const FencesList = ({navigation}) => {
 
 
     const listFences = () => {
-    return (
-      <FlatList
-        data={fences}
-        renderItem={({item}) => (
-          // eslint-disable-next-line react-native/no-inline-fenceStyles
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={fenceStyles.item} key={item.id}>
-              <Text style={fenceStyles.text_item}>{item.name}</Text>
-            </View>
-            <TouchableOpacity
-              style={fenceStyles.deleteButton}
-              onPress={() => deleteFence(item)}>
-              <Text style={fenceStyles.text}>Excluir</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    );
+        return (
+            <FlatList
+                data={fences}
+                renderItem={({item}) => (
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <TouchableOpacity
+                            style={fenceStyles.item}
+                            key={item.id}
+                            onPress={() => onPressHandler(item)}
+                        >
+                            <Text style={fenceStyles.text_item}>{item.name}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={fenceStyles.deleteButton}
+                            onPress={() => deleteFence(item)}>
+                            <Text style={fenceStyles.text}>Excluir</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            />
+        );
   };
 
     return (
