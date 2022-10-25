@@ -63,9 +63,11 @@ export const notificationListener = () => {
             }
         });
     messaging().onMessage(async remoteMessage => {
-        Alert.alert('Alerta chegou', 'Chegou um alerta do FCM', [{
-            text: "OK",
-        }]);
-        // console.log("notification on foreground state ...", remoteMessage);
+        Alert.alert(
+            remoteMessage.notification.title,
+            remoteMessage.notification.body,
+            [
+                {text: "OK"}
+            ]);
     })
 }
