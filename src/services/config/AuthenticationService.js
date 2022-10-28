@@ -1,3 +1,4 @@
+import { getFCMToken } from "../../utils/pushNotificationHelper";
 import ApiService, {LOGGED_USER, TOKEN} from "./ApiService";
 import StorageService from "./StorageService";
 
@@ -9,9 +10,11 @@ export default class AuthenticationService extends ApiService {
     }
 
     async login(username, password){
+        const FCMToken = await getFCMToken();
         const loginDTO = {
             "username": username,
-            "password": password
+            "password": password,
+            "deviceToken": FCMToken
         };
 
         try{
