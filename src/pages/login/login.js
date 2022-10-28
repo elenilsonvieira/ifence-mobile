@@ -7,23 +7,14 @@ import {
 } from 'react-native';
 
 import styles from './styles';
-import AuthenticationService from '../../services/config/AuthenticationService';
+import { useAuth } from '../../context/Auth';
 
 
-export default function Login(props) {
-    const authenticationService = new AuthenticationService();
+export default function Login() {
+    const auth = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState([]);
-
-    const login = () => {
-        authenticationService.login(email, password)
-        .then(response => {
-            props.navigation.navigate("login");
-        }).catch((error) => {
-            console.log(error);
-        })
-    }
 
     return (
         <View style={styles.container}>
@@ -54,7 +45,7 @@ export default function Login(props) {
 
             <TouchableOpacity 
                 style={styles.buttonSubmit}
-                onPress={login}>
+                onPress={() => auth.signIn(email, password)}>
                 <Text style={styles.submitText}>Entrar</Text>
             </TouchableOpacity>
 

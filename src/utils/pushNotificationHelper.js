@@ -31,7 +31,7 @@ export async function getFCMToken() {
 
     if (!FCMToken){
         try {
-            const FCMToken = await messaging().getToken();
+            FCMToken = await messaging().getToken();
             if (FCMToken){
                 console.log(FCMToken, "new token");
                 await AsyncStorage.setItem('FCMToken', FCMToken);
@@ -40,6 +40,7 @@ export async function getFCMToken() {
             console.log(error, "erro no FCMToken");
         }
     }
+    return FCMToken;
 }
 
 export const notificationListener = () => {

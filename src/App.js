@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import Routes from "./routes/index.routes";
 import {requestUserPermission, notificationListener, getFCMToken} from './utils/pushNotificationHelper';
+import AuthProvider from './context/Auth';
 
 const App = () => {
 
@@ -12,9 +12,9 @@ const App = () => {
     },[])
 
   return (
-    <NavigationContainer>
+    <AuthProvider>
       <Routes/>
-    </NavigationContainer>
+    </AuthProvider>
   );
 };
 

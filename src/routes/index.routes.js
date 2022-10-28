@@ -1,36 +1,21 @@
-import React, { useEffect, useState } from "react";
-import AuthenticationService from "../services/config/AuthenticationService";
+import React from "react";
 import OnboardingRoutes from "./onboarding.routes";
 import AppRoutes from "./app.routes";
+import { useAuth } from "../context/Auth";
+import { NavigationContainer } from "@react-navigation/native";
 
-const authenticationService = new AuthenticationService();
 export default function Routes() {
-    const [state, setState] = useState({
-        loading: true,
-        isAuthenticated: false,
-    });
-
-    useEffect(() => {
-        isAuthenticated()
-      }, []);
-
-    const isAuthenticated = async () => {
-        const isAuth = await authenticationService.isAuthenticated();
-        setState({
-            loading: false,
-            isAuthenticated: isAuth,
-        });
-    }
+    const {authData, loading} = useAuth();
 
     return (
-        <>
+        <NavigationContainer>
         {
-        state.loading ?
+        loading ?
             <></> :
-            state.isAuthenticated ?
+            authData ?
                 <AppRoutes /> :
                 <OnboardingRoutes />
         }
-        </>
+        </NavigationContainer>
     )
 }

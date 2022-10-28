@@ -1,25 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  FlatList,
-  StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import AuthenticationService from "../../services/config/AuthenticationService";
+import { useAuth } from "../../context/Auth";
 
 import styles from "./styles";
 
-function Profile(props) {
-  const logout = () => {
-    const auth = new AuthenticationService();
-    auth.logout();
-  };
+function Profile() {
+  const auth = useAuth();
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={logout}>
+      <TouchableOpacity style={styles.button} onPress={auth.signOut}>
         <Text style={styles.text}>Logout</Text>
       </TouchableOpacity>
     </View>
