@@ -6,22 +6,43 @@ import {
     View,
 } from 'react-native';
 
-import styles from './styles';
+import styles from './registerStyle';
 import { useAuth } from '../../context/Auth';
+import UserService from '../../services/UserService';
 
 
-export default function Login({navigation}) {
+export default function Register() {
+    const userService = new UserService();
     const auth = useAuth();
 
     const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState([]);
 
     const register = () => {
-        navigation.navigate('register')
+        const params = {
+            name: name,
+            email: email,
+            password: password
+        }
+        userService.create(params)
+        .then(() => {
+            auth.signIn(email, password)
+        }).catch((error) => {
+            alert("Erro ao criar a conta")
+        })
     }
 
     return (
         <View style={styles.container}>
+            <TextInput
+                style={styles.input}
+                placeholder="Name"
+                keyboardType="text"
+                autoCapitalize="none"
+                value={name}
+                onChangeText={setName}
+            />
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -49,15 +70,8 @@ export default function Login({navigation}) {
 
             <TouchableOpacity 
                 style={styles.buttonSubmit}
-                onPress={() => auth.signIn(email, password)}>
-                <Text style={styles.submitText}>Entrar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-                style={styles.buttonRegister}
-                onPress={register}
-            >
-                <Text style={styles.registerText}>Criar conta gratuita</Text>
+                onPress={() => register()}>
+                <Text style={styles.submitText}>Criar</Text>
             </TouchableOpacity>
         </View>
     );
