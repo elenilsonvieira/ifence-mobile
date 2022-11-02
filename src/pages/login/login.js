@@ -8,13 +8,24 @@ import {
 
 import styles from './styles';
 import { useAuth } from '../../context/Auth';
-
+import LoadingModal from '../../components/modals/loading/LoadingModals';
 
 export default function Login() {
     const auth = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState([]);
+    const [visible, setVisible] = useState(false);
+
+    const login = () => {
+        setVisible(true)
+        auth.signIn(email, password)
+        .then(() => {
+            setVisible(false)
+        }).catch((error) => {
+            alert("Não foi possível realizar o login")
+        });
+    }
 
     return (
         <View style={styles.container}>
@@ -45,13 +56,18 @@ export default function Login() {
 
             <TouchableOpacity 
                 style={styles.buttonSubmit}
-                onPress={() => auth.signIn(email, password)}>
+                onPress={login}>
                 <Text style={styles.submitText}>Entrar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonRegister}>
                 <Text style={styles.registerText}>Criar conta gratuita</Text>
             </TouchableOpacity>
+
+            <LoadingModal
+                modalVisible={visible}
+                text="Carregando..."
+            />
         </View>
     );
 };
