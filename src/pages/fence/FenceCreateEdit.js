@@ -3,6 +3,7 @@ import {ScrollView, Switch, Text, TextInput, TouchableOpacity, View} from 'react
 import DropdownFenceBracelet from "../../components/fence-bracelet/DropdownFenceBracelet";
 import FenceBraceletService from "../../services/FenceBraceletService";
 import FenceService from "../../services/FenceService";
+import Coords from "../../utils/Coordinates";
 import { fenceStyles } from "./fenceStyles";
 
 function FenceCreateEdit(props) {
@@ -36,6 +37,13 @@ function FenceCreateEdit(props) {
       setRadius(props.route.params.item.radius);
       setBracelets(props.route.params.item.bracelets.map((brac) => brac.id));
       setIsActive(props.route.params.item.active);
+    } else {
+      Coords.getLocation(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        }
+      )
     }
   }, [props]);
 
