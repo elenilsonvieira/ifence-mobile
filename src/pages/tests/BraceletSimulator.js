@@ -64,7 +64,7 @@ export default function BraceletSimulator() {
           <Text>Latitude: {location ? location.coords.latitude : null}</Text>
           <Text>Longitude: {location ? location.coords.longitude : null}</Text>
         </View>
-        <Button title="Enviar Localização" style={BraceletSimulatorStyles.button} onPress={() => sendLocation()}/>
+        {/* <Button title="Enviar Localização" style={BraceletSimulatorStyles.button} onPress={() => sendLocation()}/> */}
       </View>
     </View>
   );
