@@ -58,8 +58,8 @@ export default function BraceletSimulator() {
       <DropdownFenceBracelet value={bracelets} setValue={setBracelets} />
       <View style={BraceletSimulatorStyles.options}>
         <Button title="Obter Localização" onPress={getLocation} style={BraceletSimulatorStyles.button}/>
-        <View style={BraceletSimulatorStyles.space}/>
-        <Button title={watchID ? "Parar Assistir" : "Assistir Localização"} onPress={watchLocation} style={BraceletSimulatorStyles.button}/>
+        {/* <View style={BraceletSimulatorStyles.space}/>
+        <Button title={watchID ? "Parar Monitoramento" : "Monitorar Localização"} onPress={watchLocation} style={BraceletSimulatorStyles.button}/> */}
         <View style={BraceletSimulatorStyles.coordinatesContainer}>
           <Text>Latitude: {location ? location.coords.latitude : null}</Text>
           <Text>Longitude: {location ? location.coords.longitude : null}</Text>
