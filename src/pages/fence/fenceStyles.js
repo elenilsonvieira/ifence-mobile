@@ -9,11 +9,13 @@ export const fenceStyles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     body: {
-        flex: 1,
+        display: 'flex',
+        flex: 3,
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         alignItems: 'stretch',
         justifyContent: 'flex-start',
+        backgroundColor: '#E9E9E9'
     },
     register: {
         flex: 1,
@@ -27,21 +29,26 @@ export const fenceStyles = StyleSheet.create({
         marginBottom: 10,
     },
     header: {
-        backgroundColor: '#00ff00',
+        backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 2,
+        display: 'flex',
+        flex: 1,
     },
     item: {
-        flex: 3,
-        borderBottomWidth: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        height: 150,
+        display: 'flex',
+        flex: 1,
+        marginVertical: 10,
+        marginHorizontal: 30,
+        borderRadius: 25,
+        backgroundColor: '#0554F2',
     },
     text_header: {
         color: '#000000',
-        fontSize: 35,
-        fontStyle: 'italic',
+        fontSize: 32,
+        fontFamily: 'Montserrat',
+        fontWeight: '300',
         margin: 10,
     },
     text: {
@@ -50,9 +57,11 @@ export const fenceStyles = StyleSheet.create({
         margin: 10,
     },
     text_item: {
-        color: '#000000',
-        fontSize: 35,
-        margin: 5,
+        color: '#FAFBFD',
+        fontSize: 32,
+        fontFamily: 'Montserrat',
+        fontWeight: 'bold',
+        margin: 20,
     },
     input: {
         width: '75%',

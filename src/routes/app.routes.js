@@ -91,12 +91,24 @@ function BraceletStack() {
 function FenceStack() {
   return (
     <NavigationContainer independent={true}>
-      <Stack.Navigator>
+      <Stack.Navigator 
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#2405F2',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontFamily: 'Montserrat',
+            fontSize: 22,
+            fontWeight: 'bold',
+          },
+        }}
+      >
         <Stack.Screen
           name="fencesList"
           component={FencesList}
           options={{
-            title: "Lista de cercas",
+            title: "Cercas",
           }}
         />
         <Stack.Screen
@@ -117,8 +129,8 @@ export default function AppRoutes() {
     return focusedRoute === "braceletsList";
   }
 
-  function renderIcon(name, color) {
-    return <Icon name={name} size={36} color={color} />;
+  function renderIcon(name, focused) {
+    return <Icon name={name} size={32} color={focused?"#9305F2":"#5D01EC"} />;
   }
 
   return (
@@ -129,19 +141,18 @@ export default function AppRoutes() {
           fontSize: 14,
           bottom: 8,
         },
-        tabBarStyle: [
-          {
-            display: "flex",
-          },
-          null,
-        ],
+        tabBarActiveBackgroundColor: '#DCDCDC',
+        tabBarInactiveBackgroundColor: '#DCDCDC',
+        tabBarStyle: {
+          backgroundColor: '#ffff' 
+        }
       }}
-    >
+      >
       <Tab.Screen
-        name="bracelets"
-        component={BraceletStack}
+        name="fences"
+        component={FenceStack}
         options={({ route }) => ({
-          tabBarIcon: ({ color }) => renderIcon("home", color),
+          tabBarIcon: ({ focused }) => renderIcon("fence", focused),
           tabBarStyle: {
             display: getTabBarVisibility(route) ? "flex" : "none",
           },
@@ -149,10 +160,10 @@ export default function AppRoutes() {
         })}
       />
       <Tab.Screen
-        name="fences"
-        component={FenceStack}
+        name="bracelets"
+        component={BraceletStack}
         options={({ route }) => ({
-          tabBarIcon: ({ color }) => renderIcon("fence", color),
+          tabBarIcon: ({ focused }) => renderIcon("watch", focused),
           tabBarStyle: {
             display: getTabBarVisibility(route) ? "flex" : "none",
           },
@@ -163,7 +174,7 @@ export default function AppRoutes() {
         name="location"
         component={Locations}
         options={({ route }) => ({
-          tabBarIcon: ({ color }) => renderIcon("history", color),
+          tabBarIcon: ({ focused }) => renderIcon("history", focused),
           tabBarStyle: {
             display: getTabBarVisibility(route) ? "flex" : "none",
           },
@@ -174,7 +185,7 @@ export default function AppRoutes() {
         name="Alarms"
         component={AlarmStack}
         options={{
-          tabBarIcon: ({ color }) => renderIcon("bell", color),
+          tabBarIcon: ({ focused }) => renderIcon("bell", focused),
           headerShown: false,
         }}
       />
@@ -182,7 +193,7 @@ export default function AppRoutes() {
         name="config"
         component={ProfileStack}
         options={{
-          tabBarIcon: ({ color }) => renderIcon("account", color),
+          tabBarIcon: ({ focused }) => renderIcon("account", focused),
           headerShown: false,
         }}
       />

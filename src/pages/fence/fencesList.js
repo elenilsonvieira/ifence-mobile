@@ -4,11 +4,14 @@ import FenceService from '../../services/FenceService';
 import formRegisterFence from './FenceCreateEdit';
 import {fenceStyles} from './fenceStyles';
 import FloatingButton from '../../components/floating-button/floating-button';
+import SearchBar from '../../components/search-bar/searchBar';
+import CustomMenuPopup from '../../components/custom-menu-popup/customMenuPopup';
 
 const FencesList = ({navigation}) => {
   const fenceService = new FenceService();
 
   const [fences, setFences] = useState([]);
+  const [searchText, setSearchText] = useState([]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -46,6 +49,10 @@ const FencesList = ({navigation}) => {
       });
     }
 
+    const onPopupEvent = (eventName, index) => {
+      if (eventName !== "itemSelected") return;
+      if (index === 0) console.log("PopUpMenu");
+    };
 
     const listFences = () => {
         return (
@@ -58,25 +65,31 @@ const FencesList = ({navigation}) => {
                             key={item.id}
                             onPress={() => onPressHandler(item)}
                         >
+                          <CustomMenuPopup></CustomMenuPopup>
                             <Text style={fenceStyles.text_item}>{item.name}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             style={fenceStyles.deleteButton}
                             onPress={() => deleteFence(item)}>
                             <Text style={fenceStyles.text}>Excluir</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 )}
-            />
+                />
         );
   };
 
     return (
         <View style={fenceStyles.body}>
             <View style={fenceStyles.header}>
-                <Text style={fenceStyles.text_header}>Lista de cercas</Text>
+                <Text style={fenceStyles.text_header}>Essas são suas cercas</Text>
             </View>
             <View style={fenceStyles.body}>
+                <SearchBar 
+                  placeholder='Qual cerca você quer encontrar?' 
+                  searchText={searchText}
+                  setSearchText={setSearchText}
+                />
                 {listFences()}
                 <FloatingButton
                     onPress={() => onPressHandler()}
