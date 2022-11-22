@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {ScrollView, Switch, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Button, ScrollView, Switch, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DropdownFenceBracelet from "../../components/fence-bracelet/DropdownFenceBracelet";
 import FenceBraceletService from "../../services/FenceBraceletService";
 import FenceService from "../../services/FenceService";
 import Coords from "../../utils/Coordinates";
 import { fenceStyles } from "./fenceStyles";
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+
 
 function FenceCreateEdit(props) {
   const fenceService = new FenceService();
@@ -19,6 +21,32 @@ function FenceCreateEdit(props) {
   const [startTime, setStartTime] = useState("");
   const [finishTime, setfinishTime] = useState("");
   const [bracelets, setBracelets] = useState([]);
+
+  const [date, setDate] = useState(new Date(1598051730000));
+
+  const onChangeStartTime = (event, selectedDate) => {
+    setStartTime(selectedDate);
+  };
+  const onChangeFinishTime = (event, selectedDate) => {
+    setfinishTime(selectedDate);
+  };
+
+  const showTimepicker = (campo) => {
+    let onChange;
+    if (campo == "início"){
+      onChange = onChangeStartTime();
+    } else {
+      onChange = onChangeFinishTime();
+    }
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange,
+      mode: 'time',
+      is24Hour: true,
+      display: 'spinner',
+    });
+  };
+
 
   const [isActive, setIsActive] = useState();
   const toggleSwitch = () => {
@@ -155,6 +183,7 @@ function FenceCreateEdit(props) {
                   style={fenceStyles.input}
                   placeholder="12:00"
                   placeholderTextColor="#808080"
+                  onFocus={ ()=> showTimepicker("início")}
                   onChangeText={(value) => setStartTime(value)}
                   value={startTime}
               />
@@ -163,6 +192,7 @@ function FenceCreateEdit(props) {
                   style={fenceStyles.input}
                   placeholder="18:00"
                   placeholderTextColor="#808080"
+                  onFocus={()=> showTimepicker("final")}
                   onChangeText={(value) => setfinishTime(value)}
                   value={finishTime}
               />
