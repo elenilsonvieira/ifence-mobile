@@ -5,11 +5,15 @@ import FloatingButton from "../../components/floating-button/floating-button";
 import BraceletService from "../../services/BraceletService";
 
 import braceletsStyles from "./braceletsStyles";
+import {fenceStyles} from '../fence/fenceStyles';
+import SearchBar from '../../components/search-bar/searchBar';
+import CustomMenuPopup from '../../components/custom-menu-popup/customMenuPopup';
 
 const BraceletsList = ({ navigation }) => {
   const braceletService = new BraceletService();
 
   const [bracelets, setBracelets] = useState([]);
+  const [searchText, setSearchText] = useState([]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -50,51 +54,54 @@ const BraceletsList = ({ navigation }) => {
     });
   }
 
-  const listBracelets = () => {
-    return (
-      <FlatList
-        data={bracelets}
-        renderItem={({ item }) => (
-          // eslint-disable-next-line react-native/no-inline-braceletsStyles
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              style={braceletsStyles.item}
-              key={item.id}
-              onPress={() => onPressHandler(item)}
-            >
-              <Text style={braceletsStyles.text_item}>{item.name}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+    const onPopupEvent = (eventName, index) => {
+        if (eventName !== "itemSelected") return;
+        if (index === 0) console.log("PopUpMenu");
+    };
+
+
+    const listBracelets = () => {
+        return (
+            <FlatList
+                data={bracelets}
+                renderItem={({ item }) => (
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <TouchableOpacity
+                            style={braceletsStyles.item}
+                            key={item.id}
+                            onPress={() => onPressHandler(item)}
+                        >
+                            <CustomMenuPopup></CustomMenuPopup>
+                            <Text style={braceletsStyles.text_item}>{item.name}</Text>
+                        </TouchableOpacity>
+                        {/*<TouchableOpacity
               style={braceletsStyles.deleteButton}
               onPress={() => deleteBracelete(item)}
             >
               <Text style={braceletsStyles.text}>Excluir</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    );
-  };
-
-  const firstBracelet = () => {
-    return (
-      <View style={braceletsStyles.register}>
-        <Text style={braceletsStyles.text}>Cadastre a primeira pulseira:</Text>
-      </View>
-    );
-  };
+            </TouchableOpacity>*/}
+                    </View>
+                )}
+            />
+        );
+    };
 
   return (
     <View style={braceletsStyles.body}>
       <View style={braceletsStyles.header}>
-        <Text style={braceletsStyles.text_header}>Lista de pulseiras</Text>
+        <Text style={braceletsStyles.text_header}>Essas são suas pulseiras</Text>
       </View>
-      <View style={braceletsStyles.body}>
-        {bracelets.length > 0 ? listBracelets() : firstBracelet()}
-          <FloatingButton 
-            onPress={() => onPressHandler()}
-          />
-      </View>
+        <View style={fenceStyles.body}>
+            <SearchBar
+                placeholder='Qual pulseira você quer encontrar?'
+                searchText={searchText}
+                setSearchText={setSearchText}
+            />
+            {listBracelets()}
+            <FloatingButton
+                onPress={() => onPressHandler()}
+            />
+        </View>
     </View>
   );
 };

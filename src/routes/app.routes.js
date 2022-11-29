@@ -68,12 +68,24 @@ function ProfileStack() {
 function BraceletStack() {
   return (
     <NavigationContainer independent={true}>
-      <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: '#2405F2',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontFamily: 'Montserrat',
+                    fontSize: 22,
+                    fontWeight: 'bold',
+                },
+            }}
+        >
         <Stack.Screen
           name="braceletsList"
           component={BraceletsList}
           options={{
-            title: "Lista de pulseira",
+            title: "Pulseiras",
           }}
         />
         <Stack.Screen
