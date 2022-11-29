@@ -12,7 +12,6 @@ export const fenceStyles = StyleSheet.create({
         display: 'flex',
         flex: 3,
         flexDirection: 'column',
-        backgroundColor: '#ffffff',
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         backgroundColor: '#E9E9E9'
