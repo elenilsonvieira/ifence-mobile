@@ -21,7 +21,9 @@ const Tab = createBottomTabNavigator();
 function AlarmStack() {
   return (
     <NavigationContainer independent={true}>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={screnStyles}
+      >
         <Stack.Screen
           name="alarms"
           component={AlarmsList}
@@ -44,7 +46,9 @@ function AlarmStack() {
 function ProfileStack() {
   return (
     <NavigationContainer independent={true}>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={screnStyles}
+      >
         <Stack.Screen
           name="profile"
           component={Profile}
@@ -68,24 +72,14 @@ function ProfileStack() {
 function BraceletStack() {
   return (
     <NavigationContainer independent={true}>
-        <Stack.Navigator
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: '#2405F2',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontFamily: 'Montserrat',
-                    fontSize: 22,
-                    fontWeight: 'bold',
-                },
-            }}
-        >
+      <Stack.Navigator
+        screenOptions={screnStyles}
+      >
         <Stack.Screen
           name="braceletsList"
           component={BraceletsList}
           options={{
-            title: "Pulseiras",
+            title: "Lista de pulseira",
           }}
         />
         <Stack.Screen
@@ -104,17 +98,7 @@ function FenceStack() {
   return (
     <NavigationContainer independent={true}>
       <Stack.Navigator 
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#2405F2',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontFamily: 'Montserrat',
-            fontSize: 22,
-            fontWeight: 'bold',
-          },
-        }}
+        screenOptions={screnStyles}
       >
         <Stack.Screen
           name="fencesList"
@@ -147,18 +131,7 @@ export default function AppRoutes() {
 
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarShowLabel: false,
-        tabBarLabelStyle: {
-          fontSize: 14,
-          bottom: 8,
-        },
-        tabBarActiveBackgroundColor: '#DCDCDC',
-        tabBarInactiveBackgroundColor: '#DCDCDC',
-        tabBarStyle: {
-          backgroundColor: '#ffff' 
-        }
-      }}
+      screenOptions={screnStyles}
       >
       <Tab.Screen
         name="fences"
@@ -211,4 +184,27 @@ export default function AppRoutes() {
       />
     </Tab.Navigator>
   );
+}
+
+
+const screnStyles = {
+    headerStyle: {
+      backgroundColor: '#2405F2',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontFamily: 'Montserrat',
+      fontSize: 22,
+      fontWeight: 'bold',
+    },
+    tabBarShowLabel: false,
+    tabBarLabelStyle: {
+      fontSize: 14,
+      bottom: 8,
+    },
+    tabBarActiveBackgroundColor: '#DCDCDC',
+    tabBarInactiveBackgroundColor: '#DCDCDC',
+    tabBarStyle: {
+      backgroundColor: '#ffff' 
+    }
 }

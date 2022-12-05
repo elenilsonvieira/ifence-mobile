@@ -31,6 +31,10 @@ export default class FenceService extends ApiService {
         return this.get(`${params}`);
     }
 
+    search(params){
+        return this.get(`/search`, params);
+    }
+
     find(config){
         return this.get('', config);
     }

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Hearder from '../../components/header/header';
 import SelectBracelet from '../../components/select-bracelet/select-bracelet';
 import AlarmService from '../../services/AlarmService';
 import { convertDateToString } from '../../utils/DateUtil';
@@ -69,22 +70,31 @@ function AlarmsList(props) {
         )
     }
 
+    const findAlarmNotSeen = () => {
+        let alarms = 0;
+        alarmList.map((item) => {
+            if (item.seen == false) {
+                alarms++;
+            }
+        })
+        return alarms;
+    }
+
     return (
         <View style={alarmStyles.container}>
-            <SelectBracelet
-                setSelected={setSelected}
-                onSelect={getAll}
-            />
-            <FlatList
-                data={alarmList}
-                renderItem={({item}) => (
-                    <TouchableOpacity onPress={ () => navigateToAlarmPage(item)}>
-                        <View style={alarmStyles.itemList} key={item.id}>
-                            <Text style={[alarmStyles.row, item.seen ? alarmStyles.alarmSeen : alarmStyles.alarmNotSeen]}>{item.location.bracelet.name}</Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
-            />
+            <Hearder title={findAlarmNotSeen() == 0 ? 'Você não possui novos alarmes' : `Você possui ${findAlarmNotSeen()} alarmes novos`}/>
+            <View style={alarmStyles.container}>
+                <FlatList
+                    data={alarmList}
+                    renderItem={({item}) => (
+                        <TouchableOpacity onPress={ () => navigateToAlarmPage(item)}>
+                            <View style={alarmStyles.itemList} key={item.id}>
+                                <Text style={[alarmStyles.row, item.seen ? alarmStyles.alarmSeen : alarmStyles.alarmNotSeen]}>{item.location.bracelet.name}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
         </View>
     );
 }

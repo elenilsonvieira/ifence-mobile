@@ -22,6 +22,10 @@ export default class BraceletService extends ApiService {
     find(params){
         return this.get(`${params}`);
     }
+    
+    search(params){
+        return this.get(`/search`, params);
+    }
 
     findAll(){
         return this.get();

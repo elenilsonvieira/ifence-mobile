@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import CustomMenuPopup from "../../components/custom-menu-popup/customMenuPopup";
 import FloatingButton from "../../components/floating-button/floating-button";
+import Hearder from "../../components/header/header";
+import SearchBar from "../../components/search-bar/searchBar";
 import BraceletService from "../../services/BraceletService";
 
 import braceletsStyles from "./braceletsStyles";
-import {fenceStyles} from '../fence/fenceStyles';
-import SearchBar from '../../components/search-bar/searchBar';
-import CustomMenuPopup from '../../components/custom-menu-popup/customMenuPopup';
 
 const BraceletsList = ({ navigation }) => {
   const braceletService = new BraceletService();
 
   const [bracelets, setBracelets] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [element, setElement] = useState();
   const [searchText, setSearchText] = useState([]);
 
   useEffect(() => {
@@ -54,54 +56,105 @@ const BraceletsList = ({ navigation }) => {
     });
   }
 
-    const onPopupEvent = (eventName, index) => {
-        if (eventName !== "itemSelected") return;
-        if (index === 0) console.log("PopUpMenu");
-    };
+  const firstBracelet = () => {
+    return (
+      <View style={braceletsStyles.register}>
+        <Text style={braceletsStyles.text}>Cadastre a primeira pulseira:</Text>
+      </View>
+    );
+  };
 
+  const onShowPopup = (element) => {
+    setElement(element);
+    setVisible(true);
+  };
+  const onClosePopup = () => {
+    setVisible(false);
+  };
 
-    const listBracelets = () => {
-        return (
-            <FlatList
-                data={bracelets}
-                renderItem={({ item }) => (
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <TouchableOpacity
-                            style={braceletsStyles.item}
-                            key={item.id}
-                            onPress={() => onPressHandler(item)}
-                        >
-                            <CustomMenuPopup></CustomMenuPopup>
-                            <Text style={braceletsStyles.text_item}>{item.name}</Text>
-                        </TouchableOpacity>
-                        {/*<TouchableOpacity
-              style={braceletsStyles.deleteButton}
-              onPress={() => deleteBracelete(item)}
-            >
-              <Text style={braceletsStyles.text}>Excluir</Text>
-            </TouchableOpacity>*/}
-                    </View>
-                )}
-            />
-        );
-    };
+  const getData = () => {
+    return [
+      {
+        id: 1,
+        title: 'Editar Pulseira',
+        icon: (<Icon name='watch-export' size={26} color={'#5D01EC'}></Icon>),
+        action: (element) => {
+          onClosePopup();
+          onPressHandler(element);
+        }
+      },
+      {
+        id:2,
+        title: 'Excluir Pulseira',
+        icon: (<Icon name='delete' size={26} color={'#5D01EC'}></Icon>),
+        action: (element) => {
+          onClosePopup();
+          deleteBracelete(element);
+        }
+      },
+    ]
+  }
+
+  const search = () => {
+    const params = {
+      name: searchText
+    }
+    braceletService.search(params)
+    .then(response => {
+      setBracelets(response.data.content);
+    }).catch(error => {
+      console.log(error.response);
+    })
+  }
+
+  const renderContent = () => {
+    return (
+        <FlatList
+          style={{marginBottom: 20}}
+          numColumns={2}
+          data={bracelets}
+          renderItem={renderItem}
+          extraData={bracelets}
+          keyExtractor={(item, index) => index.toString()}
+        />
+    )
+  }
+  const renderItem = ({item, index}) => {
+    return (
+      <View style={braceletsStyles.itemContent}>
+          <TouchableOpacity
+              style={[braceletsStyles.item, index%2==0 ? {marginLeft: 20, marginRight: 7} : {marginLeft: 7, marginRight:20}]}
+              key={item.id}
+              onPress={() => onShowPopup(item)}
+          >
+            <Text style={braceletsStyles.text_item}>{item.name}</Text>
+          </TouchableOpacity>
+      </View>
+    )
+  }
 
   return (
     <View style={braceletsStyles.body}>
-      <View style={braceletsStyles.header}>
-        <Text style={braceletsStyles.text_header}>Essas são suas pulseiras</Text>
+      <Hearder title={'Essas são suas pulseiras'}/>
+      <View style={braceletsStyles.body}>
+        <SearchBar 
+          placeholder='Qual cerca você quer encontrar?' 
+          searchText={searchText}
+          setSearchText={setSearchText}
+          search={search}
+        />
+        {bracelets.length > 0 ? renderContent() : firstBracelet()}
+          <FloatingButton 
+            onPress={() => onPressHandler()}
+          />
       </View>
-        <View style={fenceStyles.body}>
-            <SearchBar
-                placeholder='Qual pulseira você quer encontrar?'
-                searchText={searchText}
-                setSearchText={setSearchText}
-            />
-            {listBracelets()}
-            <FloatingButton
-                onPress={() => onPressHandler()}
-            />
-        </View>
+      <CustomMenuPopup 
+        title="Opções da pulseira"
+        visible={visible}
+        onTouchOutside={onClosePopup}
+        data={() => getData()}
+        element={element}
+      />
     </View>
   );
 };

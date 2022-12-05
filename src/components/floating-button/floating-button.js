@@ -9,7 +9,7 @@ const FloatingButton = (props) => {
       <View style={[styles.container, props.style]}>
           <TouchableOpacity onPress={props.onPress}>
             <View style={styles.button}>
-                <Icon name="plus" size={24} color="#FFF"/>
+                <Icon name="plus" size={48} color="#FFF"/>
             </View>
           </TouchableOpacity>
       </View>

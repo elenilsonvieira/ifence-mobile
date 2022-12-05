@@ -5,7 +5,7 @@ const braceletsStyles = StyleSheet.create({
     display: 'flex',
     flex: 1,
     paddingTop: 22,
-    alignItems: 'stretch',
+    alignItems: 'center',
     justifyContent: 'space-between'
   },
   title: {
@@ -37,31 +37,31 @@ const braceletsStyles = StyleSheet.create({
     display: 'flex',
     flex: 3,
     flexDirection: 'column',
+    backgroundColor: '#ffffff',
     alignItems: 'stretch',
     justifyContent: 'flex-start',
     backgroundColor: '#E9E9E9'
   },
   header: {
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
+    backgroundColor: "#00ff00",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
   },
   item: {
     height: 150,
+    width: '50%',
     display: 'flex',
     flex: 1,
     marginVertical: 10,
-    marginHorizontal: 30,
     borderRadius: 25,
     backgroundColor: '#0554F2',
+    justifyContent: 'flex-end',
   },
   text_header: {
-    color: '#000000',
-    fontSize: 32,
-    fontFamily: 'Montserrat',
-    fontWeight: '300',
+    color: "#000000",
+    fontSize: 35,
+    fontStyle: "italic",
     margin: 10,
   },
   text_item: {
@@ -98,6 +98,12 @@ const braceletsStyles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
+  itemContent: {
+    maxWidth: '50%',
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    flex: 1
+  }
 });
 
 export default braceletsStyles;

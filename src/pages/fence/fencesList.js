@@ -1,15 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, FlatList, ScrollView, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import {Alert, FlatList, ScrollView, Text, SafeAreaView, TouchableOpacity, View, Switch} from 'react-native';
 import FenceService from '../../services/FenceService';
 import formRegisterFence from './FenceCreateEdit';
 import {fenceStyles} from './fenceStyles';
 import FloatingButton from '../../components/floating-button/floating-button';
 import SearchBar from '../../components/search-bar/searchBar';
 import CustomMenuPopup from '../../components/custom-menu-popup/customMenuPopup';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Hearder from '../../components/header/header';
 
 const FencesList = ({navigation}) => {
   const fenceService = new FenceService();
 
+  const [visible, setVisible] = useState(false);
+  const [element, setElement] = useState();
   const [fences, setFences] = useState([]);
   const [searchText, setSearchText] = useState([]);
 
@@ -34,6 +38,7 @@ const FencesList = ({navigation}) => {
       {
         text: 'Excluir',
         onPress: () => {
+          onClosePopup();
           fenceService.delete(item.id);
           setFences(fences => {
             return fences.filter((value, index) => value !== item);
@@ -43,16 +48,76 @@ const FencesList = ({navigation}) => {
     ]);
   };
 
-    function onPressHandler(item) {
+  const search = () => {
+    const params = {
+      name: searchText
+    }
+    fenceService.search(params)
+    .then(response => {
+      setFences(response.data.content);
+    }).catch(error => {
+      console.log(error.response);
+    })
+  }
+
+  const onShowPopup = (element) => {
+    setElement(element);
+    setVisible(true);
+  };
+  const onClosePopup = () => {
+    setVisible(false);
+  };
+
+  const getData = () => {
+    return [
+      {
+        id: 1,
+        title: 'Ativar/Desativar',
+        icon: (<Switch 
+          trackColor={{false: '#FF4C30', true: '#50c878'}}
+          value={element ? element.active : false}
+        />),
+        action: (element) => {
+          fenceService.statusActive(element.id, {active: !element.active})
+          .then(response => {
+            setElement(response.data);
+            getFences();
+          }).catch(error => {
+            console.log(error.response);
+          })
+        }
+      },
+      {
+        id: 2,
+        title: 'Editar pulseiras',
+        icon: (<Icon name='watch-export' size={26} color={'#5D01EC'}></Icon>),
+        action: (element) => {alert('story')}
+      },
+      {
+        id:3,
+        title: 'Editar Cerca',
+        icon: (<Icon name='square-edit-outline' size={26} color={'#5D01EC'}></Icon>),
+        action: (element) => {
+          console.log(element);
+          onClosePopup();
+          onPressHandler(element);
+        }
+      },
+      {
+        id:4,
+        title: 'Excluir Cerca',
+        icon: (<Icon name='delete' size={26} color={'#5D01EC'}></Icon>),
+        action: (element) => deleteFence(element)
+      },
+    ]
+  }
+
+    const onPressHandler = (element) => {
       navigation.navigate("fenceCreatEdit", {
-          item: item,
+        item: element,
       });
     }
 
-    const onPopupEvent = (eventName, index) => {
-      if (eventName !== "itemSelected") return;
-      if (index === 0) console.log("PopUpMenu");
-    };
 
     const listFences = () => {
         return (
@@ -63,16 +128,15 @@ const FencesList = ({navigation}) => {
                         <TouchableOpacity
                             style={fenceStyles.item}
                             key={item.id}
-                            onPress={() => onPressHandler(item)}
+                            onPress={() => onShowPopup(item)}
                         >
-                          <CustomMenuPopup></CustomMenuPopup>
-                            <Text style={fenceStyles.text_item}>{item.name}</Text>
+                          <Text style={fenceStyles.text_item}>{item.name}</Text>
                         </TouchableOpacity>
                         {/* <TouchableOpacity
                             style={fenceStyles.deleteButton}
                             onPress={() => deleteFence(item)}>
                             <Text style={fenceStyles.text}>Excluir</Text>
-                        </TouchableOpacity> */}
+                          </TouchableOpacity> */}
                     </View>
                 )}
                 />
@@ -81,20 +145,26 @@ const FencesList = ({navigation}) => {
 
     return (
         <View style={fenceStyles.body}>
-            <View style={fenceStyles.header}>
-                <Text style={fenceStyles.text_header}>Essas são suas cercas</Text>
-            </View>
-            <View style={fenceStyles.body}>
-                <SearchBar 
-                  placeholder='Qual cerca você quer encontrar?' 
-                  searchText={searchText}
-                  setSearchText={setSearchText}
-                />
-                {listFences()}
-                <FloatingButton
-                    onPress={() => onPressHandler()}
-                />
-            </View>
+          <Hearder title={'Essas são suas cercas'}/>
+          <View style={fenceStyles.body}>
+              <SearchBar 
+                placeholder='Qual cerca você quer encontrar?' 
+                searchText={searchText}
+                setSearchText={setSearchText}
+                search={search}
+              />
+              {listFences()}
+              <FloatingButton
+                  onPress={() => onPressHandler()}
+              />
+          </View>
+          <CustomMenuPopup 
+            title="Opções da cerca"
+            visible={visible}
+            onTouchOutside={onClosePopup}
+            data={() => getData()}
+            element={element}
+          />
         </View>
     );
 };

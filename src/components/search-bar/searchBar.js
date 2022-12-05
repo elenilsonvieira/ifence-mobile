@@ -13,6 +13,7 @@ const SearchBar = (props) => {
           style={searchBarStyles.input}
           value={props.searctText}
           onChangeText={(text) => props.setSearchText(text)}
+          onBlur={() => props.search()}
         />
         <Icon style={searchBarStyles.searchIcon} name='search' size={18} color='#6D6D6D'/>
       </View>

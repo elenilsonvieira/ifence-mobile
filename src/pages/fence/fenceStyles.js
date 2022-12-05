@@ -12,6 +12,7 @@ export const fenceStyles = StyleSheet.create({
         display: 'flex',
         flex: 3,
         flexDirection: 'column',
+        backgroundColor: '#ffffff',
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         backgroundColor: '#E9E9E9'
@@ -27,13 +28,6 @@ export const fenceStyles = StyleSheet.create({
         justifyContent: 'space-evenly',
         marginBottom: 10,
     },
-    header: {
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        flex: 1,
-    },
     item: {
         height: 150,
         display: 'flex',
@@ -42,13 +36,7 @@ export const fenceStyles = StyleSheet.create({
         marginHorizontal: 30,
         borderRadius: 25,
         backgroundColor: '#0554F2',
-    },
-    text_header: {
-        color: '#000000',
-        fontSize: 32,
-        fontFamily: 'Montserrat',
-        fontWeight: '300',
-        margin: 10,
+        justifyContent: 'flex-end',
     },
     text: {
         color: '#000000',

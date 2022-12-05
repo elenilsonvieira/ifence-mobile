@@ -11,16 +11,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowRadius: 10,
-    shadowColor: '#00213B',
+    shadowColor: '#9305F2',
     shadowOpacity: 0.3,
     shadowOffset: {
       height: 10,
     },
-    backgroundColor: '#00213B'
+    backgroundColor: '#9305F2'
   },
 });
 

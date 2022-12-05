@@ -2,10 +2,13 @@ import { StyleSheet } from 'react-native';
 
 const alarmStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 22,
+    display: 'flex',
+    flex: 3,
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
     alignItems: 'stretch',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    backgroundColor: '#E9E9E9'
   },
   itemInfo: {
     color: '#000000',

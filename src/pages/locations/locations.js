@@ -4,6 +4,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Hearder from '../../components/header/header';
 import SelectBracelet from '../../components/select-bracelet/select-bracelet';
 import LocationService from '../../services/LocationService';
 import { convertDateToString } from '../../utils/DateUtil';
@@ -53,25 +54,24 @@ function Locations() {
 
     return (
       <View style={styles.container}>
-        <SelectBracelet
-            setSelected={setSelected}
-            onSelect={getAll}
-        />
-        <View style={styles.listWrapper}>
-                    <Text style={[styles.row, styles.title]}>Pulseira</Text>
-                    <Text style={[styles.row, styles.title]}>Latitude</Text>
-                    <Text style={[styles.row, styles.title]}>Longitude</Text>
-                </View>
-        <FlatList
-            data={locationList}
-            renderItem={({item}) => (
-                <View style={styles.listWrapper} key={item.id}>
-                    <Text style={styles.row}>{item.bracelet.name}</Text>
-                    <Text style={styles.row}>{item.coordinate.latitude}</Text>
-                    <Text style={styles.row}>{item.coordinate.longitude}</Text>
-                </View>
-            )}
-        />
+        <Hearder title={'Estas são as últimas posições registradas'}/>
+        <View style={styles.container}>
+          <View style={styles.listWrapper}>
+              <Text style={[styles.row, styles.title]}>Pulseira</Text>
+              <Text style={[styles.row, styles.title]}>Latitude</Text>
+              <Text style={[styles.row, styles.title]}>Longitude</Text>
+          </View>
+          <FlatList
+              data={locationList}
+              renderItem={({item}) => (
+                  <View style={styles.listWrapper} key={item.id}>
+                      <Text style={styles.row}>{item.bracelet.name}</Text>
+                      <Text style={styles.row}>{item.coordinate.latitude}</Text>
+                      <Text style={styles.row}>{item.coordinate.longitude}</Text>
+                  </View>
+              )}
+          />
+        </View>
       </View>
     );
 }
