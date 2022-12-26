@@ -6,7 +6,7 @@ export const LOGGED_USER = 'loggedUser';
 export const TOKEN = 'token';
 
 export const httpClient = axios.create({
-    baseURL: "https://ifence-api.herokuapp.com/api",
+    baseURL: "http://localhost:8080/api",
     withCredentials: true,
 });
 
