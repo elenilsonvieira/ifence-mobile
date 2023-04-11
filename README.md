@@ -119,3 +119,6 @@ em que a notificação foi integrada.
     </intent-filter>
 </service>
 ```
+7. No arquivo [`pushNotificationHelper.js`](src/utils/pushNotificationHelper.js) foi criada a lógica para aquisição do 
+token gerado pelo Firebase, assim como um ouvinte para as notificações. As funções criadas são iniciadas no arquivo 
+[`App.js`](src/App.js).
