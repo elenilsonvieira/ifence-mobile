@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { Inter_400Regular, Inter_500Medium } from "@expo-google-fonts/inter";
 import { useFonts } from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
