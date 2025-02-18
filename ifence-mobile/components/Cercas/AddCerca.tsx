@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -12,18 +13,38 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import Header from "../Header";
 import { useState } from "react";
+import { salvarCerca } from "./storage/cercaStoragae";
 
 const AddCerca = () => {
   const router = useRouter();
 
   const [raio, setRaio] = useState(0);
-
-  const {latitude, longitude} = useLocalSearchParams();
+  const [nome, setNome] = useState("");
+  const { latitude, longitude } = useLocalSearchParams();
 
   const [fontsloaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
   });
+
+  const handleSaveCerca = async () => {
+    if (!latitude || !longitude) {
+      Alert.alert("Erro", "Por favor, selecione um local no mapa.");
+      return;
+    }
+
+    const novaCerca = {
+      nome,
+      latitude,
+      longitude,
+      raio: raio,
+    };
+
+    await salvarCerca(novaCerca);
+    setNome("");
+    // setRaio();
+    Alert.alert("Sucesso", "Cerca salva com sucesso!");
+  };
 
   return (
     <>
@@ -39,8 +60,12 @@ const AddCerca = () => {
 
         <View style={styles.containerFormAddCerca}>
           <Text style={styles.labelsInfo}>Nome da cerca: </Text>
-          <TextInput style={styles.input} placeholder="Informe o nome" />
-
+          <TextInput
+            style={styles.input}
+            placeholder="Informe o nome"
+            value={nome}
+            onChangeText={setNome}
+          />
 
           <Text style={styles.labelsInfo}>Latitude:</Text>
           <TextInput
@@ -65,15 +90,26 @@ const AddCerca = () => {
           />
 
           <Text style={styles.labelsInfo}>Adicionar localização: </Text>
-          
-          <TouchableOpacity style={styles.btnAbrirMapa} onPress={() => router.push({pathname: "/(tabs)/Map", params: {
-            raio: raio.toString(),
-          }})}>
-              <Text style={styles.textBtnMap}>Abrir mapa</Text>
+
+          <TouchableOpacity
+            style={styles.btnAbrirMapa}
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/Map",
+                params: {
+                  raio: raio.toString(),
+                },
+              })
+            }
+          >
+            <Text style={styles.textBtnMap}>Abrir mapa</Text>
           </TouchableOpacity>
-          
+
           <View style={styles.boxButtons}>
-            <TouchableOpacity style={styles.BtnAddCerca}>
+            <TouchableOpacity
+              style={styles.BtnAddCerca}
+              onPress={handleSaveCerca}
+            >
               <Text style={styles.textBtnAddCerca}>Adicionar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.BtnCancel}>
@@ -82,6 +118,13 @@ const AddCerca = () => {
           </View>
 
         </View>
+
+        <Link href={"/(tabs)/ListarCercas"} asChild>
+          <TouchableOpacity style={styles.btnListCercas}>
+            <Text style={styles.textBtnListarCerca}>Lista de cercas</Text>
+          </TouchableOpacity>
+        </Link>
+
       </SafeAreaView>
     </>
   );
@@ -92,7 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
   },
   btnBackPage: {
     alignSelf: "flex-start",
@@ -176,6 +219,18 @@ const styles = StyleSheet.create({
     marginTop: 13,
     borderRadius: 3,
   },
+  btnListCercas: {
+    backgroundColor: '#003F88',
+    alignSelf: 'center',
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 4
+  },
+  textBtnListarCerca: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 16
+  }
 });
 
 export default AddCerca;

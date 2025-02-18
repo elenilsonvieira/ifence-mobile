@@ -19,7 +19,6 @@ const Map = () => {
   }>(null);
   const mapRef = useRef<MapView | null>(null);
 
-  // const { raio } = useLocalSearchParams();
   const params = useLocalSearchParams();
   const raio = Number(params.raio);
 
@@ -53,7 +52,7 @@ const Map = () => {
           mapRef.current.animateToRegion({
             latitude: userLocation.latitude,
             longitude: userLocation.longitude,
-            latitudeDelta: 0.01, // Zoom adequado
+            latitudeDelta: 0.01, 
             longitudeDelta: 0.01,
           });
         }
@@ -108,7 +107,6 @@ const Map = () => {
           <Circle
             center={location}
             radius={raio}
-            // radius={20} 
             strokeWidth={2}
             strokeColor="rgba(0, 0, 255, 0.5)" 
             fillColor="rgba(0, 0, 255, 0.2)" 
