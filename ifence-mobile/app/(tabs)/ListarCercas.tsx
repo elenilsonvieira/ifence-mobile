@@ -1,19 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import { obterCercas } from "../../components/Cercas/storage/cercaStoragae";
-// import { Header } from "react-native/Libraries/NewAppScreen";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { limpar, obterCercas } from "../../components/Cercas/storage/cercaStoragae";
 import Header from "@/components/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
 const ListaCercas = () => {
   const [cercas, setCercas] = useState<any[]>([]);
 
-  useEffect(() => {
-    carregarCercas();
-  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarCercas();
+    }, [])
+  )
 
   const carregarCercas = async () => {
     const cercasSalvas = await obterCercas();
     setCercas(cercasSalvas);
+  };
+
+  const limparCercas = async () => {
+    try {
+      await limpar();
+      setCercas([]);
+    } catch (err) {
+      alert('Não foi possivel remover')
+    }
   };
 
   return (
@@ -71,6 +84,9 @@ const styles = StyleSheet.create({
   textInfoCerca: {
     color: '#FFFFFF',
     fontSize: 16
+  },
+  textRemove: {
+    backgroundColor: '#c1121f'
   }
 });
 

@@ -12,7 +12,7 @@ import { useFonts } from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import Header from "../Header";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { salvarCerca } from "./storage/cercaStoragae";
 
 const AddCerca = () => {
@@ -21,6 +21,9 @@ const AddCerca = () => {
   const [raio, setRaio] = useState(0);
   const [nome, setNome] = useState("");
   const { latitude, longitude } = useLocalSearchParams();
+  const inputRefLatitude = useRef(null);
+  const inputRefLongitude = useRef(null);
+
 
   const [fontsloaded] = useFonts({
     Inter_400Regular,
@@ -42,7 +45,9 @@ const AddCerca = () => {
 
     await salvarCerca(novaCerca);
     setNome("");
-    // setRaio();
+    setRaio(0);
+    inputRefLatitude.current.clear();
+    inputRefLongitude.current.clear();
     Alert.alert("Sucesso", "Cerca salva com sucesso!");
   };
 
@@ -71,6 +76,7 @@ const AddCerca = () => {
           <TextInput
             style={[styles.input, styles.disableInput]}
             editable={false}
+            ref={inputRefLatitude}
             value={latitude}
           />
 
@@ -78,6 +84,7 @@ const AddCerca = () => {
           <TextInput
             style={[styles.input, styles.disableInput]}
             editable={false}
+            ref={inputRefLongitude}
             value={longitude}
           />
 
