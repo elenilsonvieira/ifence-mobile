@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import { obterCercas } from "../../components/Cercas/storage/cercaStoragae";
-// import { Header } from "react-native/Libraries/NewAppScreen";
+import { View, Text, FlatList, StyleSheet, Touchable, TouchableOpacity } from "react-native";
+import { limparCercas, obterCercas } from "../../components/Cercas/storage/cercaStoragae";
 import Header from "@/components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
@@ -17,6 +16,11 @@ const ListaCercas = () => {
     const cercasSalvas = await obterCercas();
     setCercas(cercasSalvas);
   };
+
+  const limpar = async () => {
+    await limparCercas();
+    setCercas([]);
+  }
 
   return (
     <>
@@ -37,6 +41,10 @@ const ListaCercas = () => {
             </View>
           )}
         />
+
+        <TouchableOpacity style={styles.btn} onPress={limpar}>
+          <Text>Limpar</Text>
+        </TouchableOpacity>
       </View>
     </>
   );
@@ -74,6 +82,9 @@ const styles = StyleSheet.create({
   textInfoCerca: {
     color: '#FFFFFF',
     fontSize: 16
+  }, 
+  btn: {
+    backgroundColor: '#c1121f'
   }
 });
 

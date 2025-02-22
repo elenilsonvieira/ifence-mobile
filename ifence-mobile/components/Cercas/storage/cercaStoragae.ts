@@ -27,3 +27,11 @@ export const obterCercas = async () => {
       return [];
     }
 };
+
+export const limparCercas =  async () => {
+  try {
+    await AsyncStorage.removeItem(CERCAS_STORAGE);
+  } catch (error) {
+    console.error("erro ao excluir", error);
+  }
+}
