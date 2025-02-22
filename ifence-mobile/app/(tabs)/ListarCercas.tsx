@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { obterCercas } from "../../components/Cercas/storage/cercaStoragae";
+import { limparCercas, obterCercas } from "../../components/Cercas/storage/cercaStoragae";
 
 import Header from "@/components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
