@@ -42,7 +42,7 @@ const AddCerca = () => {
 
     await salvarCerca(novaCerca);
     setNome("");
-    // setRaio();
+    setRaio(0);
     Alert.alert("Sucesso", "Cerca salva com sucesso!");
   };
 
