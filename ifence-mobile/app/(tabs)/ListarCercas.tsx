@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Touchable, TouchableOpacity } from "react-native";
-import { limparCercas, obterCercas } from "../../components/Cercas/storage/cercaStoragae";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import { obterCercas } from "../../components/Cercas/storage/cercaStoragae";
+// import { Header } from "react-native/Libraries/NewAppScreen";
 import Header from "@/components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
@@ -26,8 +27,6 @@ const ListaCercas = () => {
     <>
       <Header />
       <View style={styles.container}>
-        <Text>Olá, Usuário</Text>
-        <Text>Olá</Text>
         <Text style={styles.titulo}>Cercas Salvas</Text>
 
         <FlatList
