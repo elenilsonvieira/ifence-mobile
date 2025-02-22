@@ -22,6 +22,7 @@ const ListaCercas = () => {
     <>
       <Header />
       <View style={styles.container}>
+        <Text>Olá, Usuário</Text>
         <Text>Olá</Text>
         <Text style={styles.titulo}>Cercas Salvas</Text>
 
