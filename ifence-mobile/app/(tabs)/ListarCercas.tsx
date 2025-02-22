@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { obterCercas } from "../../components/Cercas/storage/cercaStoragae";
-// import { Header } from "react-native/Libraries/NewAppScreen";
+
 import Header from "@/components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
