@@ -5,6 +5,7 @@ const Home = () => {
         <AddCerca />
     )
     // <AddCerca />
+    // comentario
 }
 
 export default Home;
