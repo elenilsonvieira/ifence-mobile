@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   textBtnListarCerca: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    // fontWeight: '700',
     fontSize: 16
   }
 });

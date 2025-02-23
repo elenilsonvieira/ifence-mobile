@@ -1,0 +1,35 @@
+{/* <Switch style={styles.switch}
+               trackColor={{false: '#767577', true: '#81b0ff'}}
+               thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+               ios_backgroundColor="#3e3e3e"
+               onValueChange={toggleSwitch}
+               value={isEnabled}
+              /> */}
+
+const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
+/ const limpar = async () => {
+  //   await limparCercas();
+  //   setCercas([]);
+  // }
+
+
+{/* <FlatList
+          data={cercas}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              <Text style={styles.nome}>{item.nome}</Text>
+              <Text style={styles.textInfoCerca}>Latitude: {item.latitude}</Text>
+              <Text style={styles.textInfoCerca}>Longitude: {item.longitude}</Text>
+              <Text style={styles.textInfoCerca}>Raio: {item.raio} metros</Text>
+
+              
+            </View>
+          )}
+        /> */}
+
+        {/* <TouchableOpacity style={styles.btn} onPress={limpar}>
+          <Text>Limpar</Text>
+        </TouchableOpacity> */}
