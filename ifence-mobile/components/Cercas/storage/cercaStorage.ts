@@ -4,7 +4,17 @@ import { v4 as uuidv4 } from "uuid";
 
 const CERCAS_STORAGE = "@cercas";
 
+// type Cerca = {
+//   id?: string; // ID é opcional
+//   nome: string;
+//   latitude: string;
+//   longitude: string;
+//   raio: number;
+//   pulseiraId?: string; // Novo campo para associar uma pulseira
+// };
+
 // export const salvarCerca = async (cerca: {
+//   id?: string; // ID é opcional
 //   nome: string;
 //   latitude: string;
 //   longitude: string;
@@ -14,22 +24,27 @@ const CERCAS_STORAGE = "@cercas";
 //     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
 //     const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
 
-//     // Garante que cada cerca tem um ID
-//     const novaCerca = { id: uuidv4(), ...cerca };
+//     if (cerca.id) {
+//       // Se a cerca já tem um ID, atualize a cerca existente
+//       const index = cercas.findIndex((c) => c.id === cerca.id);
+//       if (index !== -1) {
+//         cercas[index] = cerca; // Atualiza a cerca existente
+//       } else {
+//         console.warn("Cerca não encontrada para atualização. Criando uma nova.");
+//         cercas.push({ id: uuidv4(), ...cerca }); // Cria uma nova cerca se o ID não for encontrado
+//       }
+//     } else {
+//       // Se a cerca não tem um ID, crie uma nova cerca
+//       const novaCerca = { id: uuidv4(), ...cerca };
+//       cercas.push(novaCerca);
+//     }
 
-//     cercas.push(novaCerca);
 //     await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(cercas));
-
-//     console.log("Cerca salva com ID:", novaCerca.id); // Log para confirmar ID salvo
+//     console.log("Cerca salva com sucesso:", cerca);
 //   } catch (error) {
 //     console.error("Erro ao salvar cerca:", error);
 //   }
 // };
-
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { v4 as uuidv4 } from "uuid";
-
-// const CERCAS_STORAGE = "cercas";
 
 export const salvarCerca = async (cerca: {
   id?: string; // ID é opcional
@@ -37,6 +52,7 @@ export const salvarCerca = async (cerca: {
   latitude: string;
   longitude: string;
   raio: number;
+  pulseiraId?: string; // Novo campo para associar uma pulseira
 }) => {
   try {
     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
@@ -64,6 +80,7 @@ export const salvarCerca = async (cerca: {
   }
 };
 
+
 export const obterCercas = async () => {
     try {
       const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
@@ -87,10 +104,25 @@ export const removerCercaStorage = async (id: string) => {
   }
 };
 
-export const limparCercas =  async () => {
+export const atribuirPulseiraACerca = async (cercaId: string, pulseiraId: string) => {
   try {
-    await AsyncStorage.removeItem(CERCAS_STORAGE);
+    // Obtém todas as cercas salvas
+    const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
+    const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
+
+    // Encontra a cerca pelo ID
+    const cercaIndex = cercas.findIndex((c) => c.id === cercaId);
+    if (cercaIndex !== -1) {
+      // Atualiza o campo pulseiraId da cerca
+      cercas[cercaIndex].pulseiraId = pulseiraId;
+
+      // Salva as cercas atualizadas no AsyncStorage
+      await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(cercas));
+      console.log("Pulseira atribuída à cerca com sucesso:", cercas[cercaIndex]);
+    } else {
+      console.warn("Cerca não encontrada para atribuição de pulseira.");
+    }
   } catch (error) {
-    console.error("erro ao excluir", error);
+    console.error("Erro ao atribuir pulseira à cerca:", error);
   }
-}
+};

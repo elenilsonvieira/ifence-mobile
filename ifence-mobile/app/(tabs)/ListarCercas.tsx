@@ -5,21 +5,20 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Switch,
   Image,
-  SwitchComponent,
 } from "react-native";
 import {
   obterCercas,
   removerCercaStorage,
   salvarCerca,
-} from "../../components/Cercas/storage/cercaStoragae";
+} from "../../components/Cercas/storage/cercaStorage";
 
 import Header from "@/components/Header";
 import { Link, useFocusEffect } from "expo-router";
 import EditarCerca from "@/components/Cercas/EditarCerca";
+import Toast from "react-native-toast-message";
 
-const ListaCercas = () => {
+const ListarCercas = () => {
   const [cercas, setCercas] = useState<any[]>([]);
 
   useFocusEffect(
@@ -28,14 +27,13 @@ const ListaCercas = () => {
     }, [])
   );
 
-
   const handleEditar = async (cercaEditada) => {
     await salvarCerca(cercaEditada);
     setCercas((prevCercas) =>
       prevCercas.map((cerca) =>
         cerca.id === cercaEditada.id ? cercaEditada : cerca
       )
-    ); // Salva no armazenamento
+    );
   };
 
   const carregarCercas = async () => {
@@ -55,18 +53,30 @@ const ListaCercas = () => {
     await removerCercaStorage(id);
   };
 
+  const exibirToast = (cerca, ativa) => {
+    Toast.show({
+      type: "success", 
+      text1: ativa ? "Cerca Ativada" : "Cerca Desativada", 
+      text2: ativa
+        ? `A cerca "${cerca.nome}" está ativa.`
+        : `A cerca "${cerca.nome}" está desativada.`, 
+      visibilityTime: 4000, 
+      autoHide: true,
+    });
+
+  };
+
   return (
     <>
       <Header />
-      {/* <SwitchComponent></SwitchComponent> */}
       <View style={styles.container}>
         <Link href={"/(tabs)"} asChild>
           <TouchableOpacity style={styles.btnBackPage}>
             <Image source={require("@/assets/images/ArrowBack.png")} />
           </TouchableOpacity>
         </Link>
-        <Text style={styles.titulo}>Cercas Salvas</Text>
-        
+        <Text style={styles.titulo}>Cercas Cadastradas</Text>
+
         <FlatList
           data={cercas}
           keyExtractor={(item, index) => index.toString()}
@@ -75,13 +85,15 @@ const ListaCercas = () => {
               cerca={item}
               onEditar={handleEditar}
               onExcluir={removerCerca}
+              onAlternarSwitch={exibirToast}
             />
           )}
         />
       </View>
+      <Toast />
     </>
   );
-};
+} 
 
 const styles = StyleSheet.create({
   container: {
@@ -131,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListaCercas;
+export default ListarCercas;

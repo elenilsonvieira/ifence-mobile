@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter,useNavigation } from "expo-router";
 import Header from "@/components/Header";
 import { useEffect, useRef, useState } from "react";
-import { salvarCerca } from "./storage/cercaStoragae";
+import { salvarCerca } from "@/components/Cercas/storage/cercaStorage";
 
 const AddCerca = () => {
   const router = useRouter();
@@ -136,7 +136,6 @@ const AddCerca = () => {
             <Text style={styles.textBtnListarCerca}>Lista de cercas</Text>
           </TouchableOpacity>
         </Link>
-
       </SafeAreaView>
     </>
   );
@@ -182,8 +181,8 @@ const styles = StyleSheet.create({
   },
   btnAbrirMapa: {
     backgroundColor: "#003F88",
-    width: 100,
-    padding: 5,
+    width: 150,
+    padding: 10,
     borderRadius: 3,
   },
   textBtnMap: {
@@ -201,7 +200,7 @@ const styles = StyleSheet.create({
   BtnAddCerca: {
     backgroundColor: "#1A759F",
     width: 100,
-    padding: 5,
+    padding: 10,
     marginTop: 13,
     borderRadius: 3,
     alignSelf: "center",
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
   BtnCancel: {
     backgroundColor: "#DA1E37",
     width: 100,
-    padding: 5,
+    padding: 10,
     marginTop: 13,
     borderRadius: 3,
   },
@@ -240,8 +239,7 @@ const styles = StyleSheet.create({
   },
   textBtnListarCerca: {
     color: '#FFFFFF',
-    // fontWeight: '700',
-    fontSize: 16
+    fontSize: 17
   }
 });
 

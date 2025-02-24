@@ -114,7 +114,7 @@ const Map = () => {
         )}
       </MapView>
 
-      <Link href={"/(tabs)/Home"} asChild>
+      <Link href={"/(tabs)"} asChild>
         <TouchableOpacity style={styles.button}>
           <AntDesign name="arrowleft" size={35} color="#03045e" />
         </TouchableOpacity>
@@ -122,7 +122,7 @@ const Map = () => {
 
       <Link
         href={{
-          pathname: "/(tabs)/Home",
+          pathname: "/(tabs)/AddCerca",
           params: {
             latitude: location?.latitude?.toString(),
             longitude: location?.longitude?.toString(),
