@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,23 +10,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { atribuirPulseiraACerca, salvarCerca } from "./storage/cercaStorage";
 import { Picker } from "@react-native-picker/picker";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
 type Pulseira = {
   nome: string;
   ativa: boolean;
   cercaId?: string;
 };
-
-// type Cerca = {
-//   id: string;
-//   nome: string;
-//   latitude: string;
-//   longitude: string;
-//   raio: number;
-//   ativa: boolean;
-//   pulseiraId?: string;
-// };
 
 const EditarCerca = ({ cerca, onEditar, onExcluir, onAlternarSwitch }) => {
   const [selecionada, setSelecionada] = useState(false);
@@ -39,19 +29,38 @@ const EditarCerca = ({ cerca, onEditar, onExcluir, onAlternarSwitch }) => {
     cerca.pulseiraId || ""
   );
 
-  useEffect(() => {
-    const carregarPulseiras = async () => {
-      const dados = await AsyncStorage.getItem("pulseiras");
-      if (dados) {
-        setPulseiras(JSON.parse(dados));
-      }
-    };
-    carregarPulseiras();
-  }, []);
+  // useEffect(() => {
+  //   // const carregarPulseiras = async () => {
+  //   //   const dados = await AsyncStorage.getItem("pulseiras");
+  //   //   if (dados) {
+  //   //     setPulseiras(JSON.parse(dados));
+  //   //   }
+  //   // };
+  //   carregarPulseiras();
+  // }, []);
+
+  // useEffect(() => {
+  //   if(selecionada){
+  //     carregarPulseiras();
+  //   }
+  // }, [selecionada]);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarPulseiras();
+    }, [])
+  );
 
   const alternarSwitch = (novoValor: boolean) => {
     setCercaAtiva(novoValor);
     onAlternarSwitch(cerca, novoValor);
+  };
+
+  const carregarPulseiras = async () => {
+    const dados = await AsyncStorage.getItem("pulseiras");
+    if (dados) {
+      setPulseiras(JSON.parse(dados));
+    }
   };
 
   const salvarEdicao = async () => {
@@ -91,12 +100,14 @@ const EditarCerca = ({ cerca, onEditar, onExcluir, onAlternarSwitch }) => {
             />
             <Text style={styles.label}>Pulseira Associada:</Text>
             <Picker
+              style={{ color: "#FFFFFF" }}
               selectedValue={pulseiraSelecionada}
               onValueChange={(itemValue) => setPulseiraSelecionada(itemValue)}
             >
               <Picker.Item label="Nenhuma" value="" />
               {pulseiras.map((pulseira) => (
                 <Picker.Item
+                  style={{ color: "#000" }}
                   key={pulseira.nome}
                   label={pulseira.nome}
                   value={pulseira.nome}
@@ -214,7 +225,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   label: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 17,
   },
 });
