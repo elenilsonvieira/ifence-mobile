@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { useRouter } from "expo-router";
+
 import {
   obterCercas,
   removerCercaStorage,
@@ -18,52 +20,66 @@ import { Link, useFocusEffect } from "expo-router";
 import EditarCerca from "@/components/Cercas/EditarCerca";
 import Toast from "react-native-toast-message";
 
-const ListarCercas = () => {
-  const [cercas, setCercas] = useState<any[]>([]);
+interface Cerca {
+  id: string;
+  nome: string;
+  latitude: number;
+  longitude: number;
+  raio: number;
+}
 
+const ListarCercas = () => {
+  const [cercas, setCercas] = useState<Cerca[]>([]);
+  const router = useRouter();
+
+  
   useFocusEffect(
     useCallback(() => {
       carregarCercas();
     }, [])
   );
 
-  const handleEditar = async (cercaEditada) => {
+ 
+  const handleEditar = async (cercaEditada: Cerca) => {
     await salvarCerca(cercaEditada);
     setCercas((prevCercas) =>
       prevCercas.map((cerca) =>
         cerca.id === cercaEditada.id ? cercaEditada : cerca
       )
     );
+    router.push({
+      pathname: '/(tabs)/Alarme',
+      params: { cercaId: cercaEditada.id, nome: cercaEditada.nome },
+    });
   };
 
+  
   const carregarCercas = async () => {
     const cercasSalvas = await obterCercas();
     setCercas(cercasSalvas || []);
   };
 
+ 
   const removerCerca = async (id: string) => {
     if (!id) {
       console.error("Erro: ID da cerca é indefinido!");
       return;
     }
-
-    console.log("Removendo cerca com ID:", id);
     setCercas((prevCercas) => prevCercas.filter((cerca) => cerca.id !== id));
-
     await removerCercaStorage(id);
   };
 
-  const exibirToast = (cerca, ativa) => {
+ 
+  const exibirToast = (cerca: Cerca, ativa: boolean) => {
     Toast.show({
-      type: "success", 
-      text1: ativa ? "Cerca Ativada" : "Cerca Desativada", 
+      type: "success",
+      text1: ativa ? "Cerca Ativada" : "Cerca Desativada",
       text2: ativa
-        ? `A cerca "${cerca.nome}" está ativa.`
-        : `A cerca "${cerca.nome}" está desativada.`, 
-      visibilityTime: 4000, 
+        ? `A cerca "${cerca.nome}" (ID: ${cerca.id}) está ativa.`
+        : `A cerca "${cerca.nome}" (ID: ${cerca.id}) está desativada.`,
+      visibilityTime: 4000,
       autoHide: true,
     });
-
   };
 
   return (
@@ -79,7 +95,7 @@ const ListarCercas = () => {
 
         <FlatList
           data={cercas}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <EditarCerca
               cerca={item}
@@ -93,7 +109,7 @@ const ListarCercas = () => {
       <Toast />
     </>
   );
-} 
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -138,7 +154,6 @@ const styles = StyleSheet.create({
   btnBackPage: {
     alignSelf: "flex-start",
     backgroundColor: "#FFFFFF",
-    // padding: 3,
     marginLeft: 0,
   },
 });
