@@ -4,37 +4,27 @@ import { v4 as uuidv4 } from "uuid";
 
 const CERCAS_STORAGE = "@cercas";
 
-// type Cerca = {
-//   id?: string; // ID é opcional
-//   nome: string;
-//   latitude: string;
-//   longitude: string;
-//   raio: number;
-//   pulseiraId?: string; // Novo campo para associar uma pulseira
-// };
-
 // export const salvarCerca = async (cerca: {
 //   id?: string; // ID é opcional
 //   nome: string;
 //   latitude: string;
 //   longitude: string;
 //   raio: number;
+//   pulseiraId?: string; 
 // }) => {
 //   try {
 //     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
 //     const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
 
 //     if (cerca.id) {
-//       // Se a cerca já tem um ID, atualize a cerca existente
 //       const index = cercas.findIndex((c) => c.id === cerca.id);
 //       if (index !== -1) {
-//         cercas[index] = cerca; // Atualiza a cerca existente
+//         cercas[index] = cerca; 
 //       } else {
 //         console.warn("Cerca não encontrada para atualização. Criando uma nova.");
-//         cercas.push({ id: uuidv4(), ...cerca }); // Cria uma nova cerca se o ID não for encontrado
+//         cercas.push({ id: uuidv4(), ...cerca }); 
 //       }
 //     } else {
-//       // Se a cerca não tem um ID, crie uma nova cerca
 //       const novaCerca = { id: uuidv4(), ...cerca };
 //       cercas.push(novaCerca);
 //     }
@@ -46,40 +36,43 @@ const CERCAS_STORAGE = "@cercas";
 //   }
 // };
 
+
+
 export const salvarCerca = async (cerca: {
   id?: string; // ID é opcional
   nome: string;
   latitude: string;
   longitude: string;
   raio: number;
-  pulseiraId?: string; // Novo campo para associar uma pulseira
 }) => {
   try {
     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
     const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
 
+    const novaCerca = {
+      ...cerca,
+      id: cerca.id || uuidv4(), // Gera um ID se não existir
+      pulseiraId: null, // Inicialmente, a cerca não tem uma pulseira associada
+    };
+
     if (cerca.id) {
-      // Se a cerca já tem um ID, atualize a cerca existente
       const index = cercas.findIndex((c) => c.id === cerca.id);
       if (index !== -1) {
-        cercas[index] = cerca; // Atualiza a cerca existente
+        cercas[index] = novaCerca; // Atualiza a cerca existente
       } else {
         console.warn("Cerca não encontrada para atualização. Criando uma nova.");
-        cercas.push({ id: uuidv4(), ...cerca }); // Cria uma nova cerca se o ID não for encontrado
+        cercas.push(novaCerca); // Adiciona uma nova cerca
       }
     } else {
-      // Se a cerca não tem um ID, crie uma nova cerca
-      const novaCerca = { id: uuidv4(), ...cerca };
-      cercas.push(novaCerca);
+      cercas.push(novaCerca); // Adiciona uma nova cerca
     }
 
     await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(cercas));
-    console.log("Cerca salva com sucesso:", cerca);
+    console.log("Cerca salva com sucesso:", novaCerca);
   } catch (error) {
     console.error("Erro ao salvar cerca:", error);
   }
 };
-
 
 export const obterCercas = async () => {
     try {

@@ -30,7 +30,7 @@ interface Cerca {
 
 const ListarCercas = () => {
   const [cercas, setCercas] = useState<Cerca[]>([]);
-  const router = useRouter();
+  // const router = useRouter();
 
   
   useFocusEffect(
@@ -47,10 +47,7 @@ const ListarCercas = () => {
         cerca.id === cercaEditada.id ? cercaEditada : cerca
       )
     );
-    router.push({
-      pathname: '/(tabs)/Alarme',
-      params: { cercaId: cercaEditada.id, nome: cercaEditada.nome },
-    });
+    
   };
 
   

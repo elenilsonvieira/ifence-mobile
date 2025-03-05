@@ -29,22 +29,6 @@ const EditarCerca = ({ cerca, onEditar, onExcluir, onAlternarSwitch }) => {
     cerca.pulseiraId || ""
   );
 
-  // useEffect(() => {
-  //   // const carregarPulseiras = async () => {
-  //   //   const dados = await AsyncStorage.getItem("pulseiras");
-  //   //   if (dados) {
-  //   //     setPulseiras(JSON.parse(dados));
-  //   //   }
-  //   // };
-  //   carregarPulseiras();
-  // }, []);
-
-  // useEffect(() => {
-  //   if(selecionada){
-  //     carregarPulseiras();
-  //   }
-  // }, [selecionada]);
-
   useFocusEffect(
     useCallback(() => {
       carregarPulseiras();

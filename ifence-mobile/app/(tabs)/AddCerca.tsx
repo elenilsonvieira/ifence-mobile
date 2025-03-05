@@ -34,26 +34,58 @@ const AddCerca = () => {
     Inter_500Medium,
   });
 
+  // const handleSaveCerca = async () => {
+  //   if (!latitude || !longitude) {
+  //     Alert.alert("Erro", "Por favor, selecione um local no mapa.");
+  //     return;
+  //   }
+
+  //   const novaCerca = {
+  //     nome,
+  //     latitude,
+  //     longitude,
+  //     raio: raio,
+  //   };
+
+  //   await salvarCerca(novaCerca);
+  //   setNome("");
+  //   setRaio(0);
+  //   inputRefLatitude.current.clear();
+  //   inputRefLongitude.current.clear();
+
+  //   Alert.alert("Sucesso", "Cerca salva com sucesso!");
+  // };
+
   const handleSaveCerca = async () => {
     if (!latitude || !longitude) {
       Alert.alert("Erro", "Por favor, selecione um local no mapa.");
       return;
     }
-
+  
     const novaCerca = {
       nome,
       latitude,
       longitude,
       raio: raio,
     };
-
-    await salvarCerca(novaCerca);
-    setNome("");
-    setRaio(0);
-    inputRefLatitude.current.clear();
-    inputRefLongitude.current.clear();
-
-    Alert.alert("Sucesso", "Cerca salva com sucesso!");
+  
+    try {
+      const cercasAtualizadas = await salvarCerca(novaCerca); // Salva e retorna a lista atualizada
+      console.log("Cercas atualizadas:", cercasAtualizadas); // Log para depuração
+  
+      setNome("");
+      setRaio(0);
+      inputRefLatitude.current.clear();
+      inputRefLongitude.current.clear();
+  
+      Alert.alert("Sucesso", "Cerca salva com sucesso!");
+  
+      // Atualiza o estado das cercas (se necessário)
+      // Se você estiver usando um contexto ou estado global, atualize-o aqui.
+    } catch (error) {
+      console.error("Erro ao salvar a cerca:", error);
+      Alert.alert("Erro", "Ocorreu um erro ao salvar a cerca.");
+    }
   };
 
   return (

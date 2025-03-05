@@ -147,7 +147,7 @@
 //         </ScrollView>
 //       </View>
 //     </>
-   
+
 //   );
 // };
 
@@ -164,7 +164,7 @@
 //   container: {
 //     flex: 1,
 //     padding: 20,
-//     backgroundColor: "#FFFFFF", 
+//     backgroundColor: "#FFFFFF",
 //   },
 //   scrollContainer: {
 //     flexGrow: 1,
@@ -258,7 +258,7 @@
 //     borderRadius: 8,
 //     borderWidth: 1,
 //     marginBottom: 20,
-    
+
 //   },
 //   item: {
 //     fontSize: 18,
@@ -269,6 +269,8 @@
 // });
 
 // export default AdicionarPulseiraScreen;
+
+
 
 import React, { useEffect, useState } from "react";
 import {
@@ -284,12 +286,14 @@ import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "@/components/Header";
-import { showToast } from "@/utils/toastUtils"; // Importe o utilitário de Toast
+import { showToast } from "@/utils/toastUtils";
 import Toast from "react-native-toast-message";
 
 type Pulseira = {
+  id: string;
   nome: string;
   ativa: boolean;
+  cercaId: string;
 };
 
 const AdicionarPulseiraScreen = () => {
@@ -303,23 +307,70 @@ const AdicionarPulseiraScreen = () => {
     carregarPulseiras();
   }, []);
 
-  const carregarPulseiras = async () => {
-    const dados = await AsyncStorage.getItem("pulseiras");
-    if (dados) {
-      setPulseiras(JSON.parse(dados));
-    }
-  };
+  // const carregarPulseiras = async () => {
+  //   const dados = await AsyncStorage.getItem("pulseiras");
+  //   if (dados) {
+  //     setPulseiras(JSON.parse(dados));
+  //   }
+  // };
 
-  const adicionarPulseira = async () => {
+  const adicionarPulseira = async (cercaId: string) => {
     if (nomePulseira.trim().length === 0) return;
 
-    const novaPulseira: Pulseira = { nome: nomePulseira, ativa: false }; // Estado inicial: desativada
+    const novaPulseira: Pulseira = {
+      id: Date.now().toString(), // Gera um ID único
+      nome: nomePulseira,
+      ativa: false, // Estado inicial: desativada
+      cercaId: cercaId, // Associa a pulseira a uma cerca
+    };
+
     const novasPulseiras = [...pulseiras, novaPulseira];
+    console.log("Pulseira criada com cercaId:", novaPulseira.cercaId);
     setPulseiras(novasPulseiras);
     await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
 
     setNomePulseira("");
   };
+
+  const carregarPulseiras = async () => {
+    const dados = await AsyncStorage.getItem("pulseiras");
+    if (dados) {
+      const pulseirasSalvas = JSON.parse(dados);
+      const pulseirasComId = pulseirasSalvas.map((pulseira) => ({
+        ...pulseira,
+        id: pulseira.id || Date.now().toString(),
+      }));
+      setPulseiras(pulseirasComId);
+    }
+  };
+
+  // const adicionarPulseira = async () => {
+  //   if (nomePulseira.trim().length === 0) return;
+
+  //   const novaPulseira: Pulseira = { nome: nomePulseira, ativa: false }; // Estado inicial: desativada
+  //   const novasPulseiras = [...pulseiras, novaPulseira];
+  //   setPulseiras(novasPulseiras);
+  //   await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
+
+  //   setNomePulseira("");
+  // };
+
+  // antiga função usada
+  // const adicionarPulseira = async () => {
+  //   if (nomePulseira.trim().length === 0) return;
+
+  //   const novaPulseira: Pulseira = {
+  //     id: Date.now().toString(), // Gera um ID único baseado no timestamp atual
+  //     nome: nomePulseira,
+  //     ativa: false, // Estado inicial: desativada
+  //   };
+
+  //   const novasPulseiras = [...pulseiras, novaPulseira];
+  //   setPulseiras(novasPulseiras);
+  //   await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
+
+  //   setNomePulseira("");
+  // };
 
   const iniciarEdicao = (index: number) => {
     setEditandoIndex(index);
@@ -330,7 +381,10 @@ const AdicionarPulseiraScreen = () => {
     if (editandoIndex === null || novoNomePulseira.trim().length === 0) return;
 
     const novasPulseiras = [...pulseiras];
-    novasPulseiras[editandoIndex] = { ...novasPulseiras[editandoIndex], nome: novoNomePulseira };
+    novasPulseiras[editandoIndex] = {
+      ...novasPulseiras[editandoIndex],
+      nome: novoNomePulseira,
+    };
     setPulseiras(novasPulseiras);
     await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
 
@@ -443,6 +497,40 @@ const AdicionarPulseiraScreen = () => {
                 trackColor={{ false: "#767577", true: "#95d5b2" }}
                 thumbColor={item.ativa ? "#52b788" : "#f4f3f4"}
               />
+              {/* <TouchableOpacity
+                style={styles.botaoVerLocalizacoes}
+                onPress={() =>
+                  console.log("Navegando com pulseiraId:", item.id, "e cercaId:", item.cercaId)
+                  router.push({
+                    pathname: "/(tabs)/ListarLocalizacoesPulseira",
+                    params: { pulseiraId: item.id, cercaId: item.cercaId},
+                  })
+                }
+              >
+                <Text style={styles.textoBotaoVerLocalizacoes}>
+                  Ver Localizações
+                </Text>
+              </TouchableOpacity> */}
+
+              <TouchableOpacity
+                style={styles.botaoVerLocalizacoes}
+                onPress={() => {
+                  console.log(
+                    "Navegando com pulseiraId:",
+                    item.id,
+                    "e cercaId:",
+                    item.cercaId
+                  ); // Log para depuração
+                  router.push({
+                    pathname: "/(tabs)/ListarLocalizacoesPulseira",
+                    params: { pulseiraId: item.id, cercaId: item.cercaId },
+                  });
+                }}
+              >
+                <Text style={styles.textoBotaoVerLocalizacoes}>
+                  Ver Localizações
+                </Text>
+              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
@@ -555,6 +643,9 @@ const styles = StyleSheet.create({
   },
   item: {
     fontSize: 18,
+  },
+  textoBotaoVerLocalizacoes: {
+    color: "#004A99",
   },
 });
 
