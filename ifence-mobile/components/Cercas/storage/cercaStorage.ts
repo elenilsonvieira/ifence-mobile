@@ -4,40 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 
 const CERCAS_STORAGE = "@cercas";
 
-// export const salvarCerca = async (cerca: {
-//   id?: string; // ID é opcional
-//   nome: string;
-//   latitude: string;
-//   longitude: string;
-//   raio: number;
-//   pulseiraId?: string; 
-// }) => {
-//   try {
-//     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
-//     const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
-
-//     if (cerca.id) {
-//       const index = cercas.findIndex((c) => c.id === cerca.id);
-//       if (index !== -1) {
-//         cercas[index] = cerca; 
-//       } else {
-//         console.warn("Cerca não encontrada para atualização. Criando uma nova.");
-//         cercas.push({ id: uuidv4(), ...cerca }); 
-//       }
-//     } else {
-//       const novaCerca = { id: uuidv4(), ...cerca };
-//       cercas.push(novaCerca);
-//     }
-
-//     await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(cercas));
-//     console.log("Cerca salva com sucesso:", cerca);
-//   } catch (error) {
-//     console.error("Erro ao salvar cerca:", error);
-//   }
-// };
-
-
-
 export const salvarCerca = async (cerca: {
   id?: string; // ID é opcional
   nome: string;

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
-  //   Picker,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
@@ -43,12 +42,6 @@ const AdicionarPulseiraScreen = () => {
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
   const [novoNomePulseira, setNovoNomePulseira] = useState("");
 
-  // Carregar pulseiras e cercas ao iniciar
-  //   useEffect(() => {
-  //     carregarPulseiras();
-  //     carregarCercas();
-  //   }, []);
-
   useFocusEffect(
     useCallback(() => {
       carregarPulseiras();
@@ -56,7 +49,6 @@ const AdicionarPulseiraScreen = () => {
     }, [])
   );
 
-  // Carregar pulseiras salvas
   const carregarPulseiras = async () => {
     const dados = await AsyncStorage.getItem("pulseiras");
     if (dados) {
