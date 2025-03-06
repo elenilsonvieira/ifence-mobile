@@ -250,10 +250,6 @@ const AdicionarPulseiraScreen = () => {
                     "e cercaId:",
                     item.cercaId
                   );
-                  //   router.push({
-                  //     pathname: "/(tabs)/ListarLocalizacoesPulseira",
-                  //     params: { pulseiraId: item.id, cercaId: item.cercaId },
-                  //   });
                   router.push({
                         pathname: "/ListarLocalizacoesPulseira",
                         params: { pulseiraId: item.id, cercaId: item.cercaId },
