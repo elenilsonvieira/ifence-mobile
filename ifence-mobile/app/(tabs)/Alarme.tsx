@@ -6,7 +6,7 @@ import {
   Button,
   ActivityIndicator,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter} from "expo-router";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { obterCercas } from "../../components/Cercas/storage/cercaStorage";
 import Toast from "react-native-toast-message";
