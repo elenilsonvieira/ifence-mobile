@@ -6,7 +6,7 @@ import {
   Button,
   ActivityIndicator,
 } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { obterCercas } from "../../components/Cercas/storage/cercaStorage";
 import Toast from "react-native-toast-message";
@@ -72,11 +72,11 @@ const Alarme = () => {
     if (!cercaSelecionada) return;
 
     const interval = setInterval(() => {
-      const maxDistance = 0.005;
+      const maxDistance = 0.0015;
       const newLat =
-        cercaSelecionada.latitude + (Math.random() - 0.5) * maxDistance;
+        cercaSelecionada.latitude + (Math.random() - 0.2) * maxDistance;
       const newLon =
-        cercaSelecionada.longitude + (Math.random() - 0.5) * maxDistance;
+        cercaSelecionada.longitude + (Math.random() - 0.2) * maxDistance;
       const novaLocalizacao = {
         latitude: newLat,
         longitude: newLon,
@@ -115,7 +115,18 @@ const Alarme = () => {
     return R * c * 1000;
   };
 
-  const exibirToast = (cerca, ativa) => {
+  const exibirToast = async (cerca, ativa) => {
+    const novoAlarme = {
+      nomeCerca: cerca.nome,
+      timestamp: new Date().toLocaleString(),
+    };
+
+    // 
+    const historicoSalvo = await AsyncStorage.getItem("historico_alarmes");
+    const historicoArray = historicoSalvo ? JSON.parse(historicoSalvo) : [];
+    historicoArray.push(novoAlarme);
+    await AsyncStorage.setItem("historico_alarmes", JSON.stringify(historicoArray));
+
     Toast.show({
       type: "error",
       text1: ativa ? "Cerca Ativada" : "Criança fora da cerca!",
@@ -208,10 +219,6 @@ const Alarme = () => {
         <Text style={styles.text}>
           Longitude: {point2.longitude.toFixed(5)}
         </Text>
-        {/* <Button
-          title="Ver Localizações"
-          onPress={() => navigation.navigate('ListarLocalizacoesPulseira', { pulseiraId: cercaSelecionada.id })}
-        /> */}
         <Button title="Voltar" onPress={() => setCercaSelecionada(null)} />
       </View>
       <Toast />
