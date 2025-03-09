@@ -15,8 +15,8 @@ export default function TelaInicial() {
       <Text style={styles.title}>IFence</Text>
       <Text style={styles.subtitle}>Um app feito para garantir a segurança dos “pequenos”</Text>
       
-      <Image source={require("../../assets/images/imagem-tela-inicial.png")} style={styles.image} />
-      <Text style={styles.imageText}>A segurança {"\n"} é aliada da diversão</Text>
+      {/* <Image source={require("../../assets/images/imagem-tela-inicial.png")} style={styles.image} />
+      <Text style={styles.imageText}>A segurança {"\n"} é aliada da diversão</Text> */}
       
       <Text style={styles.sectionTitle}>O que é o IFence?</Text>
       <Text style={styles.infoBox}>O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.</Text>
@@ -36,10 +36,10 @@ export default function TelaInicial() {
       <Text style={styles.sectionTitle}>Para usar o IFence, adicione a sua pulseira ou adicione o cerco:</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => router.push("/Adicionar")}>
-          <Text style={styles.buttonText}>Adicionar pulseira</Text>
+          <Text style={styles.buttonText}>Fazer Login</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push("/AddCerca")}>
-          <Text style={styles.buttonText}>Adicionar cerca</Text>
+          <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -146,5 +146,3 @@ const styles = StyleSheet.create({
       padding:5 
     },
   });
-
-

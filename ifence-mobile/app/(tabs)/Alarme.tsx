@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {View,Text,StyleSheet,Button,ActivityIndicator,ScrollView} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter} from "expo-router";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { obterCercas } from "../../components/Cercas/storage/cercaStorage";
@@ -13,21 +19,6 @@ const Alarme = () => {
   const [point2, setPoint2] = useState({ latitude: 0, longitude: 0 });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [pulseiras, setPulseiras] = useState([]); //new
-  const [pulseirasDesativadas, setPulseirasDesativadas] = useState([]); //new
-  const [desativouPulseiras, setDesativouPulseiras] = useState(false); //new
-  const [redirecionamentoRealizado, setRedirecionamentoRealizado] = useState(false);//new
-
-  //new
-  const fetchPulseiras = async () => {
-    const dadosPulseiras = await AsyncStorage.getItem("pulseiras");
-    if (dadosPulseiras) {
-      const pulseiras = JSON.parse(dadosPulseiras);
-      setPulseiras(pulseiras);
-      const pulseirasFiltradas = pulseiras.filter(p => !p.ativa);
-      setPulseirasDesativadas(pulseirasFiltradas);
-    }
-  };
 
   const fetchCercas = async () => {
     try {
@@ -51,25 +42,8 @@ const Alarme = () => {
   useFocusEffect(
     useCallback(() => {
       fetchCercas();
-      fetchPulseiras(); //new
     }, [])
   );
-
-   //new
-    useEffect(() => {
-      if (pulseirasDesativadas.length > 0 && !redirecionamentoRealizado) {
-        router.push({
-          pathname: '/../components/PulseirasDesativadas',
-          query: { pulseirasDesativadas: pulseirasDesativadas.map(p => p.nome) },
-        });
-        setRedirecionamentoRealizado(true);
-      }
-    }, [pulseirasDesativadas, redirecionamentoRealizado, router]);
-  
-    //new too
-    const desativarPulseiras = () => {
-      setDesativouPulseiras(true);
-    };
 
   useEffect(() => {
     if (cercas.length > 0) {
@@ -89,8 +63,6 @@ const Alarme = () => {
     const localizacoesArray = localizacoesSalvas ? JSON.parse(localizacoesSalvas) : [];
     const novasLocalizacoes = [...localizacoesArray, novaLocalizacao];
   
-    console.log("Salvando localização:", novaLocalizacao);
-    console.log("Chave usada:", chave);
     await AsyncStorage.setItem(chave, JSON.stringify(novasLocalizacoes));
   };
 
@@ -98,11 +70,11 @@ const Alarme = () => {
     if (!cercaSelecionada) return;
 
     const interval = setInterval(() => {
-      const maxDistance = 0.0015;
+      const maxDistance = 0.005;
       const newLat =
-        cercaSelecionada.latitude + (Math.random() - 0.2) * maxDistance;
+        cercaSelecionada.latitude + (Math.random() - 0.5) * maxDistance;
       const newLon =
-        cercaSelecionada.longitude + (Math.random() - 0.2) * maxDistance;
+        cercaSelecionada.longitude + (Math.random() - 0.5) * maxDistance;
       const novaLocalizacao = {
         latitude: newLat,
         longitude: newLon,
@@ -141,18 +113,7 @@ const Alarme = () => {
     return R * c * 1000;
   };
 
-  const exibirToast = async (cerca, ativa) => {
-    const novoAlarme = {
-      nomeCerca: cerca.nome,
-      timestamp: new Date().toLocaleString(),
-    };
-
-    // Salvar histórico de alarmes
-    const historicoSalvo = await AsyncStorage.getItem("historico_alarmes");
-    const historicoArray = historicoSalvo ? JSON.parse(historicoSalvo) : [];
-    historicoArray.push(novoAlarme);
-    await AsyncStorage.setItem("historico_alarmes", JSON.stringify(historicoArray));
-
+  const exibirToast = (cerca, ativa) => {
     Toast.show({
       type: "error",
       text1: ativa ? "Cerca Ativada" : "Criança fora da cerca!",
@@ -172,39 +133,24 @@ const Alarme = () => {
     );
   }
 
-   //new
-   if (pulseirasDesativadas.length > 0) {
-    return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Text style={styles.textos}>Por favor, ative as pulseiras para que o alarme possa funcionar.</Text>
-        <Text style={styles.textos}>Pulseiras desativadas:</Text>
-        
-          {pulseirasDesativadas.map((pulseira, index) => (
-            <Text key={index} style={styles.textos}>{pulseira.nome}</Text>
-          ))}
-        </ScrollView>
-      </View>
-    );
-  }
   if (!cercaSelecionada) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.textHeader}>Tela de Alarme</Text>
         </View>
-        <Text style={styles.textSelecionar}>Selecione uma cerca para visualizar.</Text>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <View style={styles.cercasList}>
-            {cercas.map(cerca => (
-              <Button
-                key={cerca.id}
-                title={cerca.nome}
-                onPress={() => setCercaSelecionada(cerca)}
-              />
-            ))}
-          </View>
-        </ScrollView>
+        <Text style={styles.textSelecionar}>
+          Selecione uma cerca para visualizar.
+        </Text>
+        <View style={styles.cercasList}>
+          {cercas.map((cerca) => (
+            <Button
+              key={cerca.id}
+              title={cerca.nome}
+              onPress={() => setCercaSelecionada(cerca)}
+            />
+          ))}
+        </View>
         <Toast />
       </View>
     );
@@ -260,6 +206,10 @@ const Alarme = () => {
         <Text style={styles.text}>
           Longitude: {point2.longitude.toFixed(5)}
         </Text>
+        {/* <Button
+          title="Ver Localizações"
+          onPress={() => navigation.navigate('ListarLocalizacoesPulseira', { pulseiraId: cercaSelecionada.id })}
+        /> */}
         <Button title="Voltar" onPress={() => setCercaSelecionada(null)} />
       </View>
       <Toast />
@@ -309,22 +259,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
-  textos: {
-    fontSize: 18,              
-    color: "#333",             
-    textAlign: "center",       
-    marginBottom: 22,         
-    flex: -1,
-    justifyContent: "center",  
-    alignItems: "center",      
-    backgroundColor: "#f2f2f2",
-    padding: 20,
-    bottom: -60,
-  },
-  scrollViewContent: {
-    paddingBottom: 20,
-  },
 });
-
 
 export default Alarme;

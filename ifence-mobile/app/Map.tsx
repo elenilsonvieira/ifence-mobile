@@ -70,7 +70,6 @@ const Map = () => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setLocation({ latitude, longitude });
 
-    // Centraliza no novo local escolhido
     if (mapRef.current) {
       mapRef.current.animateToRegion({
         latitude,

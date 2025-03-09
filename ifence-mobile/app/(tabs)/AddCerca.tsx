@@ -34,28 +34,6 @@ const AddCerca = () => {
     Inter_500Medium,
   });
 
-  // const handleSaveCerca = async () => {
-  //   if (!latitude || !longitude) {
-  //     Alert.alert("Erro", "Por favor, selecione um local no mapa.");
-  //     return;
-  //   }
-
-  //   const novaCerca = {
-  //     nome,
-  //     latitude,
-  //     longitude,
-  //     raio: raio,
-  //   };
-
-  //   await salvarCerca(novaCerca);
-  //   setNome("");
-  //   setRaio(0);
-  //   inputRefLatitude.current.clear();
-  //   inputRefLongitude.current.clear();
-
-  //   Alert.alert("Sucesso", "Cerca salva com sucesso!");
-  // };
-
   const handleSaveCerca = async () => {
     if (!latitude || !longitude) {
       Alert.alert("Erro", "Por favor, selecione um local no mapa.");
