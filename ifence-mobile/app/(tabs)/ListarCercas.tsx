@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 
 import {
   obterCercas,
@@ -32,14 +32,12 @@ const ListarCercas = () => {
   const [cercas, setCercas] = useState<Cerca[]>([]);
   // const router = useRouter();
 
-  
   useFocusEffect(
     useCallback(() => {
       carregarCercas();
     }, [])
   );
 
- 
   const handleEditar = async (cercaEditada: Cerca) => {
     await salvarCerca(cercaEditada);
     setCercas((prevCercas) =>
@@ -47,16 +45,13 @@ const ListarCercas = () => {
         cerca.id === cercaEditada.id ? cercaEditada : cerca
       )
     );
-    
   };
 
-  
   const carregarCercas = async () => {
     const cercasSalvas = await obterCercas();
     setCercas(cercasSalvas || []);
   };
 
- 
   const removerCerca = async (id: string) => {
     if (!id) {
       console.error("Erro: ID da cerca é indefinido!");
@@ -66,7 +61,6 @@ const ListarCercas = () => {
     await removerCercaStorage(id);
   };
 
- 
   const exibirToast = (cerca: Cerca, ativa: boolean) => {
     Toast.show({
       type: "success",

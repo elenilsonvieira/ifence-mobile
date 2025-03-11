@@ -8,15 +8,12 @@ export default function TelaInicial() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Image source={require("../../assets/images/pai-filho.png")} style={styles.image1}/>
+        <Image source={require("@/assets/images/pai-filho.png")} style={styles.image1}/>
         <Text style={styles.headerTitle}>IFence</Text>
       </View>
       
       <Text style={styles.title}>IFence</Text>
       <Text style={styles.subtitle}>Um app feito para garantir a segurança dos “pequenos”</Text>
-      
-      {/* <Image source={require("../../assets/images/imagem-tela-inicial.png")} style={styles.image} />
-      <Text style={styles.imageText}>A segurança {"\n"} é aliada da diversão</Text> */}
       
       <Text style={styles.sectionTitle}>O que é o IFence?</Text>
       <Text style={styles.infoBox}>O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.</Text>
@@ -35,12 +32,15 @@ export default function TelaInicial() {
       
       <Text style={styles.sectionTitle}>Para usar o IFence, adicione a sua pulseira ou adicione o cerco:</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/Adicionar")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/LoginScreen")}>
           <Text style={styles.buttonText}>Fazer Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/AddCerca")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/CadastroScreen")}>
           <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
+        {/* <TouchableOpacity style={styles.button} onPress={() => router.replace("/(tabs)/Home")}>
+          <Text style={styles.buttonText}>Ir Para Tabs</Text>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
       marginTop: 30 
     },
     button: { 
-      backgroundColor: "#003366", 
+      backgroundColor: "#003F88", 
       padding: 10, 
       borderRadius: 5, 
       marginHorizontal: 10, 

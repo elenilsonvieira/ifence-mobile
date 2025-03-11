@@ -70,7 +70,7 @@ const AddCerca = () => {
     <>
       <Header />
       <SafeAreaView style={styles.container}>
-        <Link href={"/(tabs)"} asChild>
+        <Link href={"/(tabs)/Home"} asChild>
           <TouchableOpacity style={styles.btnBackPage}>
             <Image source={require("@/assets/images/ArrowBack.png")} />
           </TouchableOpacity>
@@ -117,7 +117,7 @@ const AddCerca = () => {
             style={styles.btnAbrirMapa}
             onPress={() =>
               router.push({
-                pathname: "/(tabs)/Map",
+                pathname: "/Screens/Map",
                 params: {
                   raio: raio.toString(),
                 },

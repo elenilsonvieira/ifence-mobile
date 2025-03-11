@@ -121,7 +121,7 @@ const Map = () => {
 
       <Link
         href={{
-          pathname: "/(tabs)/AddCerca",
+          pathname: "/Screens/AddCerca",
           params: {
             latitude: location?.latitude?.toString(),
             longitude: location?.longitude?.toString(),

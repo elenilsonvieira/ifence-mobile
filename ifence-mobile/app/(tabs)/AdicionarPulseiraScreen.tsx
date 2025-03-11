@@ -22,7 +22,7 @@ type Pulseira = {
   id: string;
   nome: string;
   ativa: boolean;
-  cercaId: string; // Associa a pulseira a uma cerca
+  cercaId: string; 
 };
 
 type Cerca = {
@@ -37,8 +37,8 @@ const AdicionarPulseiraScreen = () => {
   const router = useRouter();
   const [nomePulseira, setNomePulseira] = useState("");
   const [pulseiras, setPulseiras] = useState<Pulseira[]>([]);
-  const [cercas, setCercas] = useState<Cerca[]>([]); // Lista de cercas disponíveis
-  const [cercaSelecionada, setCercaSelecionada] = useState<string>(""); // Cerca selecionada
+  const [cercas, setCercas] = useState<Cerca[]>([]); 
+  const [cercaSelecionada, setCercaSelecionada] = useState<string>(""); 
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
   const [novoNomePulseira, setNovoNomePulseira] = useState("");
 
@@ -61,13 +61,12 @@ const AdicionarPulseiraScreen = () => {
     }
   };
 
-  // Carregar cercas salvas
+  
   const carregarCercas = async () => {
-    // const dados = await AsyncStorage.getItem("cercas");
+    
     const dados = await obterCercas();
     console.log("dados da cerca", dados);
     if (dados) {
-      //   setCercas(JSON.parse(dados));
       setCercas(dados);
       console.log("Estado 'cercas' atualizado:", dados);
     }
@@ -251,7 +250,7 @@ const AdicionarPulseiraScreen = () => {
                     item.cercaId
                   );
                   router.push({
-                        pathname: "/ListarLocalizacoesPulseira",
+                        pathname: "/Screens/ListarLocalizacoesPulseira",
                         params: { pulseiraId: item.id, cercaId: item.cercaId },
                   });
                 }}
