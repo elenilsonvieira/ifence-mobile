@@ -9,7 +9,7 @@ import {
   Switch,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "@/components/Header";
 import { showToast } from "@/utils/toastUtils";
@@ -22,7 +22,7 @@ type Pulseira = {
   id: string;
   nome: string;
   ativa: boolean;
-  cercaId: string; 
+  cercaId: string;
 };
 
 type Cerca = {
@@ -37,8 +37,8 @@ const AdicionarPulseiraScreen = () => {
   const router = useRouter();
   const [nomePulseira, setNomePulseira] = useState("");
   const [pulseiras, setPulseiras] = useState<Pulseira[]>([]);
-  const [cercas, setCercas] = useState<Cerca[]>([]); 
-  const [cercaSelecionada, setCercaSelecionada] = useState<string>(""); 
+  const [cercas, setCercas] = useState<Cerca[]>([]);
+  const [cercaSelecionada, setCercaSelecionada] = useState<string>("");
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
   const [novoNomePulseira, setNovoNomePulseira] = useState("");
 
@@ -61,9 +61,7 @@ const AdicionarPulseiraScreen = () => {
     }
   };
 
-  
   const carregarCercas = async () => {
-    
     const dados = await obterCercas();
     console.log("dados da cerca", dados);
     if (dados) {
@@ -250,13 +248,32 @@ const AdicionarPulseiraScreen = () => {
                     item.cercaId
                   );
                   router.push({
-                        pathname: "/Screens/ListarLocalizacoesPulseira",
-                        params: { pulseiraId: item.id, cercaId: item.cercaId },
+                    pathname: "/Screens/ListarLocalizacoesPulseira",
+                    params: { pulseiraId: item.id, cercaId: item.cercaId },
                   });
                 }}
               >
                 <Text style={styles.textoBotaoVerLocalizacoes}>
                   Ver Localizações
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.botaoVerLocalizacoes}
+                onPress={() => {
+                  console.log(
+                    "Navegando com pulseiraId:",
+                    item.id,
+                    "e cercaId:",
+                    item.cercaId
+                  );
+                  router.push({
+                    pathname: "/Screens/ListarRotasPulseiras",
+                    params: { pulseiraId: item.id, cercaId: item.cercaId },
+                  });
+                }}
+              >
+                <Text style={styles.textoBotaoVerLocalizacoes}>
+                  Ver Rotas percorridas
                 </Text>
               </TouchableOpacity>
             </View>
@@ -374,6 +391,7 @@ const styles = StyleSheet.create({
   },
   textoBotaoVerLocalizacoes: {
     color: "#004A99",
+    fontSize: 16
   },
 });
 
