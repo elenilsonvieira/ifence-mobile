@@ -113,7 +113,7 @@ const Map = () => {
         )}
       </MapView>
 
-      <Link href={"/(tabs)"} asChild>
+      <Link href={"/Screens/AddCerca"} asChild>
         <TouchableOpacity style={styles.button}>
           <AntDesign name="arrowleft" size={35} color="#03045e" />
         </TouchableOpacity>

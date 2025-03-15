@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   },
   textoBotaoVerLocalizacoes: {
     color: "#004A99",
-    fontSize: 16
+    fontSize: 17
   },
 });
 
