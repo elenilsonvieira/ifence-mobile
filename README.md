@@ -14,10 +14,23 @@ O IFence é um aplicativo de monitoramento de crianças em ambientes abertos.
 - Um emulador Android/iOS ou dispositivo físico(Opcional, o aplicativo Expo Go disponibliza um emulador)
 
 # Instalação e Execução
-clone o repositório
+Clone o repositório
 ```
 git clone https://github.com/elenilsonvieira/ifence-mobile.git
 ```
 
-acesse o diretório do projeto
-`cd ifence-mobile`
+Acesse o diretório do projeto
+```
+cd ifence-mobile
+```
+
+Execute o aplicativo
+```
+npx expo start # Caso esteja usando Expo
+# ou
+npx react-native run-android # Para Android
+npx react-native run-ios # Para iOS
+```
+
+
+
