@@ -15,7 +15,7 @@ import Header from "@/components/Header";
 import { showToast } from "@/utils/toastUtils";
 import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
-import { obterCercas } from "@/components/Cercas/storage/cercaStorage";
+import { obterCercas } from "@/storage/cercaStorage";
 import { useFocusEffect } from "@react-navigation/native";
 
 type Pulseira = {

@@ -8,7 +8,7 @@ import {
   Switch,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { atribuirPulseiraACerca, salvarCerca } from "./storage/cercaStorage";
+import { atribuirPulseiraACerca, salvarCerca } from "../../storage/cercaStorage";
 import { Picker } from "@react-native-picker/picker";
 import { useFocusEffect } from "expo-router";
 
@@ -110,6 +110,12 @@ const EditarCerca = ({ cerca, onEditar, onExcluir, onAlternarSwitch }) => {
             </Text>
             <Text style={styles.textInfoLocations}>
               Raio: {cerca.raio} metros
+            </Text>
+            <Text style={styles.textInfoLocations}>
+              Horário de ínicio: {cerca.horarioInicio}
+            </Text>
+            <Text style={styles.textInfoLocations}>
+              Horário de fim: {cerca.horarioFim}
             </Text>
             <Text style={styles.textInfoLocations}>
               Pulseira Associada: {cerca.pulseiraId || "Nenhuma"}

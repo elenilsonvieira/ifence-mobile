@@ -1,6 +1,7 @@
 import {
   Alert,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,10 +11,16 @@ import {
 import { Inter_400Regular, Inter_500Medium } from "@expo-google-fonts/inter";
 import { useFonts } from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useLocalSearchParams, useRouter,useNavigation } from "expo-router";
+import {
+  Link,
+  useLocalSearchParams,
+  useRouter,
+  useNavigation,
+} from "expo-router";
 import Header from "@/components/Header";
 import { useEffect, useRef, useState } from "react";
-import { salvarCerca } from "@/components/Cercas/storage/cercaStorage";
+import { salvarCerca } from "@/storage/cercaStorage";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const AddCerca = () => {
   const router = useRouter();
@@ -21,6 +28,10 @@ const AddCerca = () => {
 
   const [raio, setRaio] = useState(0);
   const [nome, setNome] = useState("");
+  const [horarioInicio, setHorarioInicio] = useState(new Date());
+  const [horarioFim, setHorarioFim] = useState(new Date());
+  const [showInicioPicker, setShowInicioPicker] = useState(false);
+  const [showFimPicker, setShowFimPicker] = useState(false);
   const inputRefLatitude = useRef(null);
   const inputRefLongitude = useRef(null);
   const { latitude, longitude } = useLocalSearchParams();
@@ -39,30 +50,45 @@ const AddCerca = () => {
       Alert.alert("Erro", "Por favor, selecione um local no mapa.");
       return;
     }
-  
+
     const novaCerca = {
       nome,
       latitude,
       longitude,
       raio: raio,
+      horarioInicio: horarioInicio.toTimeString().slice(0, 5), // Formato HH:mm
+      horarioFim: horarioFim.toTimeString().slice(0, 5),
     };
-  
+
     try {
-      const cercasAtualizadas = await salvarCerca(novaCerca); // Salva e retorna a lista atualizada
-      console.log("Cercas atualizadas:", cercasAtualizadas); // Log para depuração
-  
+      const cercasAtualizadas = await salvarCerca(novaCerca);
+      console.log("Cercas atualizadas:", cercasAtualizadas);
+
       setNome("");
       setRaio(0);
       inputRefLatitude.current.clear();
       inputRefLongitude.current.clear();
-  
+      setHorarioInicio(new Date());
+      setHorarioFim(new Date());
+
       Alert.alert("Sucesso", "Cerca salva com sucesso!");
-  
-      // Atualiza o estado das cercas (se necessário)
-      // Se você estiver usando um contexto ou estado global, atualize-o aqui.
     } catch (error) {
       console.error("Erro ao salvar a cerca:", error);
       Alert.alert("Erro", "Ocorreu um erro ao salvar a cerca.");
+    }
+  };
+
+  const onChangeInicio = (event, selectedDate) => {
+    setShowInicioPicker(false);
+    if (selectedDate) {
+      setHorarioInicio(selectedDate);
+    }
+  };
+
+  const onChangeFim = (event, selectedDate) => {
+    setShowFimPicker(false);
+    if (selectedDate) {
+      setHorarioFim(selectedDate);
     }
   };
 
@@ -70,82 +96,117 @@ const AddCerca = () => {
     <>
       <Header />
       <SafeAreaView style={styles.container}>
-        <Link href={"/(tabs)/Home"} asChild>
-          <TouchableOpacity style={styles.btnBackPage}>
-            <Image source={require("@/assets/images/ArrowBack.png")} />
-          </TouchableOpacity>
-        </Link>
+        <ScrollView>
+          <Link href={"/(tabs)/Home"} asChild>
+            <TouchableOpacity style={styles.btnBackPage}>
+              <Image source={require("@/assets/images/ArrowBack.png")} />
+            </TouchableOpacity>
+          </Link>
 
-        <Text style={styles.textAddCerca}>Adicionar Cerca</Text>
+          <Text style={styles.textAddCerca}>Adicionar Cerca</Text>
 
-        <View style={styles.containerFormAddCerca}>
-          <Text style={styles.labelsInfo}>Nome da cerca: </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Informe o nome"
-            value={nome}
-            onChangeText={setNome}
-          />
+          <View style={styles.containerFormAddCerca}>
+            <Text style={styles.labelsInfo}>Nome da cerca: </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Informe o nome"
+              value={nome}
+              onChangeText={setNome}
+            />
 
-          <Text style={styles.labelsInfo}>Latitude:</Text>
-          <TextInput
-            style={[styles.input, styles.disableInput]}
-            editable={false}
-            ref={inputRefLatitude}
-            value={latitude}
-          />
+            <Text style={styles.labelsInfo}>Latitude:</Text>
+            <TextInput
+              style={[styles.input, styles.disableInput]}
+              editable={false}
+              ref={inputRefLatitude}
+              value={latitude}
+            />
 
-          <Text style={styles.labelsInfo}>Longitude: </Text>
-          <TextInput
-            style={[styles.input, styles.disableInput]}
-            editable={false}
-            ref={inputRefLongitude}
-            value={longitude}
-          />
+            <Text style={styles.labelsInfo}>Longitude: </Text>
+            <TextInput
+              style={[styles.input, styles.disableInput]}
+              editable={false}
+              ref={inputRefLongitude}
+              value={longitude}
+            />
 
-          <Text style={styles.labelsInfo}>Raio:</Text>
-          <TextInput
-            style={[styles.input, styles.raioInput]}
-            keyboardType="numeric"
-            value={raio}
-            onChangeText={setRaio}
-          />
+            <Text style={styles.labelsInfo}>Raio:</Text>
+            <TextInput
+              style={[styles.input, styles.raioInput]}
+              keyboardType="numeric"
+              value={raio}
+              onChangeText={setRaio}
+            />
 
-          <Text style={styles.labelsInfo}>Adicionar localização: </Text>
-
-          <TouchableOpacity
-            style={styles.btnAbrirMapa}
-            onPress={() =>
-              router.push({
-                pathname: "/Screens/Map",
-                params: {
-                  raio: raio.toString(),
-                },
-              })
-            }
-          >
-            <Text style={styles.textBtnMap}>Abrir mapa</Text>
-          </TouchableOpacity>
-
-          <View style={styles.boxButtons}>
+            <Text style={styles.labelsInfo}>Horário de início:</Text>
             <TouchableOpacity
-              style={styles.BtnAddCerca}
-              onPress={handleSaveCerca}
+              style={styles.input}
+              onPress={() => setShowInicioPicker(true)}
             >
-              <Text style={styles.textBtnAddCerca}>Adicionar</Text>
+              <Text>{horarioInicio.toLocaleTimeString()}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.BtnCancel}>
-              <Text style={styles.textBtnAddCerca}>Cancelar</Text>
+            {showInicioPicker && (
+              <DateTimePicker
+                value={horarioInicio}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={onChangeInicio}
+              />
+            )}
+
+            <Text style={styles.labelsInfo}>Horário de fim:</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowFimPicker(true)}
+            >
+              <Text>{horarioFim.toLocaleTimeString()}</Text>
             </TouchableOpacity>
+            {showFimPicker && (
+              <DateTimePicker
+                value={horarioFim}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={onChangeFim}
+              />
+            )}
+
+            <Text style={styles.labelsInfo}>Adicionar localização: </Text>
+
+            <TouchableOpacity
+              style={styles.btnAbrirMapa}
+              onPress={() =>
+                router.push({
+                  pathname: "/Screens/Map",
+                  params: {
+                    raio: raio.toString(),
+                  },
+                })
+              }
+            >
+              <Text style={styles.textBtnMap}>Abrir mapa</Text>
+            </TouchableOpacity>
+
+            <View style={styles.boxButtons}>
+              <TouchableOpacity
+                style={styles.BtnAddCerca}
+                onPress={handleSaveCerca}
+              >
+                <Text style={styles.textBtnAddCerca}>Adicionar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.BtnCancel}>
+                <Text style={styles.textBtnAddCerca}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-        </View>
-
-        <Link href={"/(tabs)/ListarCercas"} asChild>
-          <TouchableOpacity style={styles.btnListCercas}>
-            <Text style={styles.textBtnListarCerca}>Lista de cercas</Text>
-          </TouchableOpacity>
-        </Link>
+          <Link href={"/(tabs)/ListarCercas"} asChild>
+            <TouchableOpacity style={styles.btnListCercas}>
+              <Text style={styles.textBtnListarCerca}>Lista de cercas</Text>
+            </TouchableOpacity>
+          </Link>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
@@ -241,16 +302,16 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   btnListCercas: {
-    backgroundColor: '#003F88',
-    alignSelf: 'center',
+    backgroundColor: "#003F88",
+    alignSelf: "center",
     padding: 10,
     marginTop: 10,
-    borderRadius: 4
+    borderRadius: 4,
   },
   textBtnListarCerca: {
-    color: '#FFFFFF',
-    fontSize: 17
-  }
+    color: "#FFFFFF",
+    fontSize: 17,
+  },
 });
 
 export default AddCerca;

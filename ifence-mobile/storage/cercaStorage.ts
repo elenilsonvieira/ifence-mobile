@@ -10,6 +10,8 @@ export const salvarCerca = async (cerca: {
   latitude: string;
   longitude: string;
   raio: number;
+  horarioInicio: string; // Novo campo
+  horarioFim: string; 
 }) => {
   try {
     const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
@@ -18,19 +20,19 @@ export const salvarCerca = async (cerca: {
     const novaCerca = {
       ...cerca,
       id: cerca.id || uuidv4(), // Gera um ID se não existir
-      pulseiraId: null, // Inicialmente, a cerca não tem uma pulseira associada
+      pulseiraId: null, 
     };
 
     if (cerca.id) {
       const index = cercas.findIndex((c) => c.id === cerca.id);
       if (index !== -1) {
-        cercas[index] = novaCerca; // Atualiza a cerca existente
+        cercas[index] = novaCerca; 
       } else {
         console.warn("Cerca não encontrada para atualização. Criando uma nova.");
-        cercas.push(novaCerca); // Adiciona uma nova cerca
+        cercas.push(novaCerca); 
       }
     } else {
-      cercas.push(novaCerca); // Adiciona uma nova cerca
+      cercas.push(novaCerca); 
     }
 
     await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(cercas));

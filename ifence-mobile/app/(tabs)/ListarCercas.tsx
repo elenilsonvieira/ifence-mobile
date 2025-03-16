@@ -13,7 +13,7 @@ import {
   obterCercas,
   removerCercaStorage,
   salvarCerca,
-} from "../../components/Cercas/storage/cercaStorage";
+} from "../../storage/cercaStorage";
 
 import Header from "@/components/Header";
 import { Link, useFocusEffect } from "expo-router";

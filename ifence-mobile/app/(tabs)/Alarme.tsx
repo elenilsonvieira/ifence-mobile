@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useRouter} from "expo-router";
 import MapView, { Marker, Circle } from "react-native-maps";
-import { obterCercas } from "../../components/Cercas/storage/cercaStorage";
+import { obterCercas } from "../../storage/cercaStorage";
 import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";

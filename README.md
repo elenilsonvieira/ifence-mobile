@@ -32,5 +32,8 @@ npx react-native run-android # Para Android
 npx react-native run-ios # Para iOS
 ```
 
+# Telas do App
+
+
 
 
