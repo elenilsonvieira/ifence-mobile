@@ -41,6 +41,7 @@ npx react-native run-ios # Para iOS
   <img src="ifence-mobile/assets/images/mapa.jpg" width="200" />
   <img src="ifence-mobile/assets/images/cadastro.jpg" width="200" />
   <img src="ifence-mobile/assets/images/login.jpg" width="200" />
+   <img src="ifence-mobile/assets/images/telaInicial-Ofc-Ifence.png" width="200" />
 </p>
 
 # Considerações
