@@ -45,23 +45,23 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     if (validateFields()) {
       try {
-        // Recupera as credenciais salvas no AsyncStorage
+        
         const credentials = await getUserCredentials();
 
         if (credentials) {
-          // Verifica se as credenciais inseridas correspondem às salvas
+          
           if (
             userName === credentials.username &&
             password === credentials.password
           ) {
-            // Credenciais corretas: redireciona para a tela Home
+            
             router.replace("/(tabs)/Home");
           } else {
-            // Credenciais incorretas: exibe mensagem de erro
+           
             Alert.alert("Erro", "Nome de usuário ou senha incorretos.");
           }
         } else {
-          // Nenhuma credencial salva: exibe mensagem de erro
+          
           Alert.alert(
             "Erro",
             "Nenhuma conta cadastrada. Crie uma conta primeiro."
