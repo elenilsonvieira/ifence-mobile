@@ -34,10 +34,13 @@ npx react-native run-ios # Para iOS
 
 # Telas do App
 <p align="center">
-  <img src="/ifence-mobile/assets/images/TelaInicial.jpg"/>
+  <img src="/ifence-mobile/assets/images/TelaInicial.jpg" widht="200" />
   <img src="/ifence-mobile/assets/images/addPulseira.jpg" width="200" />
   <img src="ifence-mobile/assets/images/addCerca.jpg" width="200" />
   <img src="ifence-mobile/assets/images/Tela de alarme.jpg" width="200" />
+  <img src="ifence-mobile/assets/images/mapa.jpg" width="200" />
+  <img src="ifence-mobile/assets/images/cadastro.jpg" width="200" />
+  <img src="ifence-mobile/assets/images/login.jpg" width="200" />
 </p>
 
 
