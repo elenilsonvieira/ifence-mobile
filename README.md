@@ -44,17 +44,18 @@ npx react-native run-ios # Para iOS
 </p>
 
 # Considerações
-Como em todo projeto, há coisas para melhorar. No app do IFence, há funcionalidades que precisam ser melhoradas. Abaixo, estão os pontos que precisam ser melhorados:
+Como em todo projeto, há coisas para melhorar. No app do IFence, há funcionalidades que precisam ser melhoradas e ajustadas. Abaixo, estão os pontos que precisam ser melhorados:
 
 - Desenvolver uma API  e, consequentemente, realizar a persistência de dados em um SGBD, por exemplo: Postres, SQLite, MongoDB, etc. Como não tivemos tempo para desenvolver uma API, optamos por salvar os dados no AsyncStorage.
 A pasta `storage` é responsável pela a persitência dos dados:
 ```
-\cercaStorage.ts - responsável pela persistência dos dados referentes a cerca
-\userStorage.ts responsável pela persistência dos dados referentes ao usuário
+\cercaStorage.ts - responsável pela persistência dos dados referentes à cerca
+\userStorage.ts - responsável pela persistência dos dados referentes ao usuário
 ```
 
-- Alguns componentes precisam ser refatorados. Por exemplo, o componente `AdicionarPulseiraScreen.tsx`, toda lógica de CRUD está no componente, isso precisa ser estruturado em outros componentes. E também a própria persistência está no respectivo componente. 
+- Alguns componentes precisam ser refatorados. Por exemplo, no componente `AdicionarPulseiraScreen.tsx`, toda lógica de CRUD está no componente, isso precisa ser estruturado em outros componentes. E também a própria persistência está no respectivo componente. 
 
+- Nós utilizamos a biblioteca `react-native-toast-message` para exibir as notificações quando uma criança sai da área de uma respectiva cerca. A próxima equipe poderá optar em utilizar o `react-native-toast-message` ou `expo-notifications`[Expo notifications](https://docs.expo.dev/versions/latest/sdk/notifications/).
 
 
 
