@@ -89,8 +89,6 @@ const ListarRotasPulseiras = () => {
       minute: "2-digit",
     });
 
-    console.log("Exibindo mensagem:", { cerca: cerca.nome, hora });
-
     Alert.alert(
       "Localização",
       `A criança "${cerca.nome}" esteve aqui às ${hora}.`
@@ -104,7 +102,7 @@ const ListarRotasPulseiras = () => {
         initialRegion={coordenadasIniciais}
         mapType="hybrid"
       >
-        {/* Desenha a rota percorrida */}
+        
         <Polyline
           coordinates={localizacoes}
           strokeColor="#FF0000" 
@@ -121,7 +119,6 @@ const ListarRotasPulseiras = () => {
             }}
             pinColor="blue"
             onPress={() => {
-              console.log("Marcador clicado:", localizacao);
               exibirMensagem(localizacao);
             }}
             
