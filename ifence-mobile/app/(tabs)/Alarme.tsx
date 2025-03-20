@@ -206,10 +206,6 @@ const Alarme = () => {
         <Text style={styles.text}>
           Longitude: {point2.longitude.toFixed(5)}
         </Text>
-        {/* <Button
-          title="Ver Localizações"
-          onPress={() => navigation.navigate('ListarLocalizacoesPulseira', { pulseiraId: cercaSelecionada.id })}
-        /> */}
         <Button title="Voltar" onPress={() => setCercaSelecionada(null)} />
       </View>
       <Toast />

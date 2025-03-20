@@ -31,6 +31,11 @@ npx expo start # Caso esteja usando Expo
 npx react-native run-android # Para Android
 npx react-native run-ios # Para iOS
 ```
+# Funcionalidades 
+- Criação de pulseiras.
+- Criação de cercas.
+- Visualização de pulseiras e cercas.
+- Monitoramento em tempo real de uma pulseira associada a uma respectiva cerca. 
 
 # Telas do App
 <p align="center">
@@ -57,6 +62,10 @@ A pasta `storage` é responsável pela a persitência dos dados:
 - Alguns componentes precisam ser refatorados. Por exemplo, no componente `AdicionarPulseiraScreen.tsx`, toda lógica de CRUD está no componente, isso precisa ser estruturado em outros componentes. E também a própria persistência está no respectivo componente. 
 
 - Nós utilizamos a biblioteca `react-native-toast-message` para exibir as notificações quando uma criança sai da área de uma respectiva cerca. A próxima equipe poderá optar em utilizar o `react-native-toast-message` ou `expo-notifications`[Expo notifications](https://docs.expo.dev/versions/latest/sdk/notifications/).
+
+- Aprimorar a funcionalidade de atribuir mais de uma pulseira a uma respectiva cerca. Atualmente, o app permite apenas a atribuição de uma pulseira.
+
+Contribuidores: [Lucas Acelino](https://github.com/lucasacelino), [Jonas de Lima](https://github.com/Jonaslima07) e [João Henrique](https://github.com/HenrIcosta16).
 
 
 
