@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import React, { useState } from "react";
+import { Modal } from "react-native";
 import Header from "@/components/Header";
 import { Link, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ const CadastroScreen = () => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validateFields = () => {
     let isValid = true;
@@ -27,12 +29,18 @@ const CadastroScreen = () => {
     if (username.trim() === "") {
       setUsernameError("O nome de usuário deve ser informado");
       isValid = false;
+    } else if (username.length < 4) {
+      setUsernameError("O nome de usuário deve ter pelo menos 4 caracteres");
+      isValid = false;
     } else {
       setUsernameError("");
     }
 
     if (password.trim() === "") {
       setPasswordError("A senha precisa ser informada");
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError("A senha deve ter pelo menos 6 caracteres");
       isValid = false;
     } else {
       setPasswordError("");
@@ -43,11 +51,11 @@ const CadastroScreen = () => {
 
   const handleCriarConta = async () => {
     if (validateFields()) {
-      const success = await saveUserCredentials(username, password); 
-      if (success) {
-        Alert.alert("Sucesso", "Conta criada com sucesso!", [
-          { text: "OK", onPress: () => router.replace("/auth/LoginScreen") },
-        ]);
+      const result = await saveUserCredentials(username, password);
+      if (result.success) {
+        setShowSuccess(true);
+      } else if (result.message === "Nome de usuário já cadastrado.") {
+        Alert.alert("Erro", "Nome de usuário já cadastrado. Escolha outro.");
       } else {
         Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
       }
@@ -57,6 +65,29 @@ const CadastroScreen = () => {
   return (
     <>
       <Header />
+      <Modal
+        visible={showSuccess}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSuccess(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Ionicons name="checkmark-circle" size={60} color="#4BB543" style={{ marginBottom: 10 }} />
+            <Text style={styles.modalTitle}>Sucesso!</Text>
+            <Text style={styles.modalMessage}>Conta criada com sucesso!</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowSuccess(false);
+                router.replace("/auth/LoginScreen");
+              }}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.container}>
       <Link href={"/"} asChild>
         <TouchableOpacity style={styles.btnBackPage}>
@@ -66,42 +97,42 @@ const CadastroScreen = () => {
         <Text style={styles.titulo}>Criar conta</Text>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Nome de usuário*</Text>
+          <Text style={styles.label} accessibilityLabel="Nome de usuário obrigatório">Nome de usuário*</Text>
           <TextInput
             style={[
               styles.input,
-              usernameError
-                ? styles.inputError
-                : username
-                ? styles.inputSuccess
-                : null,
+              usernameError ? styles.inputError : username ? styles.inputSuccess : null,
             ]}
             placeholder="O nome de usuário deve ser informado"
             placeholderTextColor="#999"
             value={username}
             onChangeText={(text) => {
               setUsername(text);
-              if (text.trim() !== "") {
+              if (text.trim() === "") {
+                setUsernameError("O nome de usuário deve ser informado");
+              } else if (text.length < 4) {
+                setUsernameError("O nome de usuário deve ter pelo menos 4 caracteres");
+              } else {
                 setUsernameError("");
               }
             }}
             onBlur={() => validateFields()}
+            accessibilityLabel="Campo para digitar o nome de usuário"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="next"
           />
           {usernameError ? (
-            <Text style={styles.errorText}>{usernameError}</Text>
+            <Text style={styles.errorText} accessibilityLiveRegion="polite">{usernameError}</Text>
           ) : null}
 
-          <Text style={styles.label}>Senha*</Text>
+          <Text style={styles.label} accessibilityLabel="Senha obrigatória">Senha*</Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={[
                 styles.input,
                 styles.passwordInput,
-                passwordError
-                  ? styles.inputError
-                  : password
-                  ? styles.inputSuccess
-                  : null,
+                passwordError ? styles.inputError : password ? styles.inputSuccess : null,
               ]}
               placeholder="******"
               placeholderTextColor="#999"
@@ -109,15 +140,24 @@ const CadastroScreen = () => {
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
-                if (text.trim() !== "") {
+                if (text.trim() === "") {
+                  setPasswordError("A senha precisa ser informada");
+                } else if (text.length < 6) {
+                  setPasswordError("A senha deve ter pelo menos 6 caracteres");
+                } else {
                   setPasswordError("");
                 }
               }}
               onBlur={() => validateFields()}
+              accessibilityLabel="Campo para digitar a senha"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
             />
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
+              accessibilityLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               <Ionicons
                 name={showPassword ? "eye-off" : "eye"}
@@ -127,7 +167,7 @@ const CadastroScreen = () => {
             </TouchableOpacity>
           </View>
           {passwordError ? (
-            <Text style={styles.errorText}>{passwordError}</Text>
+            <Text style={styles.errorText} accessibilityLiveRegion="polite">{passwordError}</Text>
           ) : null}
         </View>
 
@@ -157,6 +197,47 @@ const CadastroScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 30,
+    alignItems: 'center',
+    width: 280,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#4BB543',
+    marginBottom: 8,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#4BB543',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     padding: 20,

@@ -1,12 +1,6 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, Platform, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getUserCredentials } from "@/storage/userStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
@@ -16,12 +10,13 @@ const HeaderHomeUser = () => {
 
   useEffect(() => {
     const fetchUsername = async () => {
-      const credentials = await getUserCredentials();
-      if (credentials) {
-        setUsername(credentials.username);
+      const currentUser = await AsyncStorage.getItem("currentUser");
+      if (currentUser) {
+        setUsername(currentUser);
+      } else {
+        setUsername("");
       }
     };
-
     fetchUsername();
   }, []);
 
@@ -35,14 +30,29 @@ const HeaderHomeUser = () => {
         <Ionicons name="person-circle-outline" size={24} color="#FFFFFF" />
         <Text style={styles.headerText}>Olá, {username}</Text>
       </View>
-      <TouchableOpacity  style={styles.logoutBtn} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={26} color="#FFFFFF" />
-      </TouchableOpacity>
+      <Pressable
+        style={({ pressed }) => [
+          styles.logoutBtn,
+          pressed ? styles.logoutBtnPressed : null,
+        ]}
+        onPress={handleLogout}
+      >
+        <View style={styles.logoutContent}>
+          <Ionicons name="log-out-outline" size={26} color="#FFFFFF" />
+          <Text style={styles.logoutText}>Sair</Text>
+        </View>
+      </Pressable>
     </View>
   );
 };
 
+
+
 const styles = StyleSheet.create({
+  logoutBtnPressed: {
+    backgroundColor: "rgba(0,0,0,0.18)",
+    borderRadius: 8,
+  },
   //   safeArea: {
   //     backgroundColor: "#FFFFFF",
   //   },
@@ -66,8 +76,22 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   logoutBtn: {
-    // padding: 10
-  }
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoutContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoutText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    marginTop: 2,
+  },
+  logoutBtnHover: {
+    backgroundColor: "rgba(0,0,0,0.18)",
+    borderRadius: 8,
+  },
 });
 
 export default HeaderHomeUser;

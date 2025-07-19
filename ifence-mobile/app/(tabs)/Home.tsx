@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import Header from "@/components/Header";
 import { Link } from "expo-router";
@@ -12,12 +13,14 @@ const Home = () => {
         <View style={styles.boxButtons}>
           <Link href={"/Screens/AddCerca"} asChild>
             <TouchableOpacity style={styles.btnBoxButtons}>
+              <Ionicons name="map-outline" size={32} color="#fff" style={styles.iconBtn} />
               <Text style={styles.textBtnBoxButtons}>Adicionar Cerca</Text>
             </TouchableOpacity>
           </Link>
 
           <Link href={"/(tabs)/AdicionarPulseiraScreen"} asChild>
             <TouchableOpacity style={styles.btnBoxButtons}>
+              <Ionicons name="watch-outline" size={32} color="#fff" style={styles.iconBtn} />
               <Text style={styles.textBtnBoxButtons}>Adicionar Pulseira</Text>
             </TouchableOpacity>
           </Link>
@@ -48,6 +51,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#003F88",
     padding: 10,
     borderRadius: 3,
+    alignItems: "center",
+    width: 140,
+  },
+  iconBtn: {
+    marginBottom: 4,
   },
 });
 

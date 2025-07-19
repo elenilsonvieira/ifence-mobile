@@ -8,39 +8,48 @@ export default function TelaInicial() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Image source={require("@/assets/images/pai-filho.png")} style={styles.image1}/>
+        <Image source={require("@/assets/images/pai-filho.png")} style={styles.image1} accessibilityLabel="Imagem de pai e filho"/>
         <Text style={styles.headerTitle}>IFence</Text>
       </View>
-      
+
       <Text style={styles.title}>IFence</Text>
-      <Text style={styles.subtitle}>Um app feito para garantir a segurança dos “pequenos”</Text>
-      
+      <Text style={styles.subtitle}>Um app feito para garantir a segurança dos pequenos</Text>
+
       <Text style={styles.sectionTitle}>O que é o IFence?</Text>
-      <Text style={styles.infoBox}>O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.</Text>
-      
+      <Text style={styles.infoBox} accessibilityLabel="Descrição do IFence">
+        O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.
+      </Text>
+
       <Text style={styles.sectionTitle}>Para quem é destinado o uso do IFence?</Text>
-      <Text style={styles.infoBox}>O IFence é destinado para pais ou responsáveis que desejam monitorar crianças que estejam sob sua tutela.</Text>
-      
+      <Text style={styles.infoBox} accessibilityLabel="Público-alvo do IFence">
+        O IFence é destinado para pais ou responsáveis que desejam monitorar crianças que estejam sob sua tutela.
+      </Text>
+
       <Text style={styles.sectionTitle}>Guia de uso:</Text>
-      <Text style={styles.guideText}>
-        1 - Crie uma conta para poder utilizar o IFence{"\n"}
+      <Text style={styles.guideText} accessibilityLabel="Guia de uso do IFence">
+        1 - Crie uma conta para poder utilizar o IFence.{"\n"}
         2 - Com uma conta já criada, você pode utilizar os recursos do IFence.{"\n"}
         3 - Crie uma pulseira com o nome da criança que está sob sua tutela.{"\n"}
         4 - Crie uma cerca, adicionando a localização e o raio que essa criança pode circular.{"\n"}
         5 - Atribua a criança à cerca.
       </Text>
-      
-      <Text style={styles.sectionTitle}>Para usar o IFence, adicione a sua pulseira ou adicione o cerco:</Text>
+
+      <Text style={styles.sectionTitle}>Acesse sua conta ou crie uma nova:</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/LoginScreen")}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#003F88', marginBottom: 10 }]}
+          onPress={() => router.push("/auth/LoginScreen")}
+          accessibilityLabel="Botão para fazer login"
+        >
           <Text style={styles.buttonText}>Fazer Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/CadastroScreen")}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#0078AE' }]}
+          onPress={() => router.push("/auth/CadastroScreen")}
+          accessibilityLabel="Botão para criar conta"
+        >
           <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.button} onPress={() => router.replace("/(tabs)/Home")}>
-          <Text style={styles.buttonText}>Ir Para Tabs</Text>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
