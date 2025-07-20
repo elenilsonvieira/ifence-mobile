@@ -13,10 +13,20 @@ import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+interface Cerca {
+  id: string | number;
+  nome: string;
+  latitude: number;
+  longitude: number;
+  raio: number;
+  horarioInicio?: string;
+  horarioFim?: string;
+}
+
 const Alarme = () => {
-  const [cercas, setCercas] = useState([]);
-  const [cercaSelecionada, setCercaSelecionada] = useState(null);
-  const [point2, setPoint2] = useState({ latitude: 0, longitude: 0 });
+  const [cercas, setCercas] = useState<Cerca[]>([]);
+  const [cercaSelecionada, setCercaSelecionada] = useState<Cerca | null>(null);
+  const [point2, setPoint2] = useState<{ latitude: number; longitude: number }>({ latitude: 0, longitude: 0 });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -25,7 +35,7 @@ const Alarme = () => {
       setLoading(true);
       const cercasObtidas = await obterCercas();
       setCercas(
-        cercasObtidas.map((cerca) => ({
+        cercasObtidas.map((cerca: any) => ({
           ...cerca,
           latitude: parseFloat(cerca.latitude),
           longitude: parseFloat(cerca.longitude),
@@ -45,36 +55,24 @@ const Alarme = () => {
     }, [])
   );
 
-  useEffect(() => {
-    if (cercas.length > 0) {
-      const { cercaId } = router.query || {};
-      const cerca = cercas.find((c) => c.id === cercaId);
-      if (cerca) {
-        setCercaSelecionada(cerca);
-      }
-    }
-  }, [cercas, router.query]);
+  // Expo Router não tem 'query', então removendo esse uso
+  // Se precisar selecionar uma cerca por id, use outro método
 
-  const salvarLocalizacao = async (novaLocalizacao) => {
+  const salvarLocalizacao = async (novaLocalizacao: { latitude: number; longitude: number; timestamp: string }) => {
     if (!cercaSelecionada) return;
-  
     const chave = `localizacoes_${cercaSelecionada.id}`;
     const localizacoesSalvas = await AsyncStorage.getItem(chave);
     const localizacoesArray = localizacoesSalvas ? JSON.parse(localizacoesSalvas) : [];
     const novasLocalizacoes = [...localizacoesArray, novaLocalizacao];
-  
     await AsyncStorage.setItem(chave, JSON.stringify(novasLocalizacoes));
   };
 
   useEffect(() => {
     if (!cercaSelecionada) return;
-
     const interval = setInterval(() => {
       const maxDistance = 0.005;
-      const newLat =
-        cercaSelecionada.latitude + (Math.random() - 0.5) * maxDistance;
-      const newLon =
-        cercaSelecionada.longitude + (Math.random() - 0.5) * maxDistance;
+      const newLat = cercaSelecionada.latitude + (Math.random() - 0.5) * maxDistance;
+      const newLon = cercaSelecionada.longitude + (Math.random() - 0.5) * maxDistance;
       const novaLocalizacao = {
         latitude: newLat,
         longitude: newLon,
@@ -82,24 +80,21 @@ const Alarme = () => {
       };
       setPoint2(novaLocalizacao);
       salvarLocalizacao(novaLocalizacao);
-
       const distance = getDistance(
         cercaSelecionada.latitude,
         cercaSelecionada.longitude,
         newLat,
         newLon
       );
-
       if (distance > cercaSelecionada.raio) {
         exibirToast(cercaSelecionada, false);
       }
     }, 5000);
-
     return () => clearInterval(interval);
   }, [cercaSelecionada]);
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const toRad = (value) => (value * Math.PI) / 180;
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
     const R = 6371;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
@@ -113,7 +108,7 @@ const Alarme = () => {
     return R * c * 1000;
   };
 
-  const exibirToast = (cerca, ativa) => {
+  const exibirToast = (cerca: Cerca, ativa: boolean) => {
     Toast.show({
       type: "error",
       text1: ativa ? "Cerca Ativada" : "Criança fora da cerca!",

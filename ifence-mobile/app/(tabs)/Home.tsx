@@ -11,7 +11,7 @@ const Home = () => {
       <HeaderHomeUser />
       <View style={styles.container}>
         <View style={styles.boxButtons}>
-          <Link href={"/Screens/AddCerca"} asChild>
+          <Link href={"/(tabs)/ListarCercas"} asChild>
             <TouchableOpacity style={styles.btnBoxButtons}>
               <Ionicons name="map-outline" size={32} color="#fff" style={styles.iconBtn} />
               <Text style={styles.textBtnBoxButtons}>Adicionar Cerca</Text>

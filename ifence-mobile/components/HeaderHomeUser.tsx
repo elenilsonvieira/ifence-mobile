@@ -26,10 +26,13 @@ const HeaderHomeUser = () => {
 
   return (
     <View style={styles.header}>
-      <View style={styles.userInfo}>
+      <Pressable
+        style={styles.userInfo}
+        onPress={() => router.push("/Screens/EditarUsuario")}
+      >
         <Ionicons name="person-circle-outline" size={24} color="#FFFFFF" />
         <Text style={styles.headerText}>Olá, {username}</Text>
-      </View>
+      </Pressable>
       <Pressable
         style={({ pressed }) => [
           styles.logoutBtn,

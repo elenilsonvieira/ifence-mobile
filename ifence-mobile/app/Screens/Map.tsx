@@ -59,14 +59,14 @@ const Map = () => {
       } catch (error) {
         Alert.alert("Erro", "Não foi possível obter a localização.");
       } finally {
-        setLoading(false);
+        // setLoading(false); // removido pois não existe
       }
     };
 
     getLocation();
   }, []);
 
-  const handleMapPress = (e) => {
+  const handleMapPress = (e: { nativeEvent: { coordinate: { latitude: number; longitude: number }}}) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setLocation({ latitude, longitude });
 
@@ -121,10 +121,11 @@ const Map = () => {
 
       <Link
         href={{
-          pathname: "/Screens/AddCerca",
+          pathname: "/(tabs)/ListarCercas",
           params: {
             latitude: location?.latitude?.toString(),
             longitude: location?.longitude?.toString(),
+            ...(params.from === 'modal' ? { from: 'modal' } : {})
           },
         }}
         asChild

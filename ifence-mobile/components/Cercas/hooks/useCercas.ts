@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { obterCercas, salvarCerca, removerCercaStorage } from '@/storage/cercaStorage';
 
 export interface Cerca {
-  id: number;
+  id: string | number;
   nome: string;
-  coordenadas: string;
+  latitude: string;
+  longitude: string;
+  raio: string;
+  horarioInicio: string;
+  horarioFim: string;
 }
 
 export const useCercas = () => {
@@ -15,8 +19,8 @@ export const useCercas = () => {
   const fetchCercas = async () => {
     setLoading(true);
     try {
-      const res = await axios.get<Cerca[]>('/api/cercas');
-      setCercas(res.data as Cerca[]);
+      const lista = await obterCercas();
+      setCercas(lista);
     } catch (err) {
       console.error('Erro ao buscar cercas:', err);
     }
@@ -26,27 +30,51 @@ export const useCercas = () => {
 
   const addCerca = async (novaCerca: Omit<Cerca, 'id'>) => {
     try {
-      const res = await axios.post<Cerca>('/api/cercas', novaCerca);
-      setCercas((prev) => [...prev, res.data as Cerca]);
+      const raioNum = typeof novaCerca.raio === 'string' ? Number(novaCerca.raio) : novaCerca.raio;
+      if (isNaN(raioNum) || raioNum <= 0) {
+        throw new Error('O raio deve ser um número positivo.');
+      }
+      await salvarCerca({
+        ...novaCerca,
+        raio: raioNum,
+      });
+      await fetchCercas();
     } catch (err) {
       console.error('Erro ao adicionar cerca:', err);
+      alert(err instanceof Error ? err.message : 'Erro ao adicionar cerca.');
     }
   };
 
 
-  const updateCerca = async (id: number, dadosAtualizados: Partial<Cerca>) => {
+  const updateCerca = async (id: number | string, dadosAtualizados: Partial<Cerca>) => {
     try {
-      const res = await axios.put<Cerca>(`/api/cercas/${id}`, dadosAtualizados);
-      setCercas((prev) => prev.map((cerca) => (cerca.id === id ? (res.data as Cerca) : cerca)));
+      // Buscar a cerca atual para manter o valor de raio se não for informado
+      const cercaAtual = cercas.find((c) => String(c.id) === String(id));
+      if (!cercaAtual) throw new Error('Cerca não encontrada para atualização');
+      const raioNum = dadosAtualizados.raio !== undefined ? Number(dadosAtualizados.raio) : Number(cercaAtual.raio);
+      if (isNaN(raioNum) || raioNum <= 0) {
+        throw new Error('O raio deve ser um número positivo.');
+      }
+      await salvarCerca({
+        id: String(id),
+        nome: dadosAtualizados.nome ?? cercaAtual.nome,
+        latitude: dadosAtualizados.latitude ?? cercaAtual.latitude,
+        longitude: dadosAtualizados.longitude ?? cercaAtual.longitude,
+        raio: raioNum,
+        horarioInicio: dadosAtualizados.horarioInicio ?? cercaAtual.horarioInicio,
+        horarioFim: dadosAtualizados.horarioFim ?? cercaAtual.horarioFim,
+      });
+      await fetchCercas();
     } catch (err) {
       console.error('Erro ao atualizar cerca:', err);
+      alert(err instanceof Error ? err.message : 'Erro ao atualizar cerca.');
     }
   };
 
-  const deleteCerca = async (id: number) => {
+  const deleteCerca = async (id: number | string) => {
     try {
-      await axios.delete(`/api/cercas/${id}`);
-      setCercas((prev) => prev.filter((cerca) => cerca.id !== id));
+      await removerCercaStorage(String(id));
+      await fetchCercas();
     } catch (err) {
       console.error('Erro ao deletar cerca:', err);
     }

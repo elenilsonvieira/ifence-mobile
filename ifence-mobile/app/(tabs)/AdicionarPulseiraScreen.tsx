@@ -41,6 +41,7 @@ const AdicionarPulseiraScreen = () => {
   const [cercaSelecionada, setCercaSelecionada] = useState<string>("");
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
   const [novoNomePulseira, setNovoNomePulseira] = useState("");
+  const [novaCercaSelecionada, setNovaCercaSelecionada] = useState<string>("");
 
   useFocusEffect(
     useCallback(() => {
@@ -53,7 +54,7 @@ const AdicionarPulseiraScreen = () => {
     const dados = await AsyncStorage.getItem("pulseiras");
     if (dados) {
       const pulseirasSalvas = JSON.parse(dados);
-      const pulseirasComId = pulseirasSalvas.map((pulseira) => ({
+      const pulseirasComId = pulseirasSalvas.map((pulseira: Pulseira) => ({
         ...pulseira,
         id: pulseira.id || Date.now().toString(),
       }));
@@ -101,26 +102,30 @@ const AdicionarPulseiraScreen = () => {
   const iniciarEdicao = (index: number) => {
     setEditandoIndex(index);
     setNovoNomePulseira(pulseiras[index].nome);
+    setNovaCercaSelecionada(pulseiras[index].cercaId || "");
   };
 
   const salvarEdicao = async () => {
-    if (editandoIndex === null || novoNomePulseira.trim().length === 0) return;
+    if (editandoIndex === null || novoNomePulseira.trim().length === 0 || !novaCercaSelecionada) return;
 
     const novasPulseiras = [...pulseiras];
     novasPulseiras[editandoIndex] = {
       ...novasPulseiras[editandoIndex],
       nome: novoNomePulseira,
+      cercaId: novaCercaSelecionada,
     };
     setPulseiras(novasPulseiras);
     await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
 
     setEditandoIndex(null);
     setNovoNomePulseira("");
+    setNovaCercaSelecionada("");
   };
 
   const cancelarEdicao = () => {
     setEditandoIndex(null);
     setNovoNomePulseira("");
+    setNovaCercaSelecionada("");
   };
 
   // Deletar uma pulseira
@@ -172,7 +177,7 @@ const AdicionarPulseiraScreen = () => {
               onValueChange={(itemValue) => setCercaSelecionada(itemValue)}
             >
               <Picker.Item label="Selecione uma cerca" value="" />
-              {cercas.map((cerca) => (
+              {cercas.map((cerca: Cerca) => (
                 <Picker.Item
                   key={cerca.id}
                   label={cerca.nome}
@@ -197,7 +202,7 @@ const AdicionarPulseiraScreen = () => {
           </View>
 
           <Text style={styles.titulo}>Pulseiras Cadastradas:</Text>
-          {pulseiras.map((item, index) => (
+          {pulseiras.map((item: Pulseira, index: number) => (
             <View key={index} style={styles.card}>
               {editandoIndex === index ? (
                 <View style={styles.cardEdicao}>
@@ -206,6 +211,20 @@ const AdicionarPulseiraScreen = () => {
                     value={novoNomePulseira}
                     onChangeText={setNovoNomePulseira}
                   />
+                  <Text style={styles.label}>Selecione uma cerca:</Text>
+                  <Picker
+                    selectedValue={novaCercaSelecionada}
+                    onValueChange={(itemValue) => setNovaCercaSelecionada(itemValue)}
+                  >
+                    <Picker.Item label="Selecione uma cerca" value="" />
+                    {cercas.map((cerca: Cerca) => (
+                      <Picker.Item
+                        key={cerca.id}
+                        label={cerca.nome}
+                        value={cerca.id}
+                      />
+                    ))}
+                  </Picker>
                   <View style={styles.botoes}>
                     <TouchableOpacity
                       style={styles.botaoadd}
@@ -232,14 +251,24 @@ const AdicionarPulseiraScreen = () => {
                   <Text style={styles.item}>{item.nome}</Text>
                 </TouchableOpacity>
               )}
-              <Switch
-                value={item.ativa}
-                onValueChange={(novoValor) => alternarSwitch(index, novoValor)}
-                trackColor={{ false: "#767577", true: "#95d5b2" }}
-                thumbColor={item.ativa ? "#52b788" : "#f4f3f4"}
-              />
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginVertical: 4, gap: 24 }}>
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', color: '#003F88', marginBottom: 2 }}>Ativar</Text>
+                  <Switch
+                    value={item.ativa}
+                    onValueChange={(novoValor) => alternarSwitch(index, novoValor)}
+                    trackColor={{ false: "#767577", true: "#95d5b2" }}
+                    thumbColor={item.ativa ? "#52b788" : "#f4f3f4"}
+                  />
+                </View>
+                <View style={{ alignItems: 'center', flex: 1 }}>
+                  <Text style={{ fontWeight: 'bold', color: '#003F88', marginBottom: 2 }}>Cerca Atual</Text>
+                  <Text style={{ color: '#222', fontSize: 15, textAlign: 'center' }}>
+                    {cercas.find((c) => c.id === item.cercaId)?.nome || 'Não atribuída'}
+                  </Text>
+                </View>
+              </View>
               <TouchableOpacity
-                style={styles.botaoVerLocalizacoes}
                 onPress={() => {
                   console.log(
                     "Navegando com pulseiraId:",
@@ -258,7 +287,6 @@ const AdicionarPulseiraScreen = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.botaoVerLocalizacoes}
                 onPress={() => {
                   console.log(
                     "Navegando com pulseiraId:",
