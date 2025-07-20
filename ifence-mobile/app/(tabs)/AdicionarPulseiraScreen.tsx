@@ -51,51 +51,55 @@ const AdicionarPulseiraScreen = () => {
   );
 
   const carregarPulseiras = async () => {
-    const dados = await AsyncStorage.getItem("pulseiras");
-    if (dados) {
-      const pulseirasSalvas = JSON.parse(dados);
-      const pulseirasComId = pulseirasSalvas.map((pulseira: Pulseira) => ({
-        ...pulseira,
-        id: pulseira.id || Date.now().toString(),
-      }));
-      setPulseiras(pulseirasComId);
+    try {
+      const dados = await AsyncStorage.getItem("pulseiras");
+      if (!dados) {
+        setPulseiras([]);
+        return;
+      }
+      const pulseirasSalvas: Pulseira[] = JSON.parse(dados);
+      setPulseiras(
+        pulseirasSalvas.map((pulseira) => ({
+          ...pulseira,
+          id: pulseira.id || Date.now().toString(),
+        }))
+      );
+    } catch (e) {
+      setPulseiras([]);
     }
   };
 
   const carregarCercas = async () => {
-    const dados = await obterCercas();
-    console.log("dados da cerca", dados);
-    if (dados) {
-      setCercas(dados);
-      console.log("Estado 'cercas' atualizado:", dados);
+    try {
+      const dados = await obterCercas();
+      setCercas(Array.isArray(dados) ? dados : []);
+    } catch (e) {
+      setCercas([]);
     }
   };
 
   // Adicionar uma nova pulseira
   const adicionarPulseira = async () => {
-    if (nomePulseira.trim().length === 0 || !cercaSelecionada) {
-      showToast(
-        "error",
-        "Erro",
-        "Preencha o nome da pulseira e selecione uma cerca."
-      );
+    if (!nomePulseira.trim() || !cercaSelecionada) {
+      showToast("error", "Erro", "Preencha o nome da pulseira e selecione uma cerca.");
       return;
     }
-
     const novaPulseira: Pulseira = {
-      id: Date.now().toString(), // Gera um ID único
+      id: Date.now().toString(),
       nome: nomePulseira,
-      ativa: false, // Estado inicial: desativada
-      cercaId: cercaSelecionada, // Associa a pulseira à cerca selecionada
+      ativa: false,
+      cercaId: cercaSelecionada,
     };
-
     const novasPulseiras = [...pulseiras, novaPulseira];
-    setPulseiras(novasPulseiras);
-    await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
-
-    setNomePulseira("");
-    setCercaSelecionada(""); // Limpa a seleção da cerca
-    showToast("success", "Sucesso", "Pulseira adicionada com sucesso!");
+    try {
+      await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
+      setPulseiras(novasPulseiras);
+      setNomePulseira("");
+      setCercaSelecionada("");
+      showToast("success", "Sucesso", "Pulseira adicionada com sucesso!");
+    } catch (e) {
+      showToast("error", "Erro", "Falha ao salvar pulseira.");
+    }
   };
 
   // Editar uma pulseira existente
@@ -106,20 +110,21 @@ const AdicionarPulseiraScreen = () => {
   };
 
   const salvarEdicao = async () => {
-    if (editandoIndex === null || novoNomePulseira.trim().length === 0 || !novaCercaSelecionada) return;
-
-    const novasPulseiras = [...pulseiras];
-    novasPulseiras[editandoIndex] = {
-      ...novasPulseiras[editandoIndex],
-      nome: novoNomePulseira,
-      cercaId: novaCercaSelecionada,
-    };
-    setPulseiras(novasPulseiras);
-    await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
-
-    setEditandoIndex(null);
-    setNovoNomePulseira("");
-    setNovaCercaSelecionada("");
+    if (editandoIndex === null || !novoNomePulseira.trim() || !novaCercaSelecionada) return;
+    const novasPulseiras = pulseiras.map((p, i) =>
+      i === editandoIndex
+        ? { ...p, nome: novoNomePulseira, cercaId: novaCercaSelecionada }
+        : p
+    );
+    try {
+      await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
+      setPulseiras(novasPulseiras);
+      setEditandoIndex(null);
+      setNovoNomePulseira("");
+      setNovaCercaSelecionada("");
+    } catch (e) {
+      showToast("error", "Erro", "Falha ao salvar edição.");
+    }
   };
 
   const cancelarEdicao = () => {
