@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Modal, Pressable } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Modal } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "@/components/Header";
+import { showToast } from "@/utils/toastUtils";
+
 import { findUserCredentials } from "../../storage/userStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 function LoginScreen() {
   const router = useRouter();
@@ -13,8 +16,7 @@ function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [userNameError, setUserNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [modalErroVisible, setModalErroVisible] = useState(false);
 
   const validateFields = () => {
     let isValid = true;
@@ -45,14 +47,13 @@ function LoginScreen() {
         const user = await findUserCredentials(userName, password);
         if (user) {
           await AsyncStorage.setItem("currentUser", userName);
+          showToast("success", "Sucesso", "Login realizado com sucesso!");
           router.replace("/(tabs)/Home");
         } else {
-          setErrorMessage("Nome de usuário ou senha incorretos, ou nenhuma conta cadastrada.");
-          setShowErrorModal(true);
+          setModalErroVisible(true);
         }
       } catch (error) {
-        setErrorMessage("Ocorreu um erro ao tentar fazer login. Tente novamente.");
-        setShowErrorModal(true);
+        setModalErroVisible(true);
       }
     }
   };
@@ -169,34 +170,75 @@ function LoginScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* Modal de erro customizado */}
-        <Modal
-          visible={showErrorModal}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShowErrorModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Ionicons name="close-circle" size={60} color="#D7263D" style={{ marginBottom: 10 }} />
-              <Text style={styles.modalTitle}>Erro</Text>
-              <Text style={styles.modalMessage}>{errorMessage}</Text>
-              <Pressable
-                style={({ pressed }) => [styles.modalButton, pressed && { opacity: 0.7 }]}
-                onPress={() => setShowErrorModal(false)}
-                accessibilityLabel="Fechar mensagem de erro"
-              >
-                <Text style={styles.modalButtonText}>Fechar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
+        {/* Modal de erro removido. Todo feedback de erro é feito via showToast. */}
       </View>
+
+      <Modal
+        visible={modalErroVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalErroVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Ionicons name="close-circle" size={60} color="#DA1E37" style={{ marginBottom: 10 }} />
+            <Text style={styles.modalTitleError}>Erro ao logar</Text>
+            <Text style={styles.modalMessage}>Usuário ou senha inválidos. Verifique suas credenciais e tente novamente.</Text>
+            <TouchableOpacity
+              style={styles.modalButtonError}
+              onPress={() => setModalErroVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 30,
+    alignItems: 'center',
+    width: 280,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitleError: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#DA1E37',
+    marginBottom: 8,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  modalButtonError: {
+    backgroundColor: '#DA1E37',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   btnBackPage: {
     alignSelf: "flex-start",
     backgroundColor: "#FFFFFF",
@@ -279,52 +321,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textDecorationLine: "underline",
   },
-  // Modal customizado
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 30,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    minWidth: 280,
-    maxWidth: 340,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#D7263D',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  modalMessage: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalButton: {
-    backgroundColor: '#D7263D',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  modalButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  // Modal customizado removido
 });
 
 export default LoginScreen;

@@ -1,32 +1,42 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
+import { daltonicColors, defaultColors } from "@/constants/DaltonicColors";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 
 export default function TelaInicial() {
-    const router = useRouter();
+  const router = useRouter();
+  const [daltonicMode, setDaltonicMode] = useState(false);
+  const colors = daltonicMode ? daltonicColors : defaultColors;
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }] }>
+      <View style={[styles.header, { backgroundColor: colors.header }] }>
         <Image source={require("@/assets/images/pai-filho.png")} style={styles.image1} accessibilityLabel="Imagem de pai e filho"/>
-        <Text style={styles.headerTitle}>IFence</Text>
+        <Text style={[styles.headerTitle, { color: colors.title }]}>IFence</Text>
+        <TouchableOpacity
+          style={{ position: 'absolute', right: 20, top: 20, zIndex: 10 }}
+          accessibilityLabel="Ativar modo daltônico"
+          onPress={() => setDaltonicMode((prev) => !prev)}
+        >
+          <Ionicons name="eye" size={28} color={daltonicMode ? colors.button : colors.title} />
+        </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>IFence</Text>
-      <Text style={styles.subtitle}>Um app feito para garantir a segurança dos pequenos</Text>
+      <Text style={[styles.title, { color: colors.title }]}>IFence</Text>
+      <Text style={[styles.subtitle, { color: colors.subtitle }]}>Um app feito para garantir a segurança dos pequenos</Text>
 
-      <Text style={styles.sectionTitle}>O que é o IFence?</Text>
-      <Text style={styles.infoBox} accessibilityLabel="Descrição do IFence">
+      <Text style={[styles.sectionTitle, { color: colors.title }]}>O que é o IFence?</Text>
+      <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border }]} accessibilityLabel="Descrição do IFence">
         O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.
       </Text>
 
-      <Text style={styles.sectionTitle}>Para quem é destinado o uso do IFence?</Text>
-      <Text style={styles.infoBox} accessibilityLabel="Público-alvo do IFence">
+      <Text style={[styles.sectionTitle, { color: colors.title }]}>Para quem é destinado o uso do IFence?</Text>
+      <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border }]} accessibilityLabel="Público-alvo do IFence">
         O IFence é destinado para pais ou responsáveis que desejam monitorar crianças que estejam sob sua tutela.
       </Text>
 
-      <Text style={styles.sectionTitle}>Guia de uso:</Text>
-      <Text style={styles.guideText} accessibilityLabel="Guia de uso do IFence">
+      <Text style={[styles.sectionTitle, { color: colors.title }]}>Guia de uso:</Text>
+      <Text style={[styles.guideText, { color: colors.infoText }]} accessibilityLabel="Guia de uso do IFence">
         1 - Crie uma conta para poder utilizar o IFence.{"\n"}
         2 - Com uma conta já criada, você pode utilizar os recursos do IFence.{"\n"}
         3 - Crie uma pulseira com o nome da criança que está sob sua tutela.{"\n"}
@@ -34,21 +44,21 @@ export default function TelaInicial() {
         5 - Atribua a criança à cerca.
       </Text>
 
-      <Text style={styles.sectionTitle}>Acesse sua conta ou crie uma nova:</Text>
+      <Text style={[styles.sectionTitle, { color: colors.title }]}>Acesse sua conta ou crie uma nova:</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#003F88', marginBottom: 10 }]}
+          style={[styles.button, { backgroundColor: colors.button, marginBottom: 10 }]}
           onPress={() => router.push("/auth/LoginScreen")}
           accessibilityLabel="Botão para fazer login"
         >
-          <Text style={styles.buttonText}>Fazer Login</Text>
+          <Text style={[styles.buttonText, { color: colors.buttonText }]}>Fazer Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#0078AE' }]}
+          style={[styles.button, { backgroundColor: colors.button }]}
           onPress={() => router.push("/auth/CadastroScreen")}
           accessibilityLabel="Botão para criar conta"
         >
-          <Text style={styles.buttonText}>Criar Conta</Text>
+          <Text style={[styles.buttonText, { color: colors.buttonText }]}>Criar Conta</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { View, Image, Text } from "react-native";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
@@ -42,6 +43,26 @@ export default function RootLayout() {
           name="auth/CadastroScreen"
           // options={{ title: "Criar Conta" }}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Screens/EditarUsuario" 
+          options={{
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  source={require("../assets/images/pai-filho.png")}
+                  style={{ width: 32, height: 32, marginRight: 8 }}
+                  resizeMode="contain"
+                />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20 }}>IFence</Text>
+              </View>
+            ),
+            headerStyle: { backgroundColor: '#003F88' },
+            headerTintColor: '#fff',
+            headerLeft: () => null,
+            headerBackVisible: false,
+            gestureEnabled: false,
+          }}
         />
         <Stack.Screen name="+not-found" />
       </Stack>

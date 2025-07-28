@@ -12,6 +12,17 @@ import { obterCercas } from "../../storage/cercaStorage";
 import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// Função utilitária para buscar todas pulseiras ativas associadas à cerca
+const obterPulseirasAtivasPorCerca = async (cercaId: string | number) => {
+  const pulseirasStr = await AsyncStorage.getItem("pulseiras");
+  if (!pulseirasStr) return [];
+  try {
+    const pulseiras = JSON.parse(pulseirasStr);
+    return pulseiras.filter((p: any) => p.cercaId == cercaId && p.ativa);
+  } catch {
+    return [];
+  }
+};
 
 interface Cerca {
   id: string | number;
@@ -58,9 +69,10 @@ const Alarme = () => {
   // Expo Router não tem 'query', então removendo esse uso
   // Se precisar selecionar uma cerca por id, use outro método
 
-  const salvarLocalizacao = async (novaLocalizacao: { latitude: number; longitude: number; timestamp: string }) => {
+  // Salva localização para uma pulseira específica
+  const salvarLocalizacaoPulseira = async (pulseiraId: string, novaLocalizacao: { latitude: number; longitude: number; timestamp: string }) => {
     if (!cercaSelecionada) return;
-    const chave = `localizacoes_${cercaSelecionada.id}`;
+    const chave = `localizacoes_${pulseiraId}_${cercaSelecionada.id}`;
     const localizacoesSalvas = await AsyncStorage.getItem(chave);
     const localizacoesArray = localizacoesSalvas ? JSON.parse(localizacoesSalvas) : [];
     const novasLocalizacoes = [...localizacoesArray, novaLocalizacao];
@@ -69,25 +81,35 @@ const Alarme = () => {
 
   useEffect(() => {
     if (!cercaSelecionada) return;
-    const interval = setInterval(() => {
-      const maxDistance = 0.005;
-      const newLat = cercaSelecionada.latitude + (Math.random() - 0.5) * maxDistance;
-      const newLon = cercaSelecionada.longitude + (Math.random() - 0.5) * maxDistance;
-      const novaLocalizacao = {
-        latitude: newLat,
-        longitude: newLon,
-        timestamp: new Date().toISOString(),
-      };
-      setPoint2(novaLocalizacao);
-      salvarLocalizacao(novaLocalizacao);
-      const distance = getDistance(
-        cercaSelecionada.latitude,
-        cercaSelecionada.longitude,
-        newLat,
-        newLon
-      );
-      if (distance > cercaSelecionada.raio) {
-        exibirToast(cercaSelecionada, false);
+    let lastPoints: { [pulseiraId: string]: { latitude: number; longitude: number } } = {};
+    const interval = setInterval(async () => {
+      // Busca todas pulseiras ativas associadas à cerca
+      const pulseirasAtivas = await obterPulseirasAtivasPorCerca(cercaSelecionada.id);
+      if (!pulseirasAtivas.length) return;
+
+      for (const pulseira of pulseirasAtivas) {
+        // Cada pulseira simula seu próprio ponto
+        const prev = lastPoints[pulseira.id] || { latitude: cercaSelecionada.latitude, longitude: cercaSelecionada.longitude };
+        const maxDistance = 0.005;
+        const newLat = prev.latitude + (Math.random() - 0.5) * maxDistance;
+        const newLon = prev.longitude + (Math.random() - 0.5) * maxDistance;
+        const novaLocalizacao = {
+          latitude: newLat,
+          longitude: newLon,
+          timestamp: new Date().toISOString(),
+        };
+        lastPoints[pulseira.id] = { latitude: newLat, longitude: newLon };
+        setPoint2(novaLocalizacao); // Exibe último ponto simulado (pode ser ajustado para exibir todos)
+        await salvarLocalizacaoPulseira(pulseira.id, novaLocalizacao);
+        const distance = getDistance(
+          cercaSelecionada.latitude,
+          cercaSelecionada.longitude,
+          newLat,
+          newLon
+        );
+        if (distance > cercaSelecionada.raio) {
+          exibirToast(cercaSelecionada, false);
+        }
       }
     }, 5000);
     return () => clearInterval(interval);

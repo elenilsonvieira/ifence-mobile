@@ -4,13 +4,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Alert,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
 import * as Location from "expo-location";
+import { showToast } from "@/utils/toastUtils";
 
 const Map = () => {
   const [location, setLocation] = useState<null | {
@@ -33,10 +33,7 @@ const Map = () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          Alert.alert(
-            "Permissão negada",
-            "Você precisa permitir o acesso à localização."
-          );
+          showToast("error", "Permissão negada", "Você precisa permitir o acesso à localização.");
           return;
         }
 
@@ -57,7 +54,7 @@ const Map = () => {
           });
         }
       } catch (error) {
-        Alert.alert("Erro", "Não foi possível obter a localização.");
+        showToast("error", "Erro", "Não foi possível obter a localização.");
       } finally {
         // setLoading(false); // removido pois não existe
       }

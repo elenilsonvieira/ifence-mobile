@@ -7,6 +7,9 @@ import { saveUserCredentials } from "@/storage/userStorage";
 
 const STORAGE_KEY = "userCredentialsList";
 
+// Oculta o header padrão do Expo Router
+import { useLayoutEffect } from 'react';
+
 const EditarUsuario = () => {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -14,6 +17,8 @@ const EditarUsuario = () => {
   const [originalSenha, setOriginalSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const router = useRouter();
+
+
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -200,4 +205,11 @@ const styles = StyleSheet.create({
   },
 });
 
+
 export default EditarUsuario;
+
+// Oculta o header padrão da rota Expo Router
+export const options = {
+  header: () => null,
+  title: "",
+};

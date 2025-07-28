@@ -122,6 +122,7 @@ const AdicionarPulseiraScreen = () => {
       setEditandoIndex(null);
       setNovoNomePulseira("");
       setNovaCercaSelecionada("");
+      showToast("success", "Sucesso", "Pulseira editada com sucesso!");
     } catch (e) {
       showToast("error", "Erro", "Falha ao salvar edição.");
     }
@@ -139,6 +140,7 @@ const AdicionarPulseiraScreen = () => {
     setPulseiras(novasPulseiras);
     await AsyncStorage.setItem("pulseiras", JSON.stringify(novasPulseiras));
     setEditandoIndex(null);
+    showToast("success", "Sucesso", "Pulseira excluída com sucesso!");
   };
 
   // Alternar o estado da pulseira (ativa/inativa)
@@ -252,9 +254,23 @@ const AdicionarPulseiraScreen = () => {
                   </View>
                 </View>
               ) : (
-                <TouchableOpacity onPress={() => iniciarEdicao(index)}>
-                  <Text style={styles.item}>{item.nome}</Text>
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity onPress={() => iniciarEdicao(index)}>
+                    <Text style={styles.item}>{item.nome}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push({
+                        pathname: "/Screens/ListarLocalizacoesPulseira",
+                        params: { pulseiraId: item.id, cercaId: item.cercaId },
+                      });
+                    }}
+                  >
+                    <Text style={styles.textoBotaoVerLocalizacoes}>
+                      Ver Localizações
+                    </Text>
+                  </TouchableOpacity>
+                </>
               )}
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginVertical: 4, gap: 24 }}>
                 <View style={{ alignItems: 'center' }}>
@@ -273,42 +289,7 @@ const AdicionarPulseiraScreen = () => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log(
-                    "Navegando com pulseiraId:",
-                    item.id,
-                    "e cercaId:",
-                    item.cercaId
-                  );
-                  router.push({
-                    pathname: "/Screens/ListarLocalizacoesPulseira",
-                    params: { pulseiraId: item.id, cercaId: item.cercaId },
-                  });
-                }}
-              >
-                <Text style={styles.textoBotaoVerLocalizacoes}>
-                  Ver Localizações
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log(
-                    "Navegando com pulseiraId:",
-                    item.id,
-                    "e cercaId:",
-                    item.cercaId
-                  );
-                  router.push({
-                    pathname: "/Screens/ListarRotasPulseiras",
-                    params: { pulseiraId: item.id, cercaId: item.cercaId },
-                  });
-                }}
-              >
-                <Text style={styles.textoBotaoVerLocalizacoes}>
-                  Ver Rotas percorridas
-                </Text>
-              </TouchableOpacity>
+
             </View>
           ))}
         </ScrollView>

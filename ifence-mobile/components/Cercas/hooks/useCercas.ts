@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { showToast } from '@/utils/toastUtils';
 import { obterCercas, salvarCerca, removerCercaStorage } from '@/storage/cercaStorage';
 
 export interface Cerca {
@@ -39,6 +40,7 @@ export const useCercas = () => {
         raio: raioNum,
       });
       await fetchCercas();
+      showToast('success', 'Sucesso', 'Cerca cadastrada com sucesso!');
     } catch (err) {
       console.error('Erro ao adicionar cerca:', err);
       alert(err instanceof Error ? err.message : 'Erro ao adicionar cerca.');
@@ -65,6 +67,7 @@ export const useCercas = () => {
         horarioFim: dadosAtualizados.horarioFim ?? cercaAtual.horarioFim,
       });
       await fetchCercas();
+      showToast('success', 'Sucesso', 'Cerca editada com sucesso!');
     } catch (err) {
       console.error('Erro ao atualizar cerca:', err);
       alert(err instanceof Error ? err.message : 'Erro ao atualizar cerca.');
@@ -75,6 +78,7 @@ export const useCercas = () => {
     try {
       await removerCercaStorage(String(id));
       await fetchCercas();
+      showToast('success', 'Sucesso', 'Cerca excluída com sucesso!');
     } catch (err) {
       console.error('Erro ao deletar cerca:', err);
     }

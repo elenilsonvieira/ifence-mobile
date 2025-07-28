@@ -1,39 +1,67 @@
 import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import { showToast } from "@/utils/toastUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams } from "expo-router";
 import { obterCercas } from "@/storage/cercaStorage";
 
+type Localizacao = {
+  latitude: number;
+  longitude: number;
+  timestamp: number;
+};
+type Cerca = {
+  id: string;
+  nome: string;
+  latitude: string;
+  longitude: string;
+  raio: number;
+};
+
 const ListarRotasPulseiras = () => {
-  const { pulseiraId, cercaId } = useLocalSearchParams();
-  const [localizacoes, setLocalizacoes] = useState([]);
+  const navigation = useNavigation();
+  const { pulseiraId, cercaId, timestamp } = useLocalSearchParams();
+  const [pulseiraNome, setPulseiraNome] = useState<string>("");
+  const [localizacoes, setLocalizacoes] = useState<Localizacao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cerca, setCerca] = useState(null);
+  const [cerca, setCerca] = useState<Cerca | null>(null);
 
   // Carrega as localizações salvas e os dados da cerca
   useEffect(() => {
+    // Remove o header padrão e aplica customização
+    navigation.setOptions && navigation.setOptions({
+      headerTitle: '',
+      headerStyle: { backgroundColor: '#003F88', shadowColor: 'transparent', elevation: 0 },
+      headerTintColor: '#fff',
+    });
     const carregarDados = async () => {
       try {
-        // Carrega as localizações
-        const chaveLocalizacoes = `localizacoes_${cercaId}`;
-        const localizacoesSalvas = await AsyncStorage.getItem(
-          chaveLocalizacoes
-        );
+        // Carrega as localizações da pulseira específica
+        const chaveLocalizacoes = `localizacoes_${pulseiraId}_${cercaId}`;
+        const localizacoesSalvas = await AsyncStorage.getItem(chaveLocalizacoes);
         if (localizacoesSalvas) {
           setLocalizacoes(JSON.parse(localizacoesSalvas));
         }
 
         const cercasSalvas = await obterCercas();
         if (cercasSalvas) {
-          // const cercas = JSON.parse(cercasSalvas);
-          const cercaEncontrada = cercasSalvas.find((c) => c.id === cercaId);
+          const cercaEncontrada = cercasSalvas.find((c: Cerca) => c.id === cercaId);
           if (cercaEncontrada) {
             setCerca(cercaEncontrada);
             console.log("Dados da cerca carregados:", cercaEncontrada); 
           } else {
             console.log("Cerca não encontrada para o ID:", cercaId);
           }
+        }
+
+        // Buscar nome da pulseira
+        const pulseirasStr = await AsyncStorage.getItem("pulseiras");
+        if (pulseirasStr) {
+          const pulseiras = JSON.parse(pulseirasStr);
+          const pulseira = pulseiras.find((p: any) => p.id === pulseiraId);
+          if (pulseira) setPulseiraNome(pulseira.nome);
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -43,7 +71,7 @@ const ListarRotasPulseiras = () => {
     };
 
     carregarDados();
-  }, [cercaId]);
+  }, [cercaId, pulseiraId]);
 
   if (loading) {
     return (
@@ -70,17 +98,17 @@ const ListarRotasPulseiras = () => {
   };
 
   // Função para exibir a mensagem ao clicar no marcador
-  const exibirMensagem = (localizacao) => {
+  const exibirMensagem = (localizacao: Localizacao) => {
 
     if (!cerca) {
       console.log("Dados da cerca não disponíveis.");
-      Alert.alert("Erro", "Dados da cerca não foram carregados.");
+      showToast("error", "Erro", "Dados da cerca não foram carregados.");
       return;
     }
 
     if (!localizacao.timestamp) {
       console.log("Horário não disponível.");
-      Alert.alert("Erro", "Horário da localização não foi registrado.");
+      showToast("error", "Erro", "Horário da localização não foi registrado.");
       return;
     }
 
@@ -91,59 +119,58 @@ const ListarRotasPulseiras = () => {
 
     Alert.alert(
       "Localização",
-      `A criança "${cerca.nome}" esteve aqui às ${hora}.`
+      `A pulseira "${pulseiraNome || '---'}" esteve aqui às ${hora}.`
     );
   };
 
+  // Garante que timestamp seja number para comparação
+  const timestampNumber = typeof timestamp === 'string' ? Number(timestamp) : Array.isArray(timestamp) ? Number(timestamp[0]) : undefined;
+
   return (
     <View style={styles.container}>
+      <View style={{ backgroundColor: '#003F88', padding: 18, alignItems: 'center', borderTopLeftRadius: 8, borderTopRightRadius: 8, zIndex: 2 }}>
+        <Text style={{ color: '#fff', fontSize: 22, fontWeight: 'bold' }}>Rota da Pulseira</Text>
+      </View>
       <MapView
         style={StyleSheet.absoluteFillObject}
         initialRegion={coordenadasIniciais}
         mapType="hybrid"
       >
-        
         <Polyline
           coordinates={localizacoes}
-          strokeColor="#FF0000" 
-          strokeWidth={3} 
+          strokeColor="#FF0000"
+          strokeWidth={3}
         />
-
-        {/* Marcadores azuis para cada localização */}
-        {localizacoes.map((localizacao, index) => (
-          <Marker
-            key={index}
-            coordinate={{
-              latitude: localizacao.latitude,
-              longitude: localizacao.longitude,
-            }}
-            pinColor="blue"
-            onPress={() => {
-              exibirMensagem(localizacao);
-            }}
-            
-          />
-        ))}
-
-        {/* Marca o ponto inicial */}
-        <Marker
-          coordinate={{
-            latitude: localizacoes[0].latitude,
-            longitude: localizacoes[0].longitude,
-          }}
-          title="Início"
-          pinColor="green"
-        />
-
-        {/* Marca o ponto final */}
-        <Marker
-          coordinate={{
-            latitude: localizacoes[localizacoes.length - 1].latitude,
-            longitude: localizacoes[localizacoes.length - 1].longitude,
-          }}
-          title="Fim"
-          pinColor="red"
-        />
+        {localizacoes.map((localizacao: Localizacao, index: number) => {
+          let pinColor: "blue" | "green" | "gray" | "red" = "blue";
+          const isSelecionado = timestampNumber !== undefined && localizacao.timestamp === timestampNumber;
+          const isPrimeiro = index === 0;
+          const isUltimo = index === localizacoes.length - 1;
+          let markerTitle = undefined;
+          if (isSelecionado) {
+            pinColor = "green";
+            markerTitle = "Ponto Selecionado";
+          } else if (isUltimo) {
+            pinColor = "red";
+            markerTitle = `Cerca: ${cerca?.nome || ''}`;
+          } else if (isPrimeiro) {
+            pinColor = "gray";
+          }
+          return (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: localizacao.latitude,
+                longitude: localizacao.longitude,
+              }}
+              pinColor={pinColor}
+              title={markerTitle}
+              onPress={() => {
+                exibirMensagem(localizacao);
+              }}
+            />
+          );
+        })}
       </MapView>
     </View>
   );
