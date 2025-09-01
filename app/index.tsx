@@ -5,6 +5,7 @@ import { daltonicColors, defaultColors } from "../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useResponsiveDimensions } from "../hooks/useResponsiveDimensions";
+import { spacing, moderateScale } from "../utils/responsive";
 
 export default function TelaInicial() {
   const router = useRouter();
@@ -34,32 +35,36 @@ export default function TelaInicial() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.header, { backgroundColor: colors.header }] }>
-        <Image source={require("../assets/images/pai-filho.png")} style={styles.image1} accessibilityLabel="Imagem de pai e filho"/>
-        <Text style={[styles.headerTitle, { color: colors.title }]}>IFence</Text>
+      <View style={[styles.header, { backgroundColor: colors.header }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image source={require("../assets/images/pai-filho.png")} style={{ width: moderateScale(30), height: moderateScale(30), resizeMode: 'contain', marginRight: spacing(1) }} accessibilityLabel="Imagem de pai e filho"/>
+          <Text style={[styles.headerTitle, { color: colors.title }]}>IFence</Text>
+        </View>
         <TouchableOpacity
-          style={{ position: 'absolute', right: 20, top: 40, zIndex: 10 }}
+          style={{ padding: spacing(1) }}
           accessibilityLabel={daltonicMode ? "Desativar modo daltônico" : "Ativar modo daltônico"}
           onPress={toggleDaltonicMode}
         >
-          <Ionicons name="eye" size={28} color={daltonicMode ? colors.button : colors.title} />
+          <Ionicons name="eye" size={moderateScale(24)} color={daltonicMode ? colors.button : colors.title} />
         </TouchableOpacity>
       </View>
 
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingHorizontal: isTablet ? 40 : 20 }}
+        contentContainerStyle={{ paddingHorizontal: isTablet ? spacing(4) : spacing(2) }}
       >
-        <Text style={[styles.title, { color: colors.title }]}>IFence</Text>
+        <Text style={[styles.title, { color: colors.title }]}
+          >IFence
+        </Text>
         <Text style={[styles.subtitle, { color: colors.subtitle }]}>Um app feito para garantir a segurança dos pequenos</Text>
 
         <Text style={[styles.sectionTitle, { color: colors.title }]}>O que é o IFence?</Text>
-        <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border }]} accessibilityLabel="Descrição do IFence">
+        <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border, width: '100%' }]} accessibilityLabel="Descrição do IFence">
           O IFence é um aplicativo que tem o propósito de monitorar crianças em ambientes abertos.
         </Text>
 
         <Text style={[styles.sectionTitle, { color: colors.title }]}>Para quem é destinado o uso do IFence?</Text>
-        <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border }]} accessibilityLabel="Público-alvo do IFence">
+        <Text style={[styles.infoBox, { backgroundColor: colors.infoBox, color: colors.infoText, borderColor: colors.border, width: '100%' }]} accessibilityLabel="Público-alvo do IFence">
           O IFence é destinado para pais ou responsáveis que desejam monitorar crianças que estejam sob sua tutela.
         </Text>
 
@@ -76,14 +81,14 @@ export default function TelaInicial() {
         <Text style={[styles.sectionTitle, { color: colors.title }]}>Acesse sua conta ou crie uma nova:</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.button, marginBottom: 10, borderColor: colors.border, borderWidth: 2 }]}
+            style={[styles.button, { backgroundColor: colors.button, marginBottom: spacing(1), borderColor: colors.border, borderWidth: 2 }]}
             onPress={() => router.push("/auth/LoginScreen")}
             accessibilityLabel="Botão para fazer login"
           >
             <Text style={[styles.buttonText, { color: colors.buttonText }]}>Fazer Login</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.button, marginBottom: 10, borderColor: colors.border, borderWidth: 2 }]}
+            style={[styles.button, { backgroundColor: colors.button, marginBottom: spacing(1), borderColor: colors.border, borderWidth: 2 }]}
             onPress={() => router.push("/auth/CadastroScreen")}
             accessibilityLabel="Botão para criar conta"
           >
@@ -93,95 +98,76 @@ export default function TelaInicial() {
       </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
     container: { 
       flex: 1
     },
     header: { 
-      flexDirection: "row", 
-      justifyContent: "space-between", 
+      flexDirection: "row",
+      justifyContent: "space-between",
       alignItems: "center",
-      padding: 20 
-    },
-    headerTitle: { 
-      fontSize: 20, 
-      fontWeight: "bold", 
-      right:"75%", 
-      padding:5, 
-      bottom:-15 
-    }, 
+      paddingHorizontal: spacing(2),
+      paddingVertical: spacing(2)
+     },
+     headerTitle: { 
+      fontSize: moderateScale(20),
+      fontWeight: "bold",
+     }, 
     loginButton: { 
-      padding: 5 
+      padding: spacing(1) 
     },
     loginText: { 
-      fontSize: 16 
+      fontSize: moderateScale(14) 
     },
     title: { 
-      fontSize: 24, 
+      fontSize: moderateScale(22), 
       fontWeight: "bold", 
       textAlign: "center", 
-      marginVertical: 10
+  marginVertical: spacing(1.25)
     },
     subtitle: { 
-      fontSize: 16, 
+      fontSize: moderateScale(14), 
       textAlign: "center"
     },
     image: { 
-      marginTop: 50, 
-      left: 40, 
-      padding: 160
+      marginTop: spacing(4), 
+  left: spacing(5), 
+      padding: spacing(4)
     },
     image1: {
-      marginRight: 30,
-      width: 30,
-      height: 30,
-      right: 20,
-      top: 10,
+      marginRight: spacing(2),
+      width: moderateScale(26),
+      height: moderateScale(26),
+  right: spacing(2.5),
+      top: spacing(1),
       resizeMode: 'contain',
     },
     imageText: { 
-      fontSize: 20, 
+      fontSize: moderateScale(16), 
       fontWeight: "bold", 
       textAlign: "center", 
-      bottom:210, 
-      left:45 
+  bottom: spacing(26), 
+  left: spacing(5.5) 
     },
-    sectionTitle: { 
-      fontSize: 18, 
-      fontWeight: "bold", 
-      marginTop: 15, 
-      left: 10
-    },
-    infoBox: {
-      padding: 10,
-      borderRadius: 5,
-      marginTop: 5,
-      left: 8,
-      width: 395,
-      borderWidth: 2
-    },
-    
-    guideText: { 
-      fontSize: 14, 
-      marginTop: 5, 
-      left:10 
-    },
-    buttonContainer: { 
-      flexDirection: "row", 
-      justifyContent: "center", 
-      marginTop: 30 
-    },
-    button: { 
-      padding: 10, 
-      borderRadius: 5, 
-      marginHorizontal: 10, 
-      bottom:20 
-    },
-    buttonText: { 
-      fontSize: 16, 
-      textAlign: "center", 
-      padding:5 
-    },
+    sectionTitle: { fontSize: moderateScale(18), fontWeight: "bold", marginTop: spacing(2) },
+     infoBox: {
+      padding: spacing(2),
+  borderRadius: moderateScale(5),
+      marginTop: spacing(1),
+      borderWidth: 2,
+     },
+    guideText: { fontSize: moderateScale(14), marginTop: spacing(1) },
+     buttonContainer: { 
+       flexDirection: "row", 
+       justifyContent: "center", 
+       marginTop: spacing(3)
+     },
+     button: { 
+      padding: spacing(2), 
+  borderRadius: moderateScale(5), 
+  marginHorizontal: spacing(1.25), 
+     },
+     buttonText: { fontSize: moderateScale(16), textAlign: "center", padding: spacing(1) },
   });

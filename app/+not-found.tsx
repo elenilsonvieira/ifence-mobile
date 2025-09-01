@@ -1,5 +1,6 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
+import { spacing } from '@/utils/responsive';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -23,10 +24,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+  padding: spacing(2.5),
   },
   link: {
-    marginTop: 15,
-    paddingVertical: 15,
+  marginTop: spacing(1.875),
+  paddingVertical: spacing(1.875),
   },
 });

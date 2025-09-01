@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Pulseira } from '../hooks/usePulseiras';
+import { spacing, moderateScale } from '../../../utils/responsive';
 
 interface PulseiraTableProps {
   pulseiras: Pulseira[];
@@ -38,7 +39,7 @@ export default function PulseiraTable({ pulseiras, onEdit, onDelete }: PulseiraT
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: spacing(2),
     width: '100%',
   },
   row: {
@@ -46,36 +47,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
-    marginBottom: 10,
-    padding: 10,
+    marginBottom: spacing(1.25),
+    padding: spacing(1.5),
     justifyContent: 'space-between',
   },
   info: {
     flex: 2,
   },
   nome: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: '#003F88',
     fontWeight: 'bold',
   },
   identificador: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#555',
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing(1),
   },
   editBtn: {
     backgroundColor: '#FFD600',
     borderRadius: 5,
-    padding: 8,
-    marginRight: 5,
+    padding: spacing(1),
+    marginRight: spacing(0.5),
   },
   deleteBtn: {
     backgroundColor: '#D7263D',
     borderRadius: 5,
-    padding: 8,
+    padding: spacing(1),
   },
   actionText: {
     color: '#fff',
@@ -84,6 +85,6 @@ const styles = StyleSheet.create({
   empty: {
     textAlign: 'center',
     color: '#888',
-    marginTop: 20,
+    marginTop: spacing(2),
   },
 });

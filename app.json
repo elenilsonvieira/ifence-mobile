@@ -35,6 +35,12 @@
       ],
       "expo-font"
     ],
+    "extra": {
+      "IFENCE_API_URL": "http://192.168.0.113:8080/api",
+  "IFENCE_DEBUG_HTTP": true,
+  "MAP_TILES_URL": "https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=b6uJFfX0kEii8xNHbGqB",
+  "MAP_TILES_ATTRIBUTION": "© Map data © OpenStreetMap contributors, Tiles by MapTiler"
+    },
     "experiments": {
       "typedRoutes": true
     }

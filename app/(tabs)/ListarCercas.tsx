@@ -8,6 +8,7 @@ import CercaTable from "@/components/Cercas/components/CercaTable";
 import { CercaModal } from "@/components/Cercas/components/CercaModal";
 import Toast from "react-native-toast-message";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { spacing, moderateScale } from "../../utils/responsive";
 
 const ListarCercas = () => {
   const colors = useDaltonicColors();
@@ -66,9 +67,18 @@ const ListarCercas = () => {
     setHorarioFim(new Date());
   };
 
-  const handleSalvar = (dados: Partial<import("@/components/Cercas/hooks/useCercas").Cerca>) => {
+  const handleSalvar = (dados: {
+    nome: string;
+    latitude: string;
+    longitude: string;
+    raio: string;
+    horarioInicio: string;
+    horarioFim: string;
+  }) => {
     if (cercaEditando && cercaEditando.id) {
       updateCerca(cercaEditando.id, dados);
+    } else {
+      addCerca(dados);
     }
     setModalVisible(false);
     setCercaEditando(null);
@@ -123,7 +133,7 @@ const ListarCercas = () => {
               const raioVal = raio && !isNaN(Number(raio)) && Number(raio) > 0 ? raio : "100";
               router.push({
                 pathname: "/Screens/Map",
-                params: { raio: raioVal },
+                params: { raio: raioVal, returnTo: "/(tabs)/ListarCercas" },
               });
             }}
           >
@@ -176,14 +186,10 @@ const ListarCercas = () => {
         <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ flexGrow: 0, backgroundColor: colors.infoBox }}>
           <View style={{ minWidth: 600, flex: 1 }}>
             {loading ? (
-              <ActivityIndicator size="large" style={{ marginTop: 20 }} />
+              <ActivityIndicator size="large" style={{ marginTop: spacing(2) }} />
             ) : (
               <CercaTable
-                cercas={cercas.map((c) => ({
-                  id: c.id,
-                  nome: c.nome,
-                  coordenadas: `${c.latitude}, ${c.longitude}`
-                }))}
+                cercas={cercas as any}
               onEdit={(cerca: any) => {
                 // Encontrar a cerca original pelo id para edição completa
                 const original = cercas.find((c) => c.id === cerca.id);
@@ -202,7 +208,7 @@ const ListarCercas = () => {
                 }
                 setModalVisible(true);
               }}
-              onDelete={(id: string | number) => deleteCerca(id)}
+              onDelete={(id: string | number) => deleteCerca(String(id))}
               />
             )}
           </View>
@@ -223,39 +229,39 @@ const ListarCercas = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+  padding: spacing(2),
   },
   formContainer: {
-    marginBottom: 24,
-    padding: 12,
-    borderRadius: 8,
+  marginBottom: spacing(2),
+  padding: spacing(1.5),
+  borderRadius: moderateScale(8),
   },
   input: {
     borderWidth: 1,
-    borderRadius: 4,
-    padding: 8,
-    marginBottom: 8,
+  borderRadius: moderateScale(4),
+  padding: spacing(1),
+  marginBottom: spacing(1),
   },
   disableInput: {
   },
   labelsInfo: {
     fontWeight: 'bold',
-    marginBottom: 4,
-    marginTop: 8,
+  marginBottom: spacing(0.5),
+  marginTop: spacing(1),
   },
   btnAbrirMapa: {
-    borderRadius: 5,
-    padding: 10,
+  borderRadius: moderateScale(5),
+  padding: spacing(1),
     alignItems: 'center',
-    marginBottom: 8,
+  marginBottom: spacing(1),
   },
   btnAbrirMapaText: {
     fontWeight: 'bold',
   },
   titulo: {
-    fontSize: 28,
+  fontSize: moderateScale(24),
     fontWeight: "bold",
-    marginBottom: 10,
+  marginBottom: spacing(1),
     textAlign: "center",
   },
   btnBackPage: {
@@ -263,13 +269,13 @@ const styles = StyleSheet.create({
     marginLeft: 0,
   },
   button: {
-    borderRadius: 5,
-    padding: 15,
+  borderRadius: moderateScale(5),
+  padding: spacing(1.5),
     alignItems: "center",
-    marginTop: 10,
+  marginTop: spacing(1),
   },
   buttonText: {
-    fontSize: 18,
+  fontSize: moderateScale(16),
     fontWeight: "bold",
   },
 });

@@ -4,6 +4,17 @@ import { v4 as uuidv4 } from "uuid";
 
 const CERCAS_STORAGE = "@cercas";
 
+export type Cerca = {
+  id: string;
+  nome: string;
+  latitude: string;
+  longitude: string;
+  raio: number;
+  horarioInicio: string;
+  horarioFim: string;
+  pulseiraId: string | null;
+};
+
 export const salvarCerca = async (cerca: {
   id?: string; // ID é opcional
   nome: string;
@@ -14,17 +25,17 @@ export const salvarCerca = async (cerca: {
   horarioFim: string; 
 }) => {
   try {
-    const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
-    const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
+  const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
+  const cercas: Cerca[] = cercasSalvas ? JSON.parse(cercasSalvas) : [];
 
-    const novaCerca = {
+  const novaCerca: Cerca = {
       ...cerca,
       id: cerca.id || uuidv4(), // Gera um ID se não existir
       pulseiraId: null, 
     };
 
     if (cerca.id) {
-      const index = cercas.findIndex((c) => c.id === cerca.id);
+  const index = cercas.findIndex((c: Cerca) => c.id === cerca.id);
       if (index !== -1) {
         cercas[index] = novaCerca; 
       } else {
@@ -42,10 +53,10 @@ export const salvarCerca = async (cerca: {
   }
 };
 
-export const obterCercas = async () => {
+export const obterCercas = async (): Promise<Cerca[]> => {
     try {
-      const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
-      return cercasSalvas ? JSON.parse(cercasSalvas) : [];
+  const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
+  return cercasSalvas ? (JSON.parse(cercasSalvas) as Cerca[]) : [];
     } catch (error) {
       console.error("Erro ao obter cercas:", error);
       return [];
@@ -54,10 +65,10 @@ export const obterCercas = async () => {
 
 export const removerCercaStorage = async (id: string) => {
   try {
-    const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
-    const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
+  const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
+  const cercas: Cerca[] = cercasSalvas ? (JSON.parse(cercasSalvas) as Cerca[]) : [];
     
-    const novasCercas = cercas.filter((cerca) => cerca.id !== id);
+  const novasCercas = cercas.filter((cerca: Cerca) => cerca.id !== id);
     
     await AsyncStorage.setItem(CERCAS_STORAGE, JSON.stringify(novasCercas));
   } catch (error) {
@@ -68,11 +79,11 @@ export const removerCercaStorage = async (id: string) => {
 export const atribuirPulseiraACerca = async (cercaId: string, pulseiraId: string) => {
   try {
     // Obtém todas as cercas salvas
-    const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
-    const cercas = cercasSalvas ? JSON.parse(cercasSalvas) : [];
+  const cercasSalvas = await AsyncStorage.getItem(CERCAS_STORAGE);
+  const cercas: Cerca[] = cercasSalvas ? (JSON.parse(cercasSalvas) as Cerca[]) : [];
 
     // Encontra a cerca pelo ID
-    const cercaIndex = cercas.findIndex((c) => c.id === cercaId);
+  const cercaIndex = cercas.findIndex((c: Cerca) => c.id === cercaId);
     if (cercaIndex !== -1) {
       // Atualiza o campo pulseiraId da cerca
       cercas[cercaIndex].pulseiraId = pulseiraId;

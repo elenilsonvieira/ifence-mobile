@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, UrlTile, PROVIDER_GOOGLE } from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams } from "expo-router";
-import { obterCercas } from "@/storage/cercaStorage";
+import { obterCercas, type Cerca as StorageCerca } from "@/storage/cercaStorage";
 import { useDaltonicColors } from "../hooks/useDaltonicColors";
 import HeaderBrand from "../../components/HeaderBrand";
+import { spacing, moderateScale } from "../../utils/responsive";
+import Constants from "expo-constants";
 
 type Localizacao = {
   latitude: number;
@@ -13,22 +15,14 @@ type Localizacao = {
   timestamp: string;
 };
 
-interface Cerca {
-  id: string;
-  nome: string;
-  latitude: number;
-  longitude: number;
-  raio: number;
-  horarioInicio?: string;
-  horarioFim?: string;
-}
+// Usa o tipo de Cerca do storage para evitar conflitos de tipos
 
 const ListarRotasPulseiras = () => {
   const colors = useDaltonicColors();
   const { pulseiraId, cercaId, latitude, longitude, timestamp } = useLocalSearchParams();
   const [localizacoes, setLocalizacoes] = useState<Localizacao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cerca, setCerca] = useState<Cerca | null>(null);
+  const [cerca, setCerca] = useState<StorageCerca | null>(null);
   const [pulseiraNome, setPulseiraNome] = useState<string>("");
 
   // Carrega as localizações salvas e os dados da cerca
@@ -44,7 +38,7 @@ const ListarRotasPulseiras = () => {
 
         const cercasSalvas = await obterCercas();
         if (cercasSalvas) {
-          const cercaEncontrada = (cercasSalvas as Cerca[]).find((c: Cerca) => c.id === cercaId);
+          const cercaEncontrada = (cercasSalvas as StorageCerca[]).find((c: StorageCerca) => c.id === String(cercaId));
           if (cercaEncontrada) {
             setCerca(cercaEncontrada);
           }
@@ -73,6 +67,15 @@ const ListarRotasPulseiras = () => {
     );
   }
 
+  // Se uma cerca foi carregada e for necessário exibir seu centro em algum momento,
+  // convertemos latitude/longitude para número aqui (mantendo o storage como string)
+  const cercaCoords = cerca
+    ? {
+        latitude: Number(cerca.latitude) || 0,
+        longitude: Number(cerca.longitude) || 0,
+      }
+    : null;
+
   const coordenadasSelecionadas = latitude && longitude ? {
     latitude: parseFloat(latitude as string),
     longitude: parseFloat(longitude as string),
@@ -94,7 +97,24 @@ const ListarRotasPulseiras = () => {
           longitudeDelta: 0.01,
         }}
         mapType="hybrid"
+        provider={(
+          (Constants.expoConfig as any)?.android?.config?.googleMaps?.apiKey ||
+          (Constants.expoConfig as any)?.ios?.config?.googleMapsApiKey
+        ) ? PROVIDER_GOOGLE : undefined}
       >
+        {!(
+          (Constants.expoConfig as any)?.android?.config?.googleMaps?.apiKey ||
+          (Constants.expoConfig as any)?.ios?.config?.googleMapsApiKey
+        ) && (
+          (() => {
+            const mapTilerKey = (Constants.expoConfig as any)?.extra?.MAPTILER_KEY;
+            const cfgUrl = (Constants.expoConfig as any)?.extra?.MAP_TILES_URL as string | undefined;
+            const url = cfgUrl || (mapTilerKey ? `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=${mapTilerKey}` : undefined);
+            return url ? (
+              <UrlTile urlTemplate={url} maximumZ={22} zIndex={-1} flipY={false} />
+            ) : null;
+          })()
+        )}
         {localizacoes.map((localizacao, index) => (
           <Marker
             key={index}
@@ -126,9 +146,9 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.background // agora controlado pelo hook
   },
   texto: {
-    fontSize: 18,
+  fontSize: moderateScale(18),
     textAlign: "center",
-    marginTop: 20,
+  marginTop: spacing(2.5),
     // color: colors.title // agora controlado pelo hook
   },
 });

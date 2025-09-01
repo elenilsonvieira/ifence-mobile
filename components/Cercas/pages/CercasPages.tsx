@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { useCercas } from '../hooks/useCercas';
+import { useCercas, type Cerca } from '../hooks/useCercas';
 import { CercaModal } from '../components/CercaModal';
-import { CercaTable } from '../components/CercaTable';
+import CercaTable from '../components/CercaTable';
+import { spacing, moderateScale } from '../../../utils/responsive';
 
 const CercasPages: React.FC = () => {
   const { cercas, loading, addCerca, updateCerca, deleteCerca } = useCercas();
   const [modalVisible, setModalVisible] = useState(false);
-  const [cercaEditando, setCercaEditando] = useState<any>(null);
+  type ModalCercaData = {
+    nome: string;
+    latitude: string;
+    longitude: string;
+    raio: string;
+    horarioInicio: string;
+    horarioFim: string;
+  };
+  const [cercaEditando, setCercaEditando] = useState<ModalCercaData | null>(null);
 
-  const handleSalvar = (dados: { nome: string; coordenadas: string }) => {
+  const handleSalvar = (dados: {
+    nome: string;
+    latitude: string;
+    longitude: string;
+    raio: string;
+    horarioInicio: string;
+    horarioFim: string;
+  }) => {
     if (cercaEditando) {
-      updateCerca(cercaEditando.id, dados);
+      // Encontrar a cerca original pelo nome/coords se necessário; aqui assumimos que o ID está na lista
+      const alvo = cercas.find((c) => c.nome === cercaEditando.nome && c.latitude === cercaEditando.latitude && c.longitude === cercaEditando.longitude);
+      if (alvo) {
+        updateCerca(alvo.id, dados);
+      }
     } else {
       addCerca(dados);
     }
@@ -27,15 +47,22 @@ const CercasPages: React.FC = () => {
       <Text style={styles.title}>Gerenciar Cercas</Text>
       <Button title="Nova Cerca" onPress={abrirModalNova} />
       {loading ? (
-        <ActivityIndicator size="large" style={{ marginTop: 20 }} />
+        <ActivityIndicator size="large" style={{ marginTop: spacing(2) }} />
       ) : (
         <CercaTable
           cercas={cercas}
-          onEdit={(cerca) => {
-            setCercaEditando(cerca);
+          onEdit={(cerca: Cerca) => {
+            setCercaEditando({
+              nome: cerca.nome,
+              latitude: cerca.latitude,
+              longitude: cerca.longitude,
+              raio: String(cerca.raio),
+              horarioInicio: cerca.horarioInicio,
+              horarioFim: cerca.horarioFim,
+            });
             setModalVisible(true);
           }}
-          onDelete={deleteCerca}
+          onDelete={(id) => deleteCerca(id)}
         />
       )}
       <CercaModal
@@ -51,13 +78,13 @@ const CercasPages: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: spacing(2),
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: spacing(2),
   },
 });
 

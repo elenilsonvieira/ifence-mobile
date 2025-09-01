@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 import { useDaltonicColors } from "../hooks/useDaltonicColors";
 import HeaderBrand from "../../components/HeaderBrand";
+import { spacing, moderateScale } from "../../utils/responsive";
 
 type AlarmeHistorico = {
   nomeCerca: string;
@@ -56,8 +57,11 @@ const Historico = () => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }] }>
-        <ActivityIndicator size="large" color={colors.title} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <HeaderBrand />
+        <View style={styles.content}>
+          <ActivityIndicator size="large" color={colors.title} />
+        </View>
       </View>
     );
   }
@@ -65,22 +69,24 @@ const Historico = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
       <HeaderBrand />
-      <Text style={[styles.textHeader, { color: colors.title }]}>Histórico de Alarmes</Text>
-      <TouchableOpacity style={[styles.deleteButton, { backgroundColor: colors.button }] } onPress={limparHistorico}>
-        <Text style={[styles.deleteButtonText, { color: colors.buttonText }]}>Deletar histórico</Text>
-      </TouchableOpacity>
-      <View style={styles.history}>
-        {historico.length === 0 ? (
-          <Text style={[styles.noHistory, { color: colors.infoText }]}>Nenhum alarme registrado ainda.</Text>
-        ) : (
-          historico.map((alarme, index) => (
-            <View key={index} style={[styles.historyItem, { backgroundColor: colors.infoBox }] }>
-              <Text style={[styles.textmap, { color: colors.infoText }] }>
-                Alarme: {alarme.nomeCerca} - {alarme.timestamp}
-              </Text>
-            </View>
-          ))
-        )}
+      <View style={styles.content}>
+        <Text style={[styles.textHeader, { color: colors.title }]}>Histórico de Alarmes</Text>
+        <TouchableOpacity style={[styles.deleteButton, { backgroundColor: colors.button }]} onPress={limparHistorico}>
+          <Text style={[styles.deleteButtonText, { color: colors.buttonText }]}>Deletar histórico</Text>
+        </TouchableOpacity>
+        <View style={styles.history}>
+          {historico.length === 0 ? (
+            <Text style={[styles.noHistory, { color: colors.infoText }]}>Nenhum alarme registrado ainda.</Text>
+          ) : (
+            historico.map((alarme, index) => (
+              <View key={index} style={[styles.historyItem, { backgroundColor: colors.infoBox }]}>
+                <Text style={[styles.textmap, { color: colors.infoText }]}>
+                  Alarme: {alarme.nomeCerca} - {alarme.timestamp}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
       </View>
     </View>
   );
@@ -90,33 +96,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 20,
+  },
+  content: {
+    flex: 1,
+    padding: spacing(2),
   },
   textHeader: {
-    fontSize: 24,
+    fontSize: moderateScale(22),
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 25,
+    marginVertical: spacing(1.5),
     color: "#003F88",
   },
   textmap:{
-    color:'white'
+    color:'white',
+    fontSize: moderateScale(13),
   },
   history: {
-    marginTop: 20,
-    
+    marginTop: spacing(1),
   },
   historyItem: {
-    marginBottom: 15,
+    marginBottom: spacing(1),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    top: 30,
     backgroundColor: "#003F88",
-    padding: 25,
-    marginVertical: 8,
-    borderRadius: 18,
-    
+    padding: spacing(1.5),
+    marginVertical: spacing(1),
+    borderRadius: 14,
   },
   noHistory: {
     textAlign: "center",
@@ -125,19 +132,18 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: "red",
     alignItems: "center",
-    padding: 15,
-    marginVertical: 8,
-    width:62,
-    height:60,
-    borderRadius: 88,
+    justifyContent: 'center',
+    marginVertical: spacing(1),
+    width: moderateScale(60),
+    height: moderateScale(60),
+    borderRadius: moderateScale(30),
     color: "white",
   },
   deleteButtonText: {
     color: "#fff",
-    fontSize: 8,
+    fontSize: moderateScale(10),
     fontWeight: "bold",
-    top:4
-    
+    textAlign: 'center',
   },
 });
 

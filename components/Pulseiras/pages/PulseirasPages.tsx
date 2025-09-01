@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity } from 'rea
 import { usePulseiras, Pulseira } from '../hooks/usePulseiras';
 import PulseiraModal from '../components/PulseiraModal';
 import PulseiraTable from '../components/PulseiraTable';
+import { spacing, moderateScale } from '../../../utils/responsive';
 
 export default function PulseirasPages() {
   const { pulseiras, loading, addPulseira, updatePulseira, deletePulseira } = usePulseiras();
@@ -76,40 +77,40 @@ export default function PulseirasPages() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: spacing(2.5),
     backgroundColor: '#fff',
   },
   formContainer: {
-    marginBottom: 24,
+    marginBottom: spacing(3),
     backgroundColor: '#f5f5f5',
-    padding: 12,
+    padding: spacing(1.5),
     borderRadius: 8,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 4,
-    padding: 8,
-    marginBottom: 8,
+    padding: spacing(1),
+    marginBottom: spacing(1),
     backgroundColor: '#fff',
   },
   button: {
     backgroundColor: '#003F88',
     borderRadius: 5,
-    padding: 15,
+    padding: spacing(2),
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: spacing(1.25),
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 24,
+    fontSize: moderateScale(24),
     fontWeight: 'bold',
     color: '#003F88',
-    marginBottom: 20,
+    marginBottom: spacing(2.5),
     textAlign: 'center',
   },
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { spacing, moderateScale } from '../../../utils/responsive';
 
 interface PulseiraModalProps {
   visible: boolean;
@@ -9,7 +10,6 @@ interface PulseiraModalProps {
   initialNome?: string;
   initialIdentificador?: string;
 }
-
 
 export default function PulseiraModal({ visible, onClose, onSave, initialNome = '', initialIdentificador = '' }: PulseiraModalProps) {
   const [nome, setNome] = React.useState(initialNome);
@@ -67,45 +67,45 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 30,
+    padding: spacing(3),
     alignItems: 'center',
-    minWidth: 280,
-    maxWidth: 340,
+    width: '90%',
+    maxWidth: 420,
   },
   title: {
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: 'bold',
     color: '#003F88',
-    marginBottom: 16,
+    marginBottom: spacing(2),
   },
   input: {
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    fontSize: 16,
+    padding: spacing(1.25),
+    marginBottom: spacing(1.25),
+    fontSize: moderateScale(16),
     color: '#003F88',
     borderWidth: 1,
     borderColor: '#003F88',
-    width: 220,
+    width: '100%',
   },
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 10,
+    marginTop: spacing(1.25),
   },
   button: {
     backgroundColor: '#003F88',
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 5,
+    padding: spacing(1.25),
+    marginHorizontal: spacing(0.75),
     flex: 1,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: 'bold',
   },
 });

@@ -18,11 +18,13 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
+        // Esconde completamente a barra de abas
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
+            display: "none",
           },
-          default: {},
+          default: { display: "none" },
         }),
       }}
     >

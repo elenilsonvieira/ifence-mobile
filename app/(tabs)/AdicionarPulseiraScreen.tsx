@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Switch } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { useDaltonicColors } from "../hooks/useDaltonicColors";
@@ -7,52 +7,62 @@ import Header from "@/components/Header";
 import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
 import { useCercas } from "../../components/Cercas/hooks/useCercas";
+import { usePulseiras } from "@/components/Pulseiras/hooks/usePulseiras";
+import api, { authApi } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { spacing, moderateScale } from "../../utils/responsive";
 
-type Pulseira = {
-  id: string;
-  nome: string;
-  ativa: boolean;
-  cercaId: string;
-};
+// Lista e operações de pulseiras agora vêm do backend via hook usePulseiras
 
 const AdicionarPulseiraScreen: React.FC = () => {
   const router = useRouter();
   const colors = useDaltonicColors();
   const [nomePulseira, setNomePulseira] = useState("");
-  const [pulseiras, setPulseiras] = useState<Pulseira[]>([]);
+  const { pulseiras: pulseirasApi, addPulseira: addPulseiraApi, updatePulseira: updatePulseiraApi, deletePulseira: deletePulseiraApi, refresh: refreshPulseiras } = usePulseiras();
   const [cercaSelecionada, setCercaSelecionada] = useState<string>("");
   // Buscar cercas reais do sistema
   const { cercas } = useCercas();
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
   const [novoNomePulseira, setNovoNomePulseira] = useState("");
-
-  const PULSEIRAS_STORAGE = "@pulseiras";
+  const [cercaEdicaoSelecionada, setCercaEdicaoSelecionada] = useState<string>("");
 
   // Funções de manipulação
-  const adicionarPulseira = () => {
+  const adicionarPulseira = async () => {
     if (!nomePulseira || !cercaSelecionada) {
       Toast.show({ type: "error", text1: "Preencha todos os campos!" });
       return;
     }
-    const novaPulseira: Pulseira = {
-      id: Math.random().toString(36).substr(2, 9),
-      nome: nomePulseira,
-      ativa: true,
-      cercaId: cercaSelecionada,
-    };
-    const novasPulseiras = [...pulseiras, novaPulseira];
-    setPulseiras(novasPulseiras);
-    salvarPulseiras(novasPulseiras);
-    setNomePulseira("");
-    setCercaSelecionada("");
-    Toast.show({ type: "success", text1: "Pulseira adicionada!" });
+    try {
+      // 1) Cria a pulseira no backend
+      const criada = await addPulseiraApi({ nome: nomePulseira });
+      if (!criada) throw new Error("Falha ao criar pulseira");
+      // 2) Vincula à cerca
+      try {
+        await api.post(`/fences/registerBracelet`, null, { params: { fence: Number(cercaSelecionada), bracelet: criada.id } });
+      } catch (err: any) {
+        if (err?.response?.status === 404) {
+          await authApi.post(`/fences/registerBracelet`, null, { params: { fence: Number(cercaSelecionada), bracelet: criada.id } });
+        } else {
+          throw err;
+        }
+      }
+  // Refaz listagem para refletir vínculo
+  await refreshPulseiras();
+  setNomePulseira("");
+  setCercaSelecionada("");
+      Toast.show({ type: "success", text1: "Pulseira adicionada e vinculada!" });
+    } catch (e: any) {
+      const msg = e?.response?.data ? String(e.response.data) : e?.message;
+      Toast.show({ type: "error", text1: msg || "Erro ao adicionar pulseira" });
+    }
   };
 
   const iniciarEdicao = (index: number) => {
     setEditandoIndex(index);
-    setNovoNomePulseira(pulseiras[index].nome);
-    setCercaSelecionada(pulseiras[index].cercaId); // Setar cerca atual para edição
+    setNovoNomePulseira(pulseirasApi[index]?.nome ?? "");
+  // Seleciona a primeira cerca vinculada, se houver, para edição
+  const fenceId = pulseirasApi[index]?.cercas?.[0]?.id;
+  setCercaEdicaoSelecionada(fenceId ? String(fenceId) : "");
   };
 
   const cancelarEdicao = () => {
@@ -61,57 +71,69 @@ const AdicionarPulseiraScreen: React.FC = () => {
     setCercaSelecionada(""); // Limpar seleção de cerca ao cancelar edição
   };
 
-  const salvarEdicao = () => {
+  const salvarEdicao = async () => {
     if (editandoIndex === null) return;
-    const novasPulseiras = [...pulseiras];
-    novasPulseiras[editandoIndex].nome = novoNomePulseira;
-    novasPulseiras[editandoIndex].cercaId = cercaSelecionada; // Atualizar cerca
-    setPulseiras(novasPulseiras);
-    salvarPulseiras(novasPulseiras);
-    cancelarEdicao();
-    Toast.show({ type: "success", text1: "Pulseira editada!" });
-  };
-
-  const deletarPulseira = (index: number) => {
-    const novasPulseiras = pulseiras.filter((_, i) => i !== index);
-    setPulseiras(novasPulseiras);
-    cancelarEdicao();
-    Toast.show({ type: "info", text1: "Pulseira excluída!" });
-  };
-
-  const alternarSwitch = (index: number, novoValor: boolean) => {
-    const novasPulseiras = [...pulseiras];
-    novasPulseiras[index].ativa = novoValor;
-    setPulseiras(novasPulseiras);
-  };
-
-  const salvarPulseiras = async (pulseiras: Pulseira[]) => {
     try {
-      await AsyncStorage.setItem(PULSEIRAS_STORAGE, JSON.stringify(pulseiras));
-    } catch (error) {
-      console.error("Erro ao salvar pulseiras:", error);
+      const alvo = pulseirasApi[editandoIndex];
+      if (!alvo) return;
+      // 1) Atualiza nome
+      if (novoNomePulseira && novoNomePulseira !== alvo.nome) {
+        await updatePulseiraApi(alvo.id, { nome: novoNomePulseira });
+      }
+      // 2) Atualiza vínculo de cerca (se mudou)
+      const atualFenceId = alvo.cercas?.[0]?.id ? String(alvo.cercas![0].id) : "";
+  if (cercaEdicaoSelecionada !== atualFenceId) {
+        // Se havia uma cerca antes e foi escolhida outra/deselecionada, remove vínculo anterior
+        if (atualFenceId) {
+          try {
+            await api.delete(`/fences/removeBracelet`, { params: { fence: Number(atualFenceId), bracelet: alvo.id } });
+          } catch (err: any) {
+            if (err?.response?.status === 404) {
+              await authApi.delete(`/fences/removeBracelet`, { params: { fence: Number(atualFenceId), bracelet: alvo.id } });
+            } else {
+              throw err;
+            }
+          }
+        }
+        // Se selecionou uma nova cerca, registra novo vínculo
+        if (cercaEdicaoSelecionada) {
+          try {
+            await api.post(`/fences/registerBracelet`, null, { params: { fence: Number(cercaEdicaoSelecionada), bracelet: alvo.id } });
+          } catch (err: any) {
+            if (err?.response?.status === 404) {
+              await authApi.post(`/fences/registerBracelet`, null, { params: { fence: Number(cercaEdicaoSelecionada), bracelet: alvo.id } });
+            } else {
+              throw err;
+            }
+          }
+        }
+      }
+      // Atualiza listagem após operações de vínculo
+      await refreshPulseiras();
+      cancelarEdicao();
+      Toast.show({ type: "success", text1: "Pulseira atualizada!" });
+    } catch (e: any) {
+      const msg = e?.response?.data ? String(e.response.data) : e?.message;
+      Toast.show({ type: "error", text1: msg || "Erro ao atualizar pulseira" });
     }
   };
 
-  const carregarPulseiras = async () => {
+  const deletarPulseira = async (index: number) => {
     try {
-      const pulseirasSalvas = await AsyncStorage.getItem(PULSEIRAS_STORAGE);
-      return pulseirasSalvas ? JSON.parse(pulseirasSalvas) : [];
-    } catch (error) {
-      console.error("Erro ao carregar pulseiras:", error);
-      return [];
+      const alvo = pulseirasApi[index];
+      if (!alvo) return;
+      await deletePulseiraApi(alvo.id);
+      cancelarEdicao();
+      Toast.show({ type: "info", text1: "Pulseira excluída!" });
+    } catch (e: any) {
+      const msg = e?.response?.data ? String(e.response.data) : e?.message;
+      Toast.show({ type: "error", text1: msg || "Erro ao excluir pulseira" });
     }
   };
 
-  useEffect(() => {
-    const inicializarPulseiras = async () => {
-      const pulseirasCarregadas = await carregarPulseiras();
-      setPulseiras(pulseirasCarregadas);
-    };
-    inicializarPulseiras();
-  }, []);
+  // Removidos dados locais de AsyncStorage; fonte de verdade é o backend via hook
 
-  // Removido mock de cercas, agora usa cercas reais do sistema
+  // Observação: listagem abaixo exibe as pulseiras do backend (pulseirasApi)
 
   return (
     <View style={{ flex: 1 }}>
@@ -156,10 +178,9 @@ const AdicionarPulseiraScreen: React.FC = () => {
             </View>
           </View>
           <Text style={[styles.titulo, { color: colors.title }]}>Pulseiras Cadastradas:</Text>
-          {pulseiras.map((item, index) => {
-            const cercaAtribuida = cercas.find((cerca) => cerca.id === item.cercaId);
+          {pulseirasApi.map((item, index) => {
             return (
-              <View key={item.id || index} style={[styles.card, { backgroundColor: colors.infoBox, borderColor: colors.border }] }>
+              <View key={String(item.id) || String(index)} style={[styles.card, { backgroundColor: colors.infoBox, borderColor: colors.border }] }>
                 {editandoIndex === index ? (
                   <View style={[styles.cardEdicao, { backgroundColor: colors.infoBox, borderColor: colors.border }] }>
                     <TextInput
@@ -168,12 +189,12 @@ const AdicionarPulseiraScreen: React.FC = () => {
                       onChangeText={setNovoNomePulseira}
                     />
                     <Picker
-                      selectedValue={cercaSelecionada}
-                      onValueChange={(itemValue) => setCercaSelecionada(itemValue)}
+                      selectedValue={cercaEdicaoSelecionada}
+                      onValueChange={(itemValue) => setCercaEdicaoSelecionada(String(itemValue))}
                     >
-                      <Picker.Item label="Selecione uma cerca" value="" />
+                      <Picker.Item label="Selecione uma cerca (opcional)" value="" />
                       {cercas.map((cerca) => (
-                        <Picker.Item key={cerca.id} label={cerca.nome} value={cerca.id} />
+                        <Picker.Item key={String(cerca.id)} label={cerca.nome} value={String(cerca.id)} />
                       ))}
                     </Picker>
                     <View style={styles.botoes}>
@@ -202,20 +223,20 @@ const AdicionarPulseiraScreen: React.FC = () => {
                     <Text style={[styles.item, { color: colors.title }]}>{item.nome}</Text>
                   </TouchableOpacity>
                 )}
+                {/* Status de vínculo de cerca */}
                 <Text style={[styles.cercaInfo, { color: colors.title }]}>
-                  Cerca: {cercaAtribuida ? cercaAtribuida.nome : "Não atribuída"}
+                  {item.cercas && item.cercas.length > 0
+                    ? `Vinculada à cerca: ${item.cercas.map(c => c.nome).join(", ")}`
+                    : 'Sem cerca vinculada'}
                 </Text>
-                <Switch
-                  value={item.ativa}
-                  onValueChange={(novoValor) => alternarSwitch(index, novoValor)}
-                  trackColor={{ false: colors.infoBox, true: colors.button }}
-                  thumbColor={item.ativa ? colors.button : colors.infoBox}
-                />
                 <TouchableOpacity
                   onPress={() => {
                     router.push({
                       pathname: "/Screens/ListarLocalizacoesPulseira",
-                      params: { pulseiraId: item.id, cercaId: item.cercaId },
+                      params: {
+                        pulseiraId: String(item.id),
+                        cercaId: item.cercas && item.cercas.length > 0 ? String(item.cercas[0].id) : "",
+                      },
                     });
                   }}
                 >
@@ -235,101 +256,101 @@ const AdicionarPulseiraScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   cardEdicao: {
-    padding: 15,
-    margin: 10,
+  padding: spacing(1.5),
+  margin: spacing(1.25),
     borderWidth: 2,
-    borderRadius: 8,
+  borderRadius: moderateScale(8),
   },
   container: {
     flex: 1,
-    padding: 20,
+  padding: spacing(2.5),
   },
   scrollContainer: {
     flexGrow: 1,
   },
   backButton: {
-    padding: 10,
+  padding: spacing(1.25),
   },
   label: {
-    fontSize: 20,
+  fontSize: moderateScale(20),
     fontWeight: "600",
-    marginBottom: 8,
+  marginBottom: spacing(1),
   },
   input: {
     borderWidth: 1,
-    padding: 8,
-    fontSize: 18,
-    borderRadius: 5,
-    marginBottom: 20,
+  padding: spacing(1),
+  fontSize: moderateScale(18),
+  borderRadius: moderateScale(5),
+  marginBottom: spacing(2.5),
   },
   botoes: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 15,
+  gap: spacing(1.5),
   },
   botaoAdicionar: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 4,
+  paddingVertical: spacing(1.25),
+  paddingHorizontal: spacing(2.5),
+  borderRadius: moderateScale(4),
   },
   botaoCancelar: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 4,
+  paddingVertical: spacing(1.25),
+  paddingHorizontal: spacing(2.5),
+  borderRadius: moderateScale(4),
   },
   botaoadd: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
+  paddingVertical: spacing(1.25),
+  paddingHorizontal: spacing(1.875),
+  borderRadius: moderateScale(6),
     flex: 1,
-    maxWidth: 120,
+  maxWidth: moderateScale(120),
     alignItems: "center",
-    marginHorizontal: 5,
-    marginBottom: 10,
+  marginHorizontal: spacing(0.625),
+  marginBottom: spacing(1.25),
   },
   botaoExcluir: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
+  paddingVertical: spacing(1.25),
+  paddingHorizontal: spacing(1.875),
+  borderRadius: moderateScale(6),
     flex: 1,
     alignItems: "center",
-    marginHorizontal: 5,
-    marginBottom: 10,
+  marginHorizontal: spacing(0.625),
+  marginBottom: spacing(1.25),
   },
   botaoCancell: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    borderRadius: 6,
+  paddingVertical: spacing(1.25),
+  paddingHorizontal: spacing(0.625),
+  borderRadius: moderateScale(6),
     flex: 1,
-    maxWidth: 120,
-    marginBottom: 10,
+  maxWidth: moderateScale(120),
+  marginBottom: spacing(1.25),
   },
   textoBotao: {
-    fontSize: 18,
+  fontSize: moderateScale(18),
   },
   textoBotaoedit: {
     textAlign: "center",
-    fontSize: 11,
+  fontSize: moderateScale(11),
   },
   titulo: {
-    fontSize: 27,
+  fontSize: moderateScale(27),
     fontWeight: "600",
-    marginVertical: 10,
+  marginVertical: spacing(1.25),
   },
   card: {
-    padding: 10,
-    borderRadius: 8,
+  padding: spacing(1.25),
+  borderRadius: moderateScale(8),
     borderWidth: 1,
-    marginBottom: 20,
+  marginBottom: spacing(2.5),
   },
   item: {
-    fontSize: 18,
+  fontSize: moderateScale(18),
   },
   textoBotaoVerLocalizacoes: {
-    fontSize: 17
+  fontSize: moderateScale(17)
   },
   cercaInfo: {
-    fontSize: 14,
+  fontSize: moderateScale(14),
     color: "#555",
   },
 });

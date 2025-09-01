@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { spacing, moderateScale } from "../utils/responsive";
 
 const HeaderBrand: React.FC = () => {
   return (
@@ -24,18 +25,18 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  paddingHorizontal: spacing(2),
+  paddingVertical: spacing(1.5),
   },
   logo: {
-    width: 28,
-    height: 28,
+    width: moderateScale(28),
+    height: moderateScale(28),
     resizeMode: "contain",
-    marginRight: 12,
+    marginRight: spacing(1.5 as any),
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 20,
+  fontSize: moderateScale(20),
     fontWeight: "bold",
   },
 });

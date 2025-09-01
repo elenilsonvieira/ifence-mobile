@@ -1,18 +1,12 @@
-
-
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-
-type Cerca = {
-  id: string | number;
-  nome: string;
-  coordenadas?: string;
-};
+import { spacing, moderateScale } from '../../../utils/responsive';
+import type { Cerca } from '../hooks/useCercas';
 
 interface CercaTableProps {
   cercas: Cerca[];
   onEdit: (cerca: Cerca) => void;
-  onDelete: (id: string | number) => void;
+  onDelete: (id: string) => void;
 }
 
 const CercaTable: React.FC<CercaTableProps> = ({ cercas, onEdit, onDelete }) => {
@@ -31,15 +25,15 @@ const CercaTable: React.FC<CercaTableProps> = ({ cercas, onEdit, onDelete }) => 
           <Text style={styles.cellNome}>{item.nome}</Text>
           <View style={styles.cellCoord}>
             <Text style={styles.coordLabel}>Latitude:</Text>
-            <Text style={styles.coordValue} numberOfLines={2}>{item.coordenadas ? item.coordenadas.split(',')[0] : ''}</Text>
+            <Text style={styles.coordValue} numberOfLines={2}>{item.latitude}</Text>
             <Text style={styles.coordLabel}>Longitude:</Text>
-            <Text style={styles.coordValue} numberOfLines={2}>{item.coordenadas ? item.coordenadas.split(',')[1] : ''}</Text>
+            <Text style={styles.coordValue} numberOfLines={2}>{item.longitude}</Text>
           </View>
           <View style={styles.actions}>
             <TouchableOpacity style={styles.editBtn} onPress={() => onEdit(item)}>
               <Text style={styles.editText}>Editar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(item.id)}>
+            <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(String(item.id))}>
               <Text style={styles.deleteText}>Excluir</Text>
             </TouchableOpacity>
           </View>
@@ -63,26 +57,23 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     backgroundColor: '#eee',
-    padding: 8,
+    padding: spacing(1),
     alignItems: 'center',
   },
   headerCellId: {
     flex: 1.2,
     fontWeight: 'bold',
-    minWidth: 60,
-    maxWidth: 90,
+    minWidth: 50,
   },
   headerCellNome: {
     flex: 1.2,
     fontWeight: 'bold',
-    minWidth: 70,
-    maxWidth: 120,
+    minWidth: 60,
   },
   headerCellCoord: {
     flex: 1.5,
     fontWeight: 'bold',
-    minWidth: 90,
-    maxWidth: 140,
+    minWidth: 80,
   },
   headerCellAcoes: {
     flex: 0.9,
@@ -92,56 +83,53 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingVertical: spacing(1),
+    paddingHorizontal: spacing(0.5),
     borderBottomWidth: 1,
     borderColor: '#ccc',
     alignItems: 'center',
   },
   cellId: {
     flex: 1.2,
-    minWidth: 90,
-    maxWidth: 180,
-    marginRight: 2,
+    minWidth: 70,
+    marginRight: spacing(0.25),
     flexDirection: 'column',
   },
   idLabel: {
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: moderateScale(12),
     color: '#333',
   },
   idValue: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#222',
     flexWrap: 'wrap',
-    maxWidth: 90,
-    lineHeight: 16,
+    maxWidth: '100%',
+    lineHeight: moderateScale(16),
     textAlign: 'left',
   },
   cellNome: {
     flex: 1.2,
-    minWidth: 70,
-    maxWidth: 120,
-    marginRight: 2,
+    minWidth: 60,
+    marginRight: spacing(0.25),
     overflow: 'hidden',
   },
   cellCoord: {
     flex: 1.5,
-    minWidth: 110,
-    maxWidth: 200,
-    marginRight: 2,
+    minWidth: 90,
+    marginRight: spacing(0.25),
     flexDirection: 'column',
   },
   coordLabel: {
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: moderateScale(12),
     color: '#333',
-    marginTop: 2,
+    marginTop: spacing(0.25),
   },
   coordValue: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#222',
-    marginBottom: 2,
+    marginBottom: spacing(0.25),
   },
   actions: {
     flexDirection: 'row',
@@ -149,21 +137,21 @@ const styles = StyleSheet.create({
     minWidth: 80,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing(0.5),
   },
   editBtn: {
     backgroundColor: '#ffc107',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: spacing(0.75),
+    paddingHorizontal: spacing(1.25),
     borderRadius: 4,
-    marginRight: 4,
+    marginRight: spacing(0.5),
     minWidth: 54,
     alignItems: 'center',
   },
   deleteBtn: {
     backgroundColor: '#dc3545',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: spacing(0.75),
+    paddingHorizontal: spacing(1.25),
     borderRadius: 4,
     minWidth: 54,
     alignItems: 'center',
@@ -171,11 +159,11 @@ const styles = StyleSheet.create({
   editText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   deleteText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
 });

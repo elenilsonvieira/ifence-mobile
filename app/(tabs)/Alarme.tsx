@@ -8,11 +8,19 @@ import {
 } from "react-native";
 import { daltonicColors, defaultColors } from "../constants/DaltonicColors";
 import { useRouter} from "expo-router";
-import MapView, { Marker, Circle } from "react-native-maps";
-import { obterCercas } from "../../storage/cercaStorage";
+import MapView, { Marker, Circle, UrlTile, PROVIDER_GOOGLE } from "react-native-maps";
+// import { obterCercas } from "../../storage/cercaStorage"; // substituído por backend
 import Toast from "react-native-toast-message";
+import { addNotification } from "../../storage/notificationsStorage";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import HeaderBrand from "../../components/HeaderBrand";
+import { spacing, moderateScale } from "../../utils/responsive";
+import { useLocalizacoes } from "@/components/Localizacoes/hooks/useLocalizacoes";
+import { usePulseiras } from "@/components/Pulseiras/hooks/usePulseiras";
+import { useCercas as useCercasHook } from "@/components/Cercas/hooks/useCercas";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
 interface Cerca {
   id: string | number;
@@ -34,47 +42,46 @@ const Alarme = () => {
       if (value === 'true') setDaltonicMode(true);
     })();
   }, []);
-  const [cercas, setCercas] = useState<Cerca[]>([]);
+  // Backend: lista de cercas do servidor
+  const { cercas: cercasBackend, loading: cercasLoading } = useCercasHook();
+  const cercas: Cerca[] = (cercasBackend || []).map((c: any) => ({
+    id: c.id,
+    nome: c.nome,
+    latitude: Number(c.latitude),
+    longitude: Number(c.longitude),
+    raio: Number(c.raio),
+    horarioInicio: c.horarioInicio ?? undefined,
+    horarioFim: c.horarioFim ?? undefined,
+  })).filter(c => !Number.isNaN(c.latitude) && !Number.isNaN(c.longitude) && c.raio > 0);
   const [cercaSelecionada, setCercaSelecionada] = useState<Cerca | null>(null);
   const [point2, setPoint2] = useState<{ latitude: number; longitude: number }>({ latitude: 0, longitude: 0 });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { saveLocation } = useLocalizacoes();
+  const { pulseiras } = usePulseiras();
 
-  const fetchCercas = async () => {
-    try {
-      setLoading(true);
-      const cercasObtidas = await obterCercas();
-      setCercas(
-        cercasObtidas.map((cerca: any) => ({
-          ...cerca,
-          latitude: parseFloat(cerca.latitude),
-          longitude: parseFloat(cerca.longitude),
-          raio: parseFloat(cerca.raio),
-        }))
-      );
-      setLoading(false);
-    } catch (error) {
-      console.error("Erro ao obter cercas:", error);
-      setLoading(false);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchCercas();
-    }, [])
-  );
+  // Loading local acompanha o loading do hook de cercas
+  useEffect(() => {
+    setLoading(cercasLoading);
+  }, [cercasLoading]);
 
   // Expo Router não tem 'query', então removendo esse uso
   // Se precisar selecionar uma cerca por id, use outro método
 
   const salvarLocalizacao = async (novaLocalizacao: { latitude: number; longitude: number; timestamp: string }) => {
     if (!cercaSelecionada) return;
-    const chave = `localizacoes_${cercaSelecionada.id}`;
-    const localizacoesSalvas = await AsyncStorage.getItem(chave);
-    const localizacoesArray = localizacoesSalvas ? JSON.parse(localizacoesSalvas) : [];
-    const novasLocalizacoes = [...localizacoesArray, novaLocalizacao];
-    await AsyncStorage.setItem(chave, JSON.stringify(novasLocalizacoes));
+    // Descobre pulseira vinculada à cerca (primeira que referencie esta cerca)
+    const alvo = pulseiras.find(p => p.cercas?.some(c => String(c.id) === String(cercaSelecionada.id)));
+    const pulseiraId = alvo?.id;
+    // Tenta enviar ao backend; se falhar, mantém cache local como fallback
+    const ok = pulseiraId ? await saveLocation({ pulseiraId, cercaId: cercaSelecionada.id, ...novaLocalizacao }) : false;
+    if (!ok) {
+      const chave = `localizacoes_${cercaSelecionada.id}`;
+      const localizacoesSalvas = await AsyncStorage.getItem(chave);
+      const localizacoesArray = localizacoesSalvas ? JSON.parse(localizacoesSalvas) : [];
+      const novasLocalizacoes = [...localizacoesArray, novaLocalizacao];
+      await AsyncStorage.setItem(chave, JSON.stringify(novasLocalizacoes));
+    }
   };
 
   useEffect(() => {
@@ -98,6 +105,15 @@ const Alarme = () => {
       );
       if (distance > cercaSelecionada.raio) {
         exibirToast(cercaSelecionada, false);
+        // Salva notificação
+        addNotification({
+          id: `${cercaSelecionada.id}-${Date.now()}`,
+          braceletName: 'Pulseira',
+          fenceName: cercaSelecionada.nome,
+          timestamp: new Date().toISOString(),
+          message: `Pulseira "${cercaSelecionada.nome}" fora da cerca às ${new Date().toLocaleTimeString()}`,
+          read: false,
+        });
       }
     }, 5000);
     return () => clearInterval(interval);
@@ -132,18 +148,32 @@ const Alarme = () => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }] }>
-        <ActivityIndicator size="large" color={colors.button} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <HeaderBrand />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.button} />
+        </View>
       </View>
     );
   }
 
   if (!cercaSelecionada) {
+    if (!loading && cercas.length === 0) {
+      return (
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <HeaderBrand />
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing(2) }}>
+            <Text style={[styles.textSelecionar, { color: colors.subtitle }]}>Nenhuma cerca cadastrada no sistema.</Text>
+            <View style={{ height: spacing(1.5) }} />
+            <Button title="Cadastrar cerca" color={colors.button} onPress={() => router.push('/Screens/AddCerca')} />
+          </View>
+          <Toast />
+        </View>
+      );
+    }
     return (
       <View style={[styles.container, { backgroundColor: colors.background }] }>
-        <View style={[styles.header, { backgroundColor: colors.header }] }>
-          <Text style={[styles.textHeader, { color: colors.title }]}>Tela de Alarme</Text>
-        </View>
+        <HeaderBrand />
         <Text style={[styles.textSelecionar, { color: colors.subtitle }] }>
           Selecione uma cerca para visualizar.
         </Text>
@@ -163,12 +193,10 @@ const Alarme = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }] }>
-      <View style={[styles.header, { backgroundColor: colors.header }] }>
-        <Text style={[styles.textHeader, { color: colors.title }]}>Tela de Alarme</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <HeaderBrand />
       <MapView
-        style={StyleSheet.absoluteFillObject}
+        style={{ flex: 1 }}
         region={{
           latitude: cercaSelecionada.latitude,
           longitude: cercaSelecionada.longitude,
@@ -176,7 +204,24 @@ const Alarme = () => {
           longitudeDelta: 0.01,
         }}
         mapType="hybrid"
+        provider={(
+          (Constants.expoConfig as any)?.android?.config?.googleMaps?.apiKey ||
+          (Constants.expoConfig as any)?.ios?.config?.googleMapsApiKey
+        ) ? PROVIDER_GOOGLE : undefined}
       >
+        {!(
+          (Constants.expoConfig as any)?.android?.config?.googleMaps?.apiKey ||
+          (Constants.expoConfig as any)?.ios?.config?.googleMapsApiKey
+        ) && (
+          (() => {
+            const mapTilerKey = (Constants.expoConfig as any)?.extra?.MAPTILER_KEY;
+            const cfgUrl = (Constants.expoConfig as any)?.extra?.MAP_TILES_URL as string | undefined;
+            const url = cfgUrl || (mapTilerKey ? `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=${mapTilerKey}` : undefined);
+            return url ? (
+              <UrlTile urlTemplate={url} maximumZ={22} zIndex={-1} flipY={false} />
+            ) : null;
+          })()
+        )}
         {cercas.map((cerca) => (
           <React.Fragment key={cerca.id}>
             <Circle
@@ -221,37 +266,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    padding: 25,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 20,
-  },
   textSelecionar: {
-    marginTop: 50,
+    marginTop: spacing(2),
     textAlign: "center",
-    fontSize: 20,
+    fontSize: moderateScale(18),
     fontWeight: "bold",
   },
   cercasList: {
-    padding: 100,
-    bottom: -50,
+    padding: spacing(2),
     flex: 1,
-    gap: 30,
+    gap: spacing(1.5),
   },
   text: {
-    fontSize: 16,
+    fontSize: moderateScale(14),
   },
   info: {
     position: "absolute",
-    bottom: 20,
-    left: 10,
-    padding: 10,
-    borderRadius: 8,
+    bottom: spacing(2),
+    left: spacing(1.25),
+    padding: spacing(1),
+    borderRadius: moderateScale(8),
   },
 });
 

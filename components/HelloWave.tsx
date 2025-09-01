@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+import { moderateScale, spacing } from '@/utils/responsive';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -33,8 +34,8 @@ export function HelloWave() {
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 28,
-    lineHeight: 32,
-    marginTop: -6,
+  fontSize: moderateScale(28),
+  lineHeight: moderateScale(32),
+  marginTop: -spacing(0.75),
   },
 });

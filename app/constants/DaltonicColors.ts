@@ -21,3 +21,5 @@ export const defaultColors = {
   infoText: '#003F88',
   border: '#003F88',
 };
+
+export default function __NoRoute() { return null as any; }

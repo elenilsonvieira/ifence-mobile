@@ -14,3 +14,5 @@ export function useDaltonicColors() {
 
   return colors;
 }
+
+export default function __NoRoute() { return null as any; }

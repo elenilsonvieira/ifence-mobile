@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { useDaltonicColors } from "../hooks/useDaltonicColors";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Modal, Pressable } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Header from "@/components/Header";
-import { findUserCredentials } from "../../storage/userStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api, { authApi, setAuthToken } from "@/utils/api";
+import Header from "@/components/Header";
+import { useDaltonicColors } from "../hooks/useDaltonicColors";
+import { findUserCredentials } from "../../storage/userStorage";
+import { spacing, moderateScale } from "../../utils/responsive";
+
+type AuthenticationResponse = { token: string; user?: any };
 
 function LoginScreen() {
   const colors = useDaltonicColors();
@@ -21,10 +25,10 @@ function LoginScreen() {
   const validateFields = () => {
     let isValid = true;
     if (userName.trim() === "") {
-      setUserNameError("O nome de usuário deve ser informado");
+      setUserNameError("Informe e-mail ou nome de usuário");
       isValid = false;
     } else if (userName.length < 4) {
-      setUserNameError("O nome de usuário deve ter pelo menos 4 caracteres");
+      setUserNameError("Mínimo de 4 caracteres");
       isValid = false;
     } else {
       setUserNameError("");
@@ -41,66 +45,168 @@ function LoginScreen() {
     return isValid;
   };
 
-  const handleLogin = async () => {
-    if (validateFields()) {
-      try {
-        const user = await findUserCredentials(userName, password);
-        if (user) {
-          await AsyncStorage.setItem("currentUser", userName);
-          router.replace("/(tabs)/Home");
-        } else {
-          setErrorMessage("Nome de usuário ou senha incorretos, ou nenhuma conta cadastrada.");
-          setShowErrorModal(true);
-        }
-      } catch (error) {
-        setErrorMessage("Ocorreu um erro ao tentar fazer login. Tente novamente.");
-        setShowErrorModal(true);
+  async function loginBackend(identifier: string, password: string, deviceToken?: string) {
+    try {
+      // Resolve alias local: se usuario digitou nome (não email), tenta mapear para email salvo
+      let ident = identifier;
+      const looksEmail = /@/.test(identifier);
+      if (!looksEmail) {
+        try {
+          const raw = await AsyncStorage.getItem('loginAliases');
+          if (raw) {
+            const map = JSON.parse(raw) as Record<string, string>;
+            if (map[identifier]) ident = map[identifier];
+          }
+        } catch {}
       }
+      // 1) Tenta com { username }
+      try {
+        const res = await authApi.post<AuthenticationResponse>('/api/login', {
+          username: ident,
+          password,
+          deviceToken: deviceToken ?? null,
+        });
+        const token = res.data?.token;
+        if (token) {
+          await setAuthToken(token);
+          return { success: true };
+        }
+      } catch (err1: any) {
+        const st1 = err1?.response?.status;
+        if (st1 === 404) {
+          // fallback sem prefixo
+          const res2 = await authApi.post<AuthenticationResponse>('/login', {
+            username: ident,
+            password,
+            deviceToken: deviceToken ?? null,
+          });
+          const token = res2.data?.token;
+          if (token) {
+            await setAuthToken(token);
+            return { success: true };
+          }
+        }
+        // 2) Se falhou com 400/401, tenta com { email } quando parecer email
+        if (st1 === 400 || st1 === 401) {
+          try {
+            const res3 = await authApi.post<AuthenticationResponse>('/api/login', {
+              email: looksEmail ? ident : undefined,
+              username: looksEmail ? undefined : ident,
+              password,
+              deviceToken: deviceToken ?? null,
+            });
+            const token = res3.data?.token;
+            if (token) {
+              await setAuthToken(token);
+              return { success: true };
+            }
+          } catch (err3: any) {
+            const st3 = err3?.response?.status;
+            if (st3 === 404) {
+              const res4 = await authApi.post<AuthenticationResponse>('/login', {
+                email: looksEmail ? ident : undefined,
+                username: looksEmail ? undefined : ident,
+                password,
+                deviceToken: deviceToken ?? null,
+              });
+              const token = res4.data?.token;
+              if (token) {
+                await setAuthToken(token);
+                return { success: true };
+              }
+            }
+          }
+        }
+        // Se chegou aqui, propaga o erro original
+        throw err1;
+      }
+      return { success: false, message: 'Credenciais inválidas.' };
+    } catch (e: any) {
+      console.error('Erro no login:', e?.response?.data || e?.message);
+      return { success: false, message: 'Falha ao autenticar.' };
+    }
+  }
+
+  const handleLogin = async () => {
+    if (!validateFields()) return;
+    const result = await loginBackend(userName, password);
+    if (result.success) {
+      // guarda credenciais para re-login silencioso se necessário
+      await AsyncStorage.setItem("currentUser", userName);
+      await AsyncStorage.setItem("currentUserPassword", password);
+      // tenta obter nome de exibição do backend
+      try {
+        const r1 = await api.get('/users/user');
+        const u: any = r1?.data ?? {};
+        const display = u?.name ?? u?.username ?? u?.email ?? userName;
+        await AsyncStorage.setItem('currentUser', String(display));
+      } catch {
+        try {
+          const r2 = await authApi.get('/users/user');
+          const u2: any = r2?.data ?? {};
+          const display2 = u2?.name ?? u2?.username ?? u2?.email ?? userName;
+          await AsyncStorage.setItem('currentUser', String(display2));
+        } catch {}
+      }
+      router.replace("/(tabs)/Home");
+    } else {
+      setErrorMessage(result.message || "Falha ao autenticar.");
+      setShowErrorModal(true);
     }
   };
+
+  const disabled = !userName || !password || userNameError !== "" || passwordError !== "";
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Header />
       <View style={styles.container}>
-        <Link href={"/"} asChild>
-          <TouchableOpacity style={styles.btnBackPage}>
+        <Link href="/" asChild>
+          <TouchableOpacity style={styles.btnBackPage} accessibilityRole="button" accessibilityLabel="Voltar">
             <Image source={require("@/assets/images/ArrowBack.png")} />
           </TouchableOpacity>
         </Link>
+
         <Text style={[styles.titulo, { color: colors.title }]}>Login</Text>
+
         <View style={styles.form}>
-          <Text style={[styles.label, { color: colors.title }]} accessibilityLabel="Nome de usuário obrigatório">Nome de usuário*</Text>
+          <Text style={[styles.label, { color: colors.title }]} accessibilityLabel="E-mail ou nome de usuário obrigatório">
+            E-mail ou Nome de usuário*
+          </Text>
           <TextInput
             style={[
               styles.input,
               { backgroundColor: colors.background, color: colors.title, borderColor: colors.border },
               userNameError ? { borderColor: colors.button } : userName ? { borderColor: colors.buttonText } : null,
             ]}
-            placeholder="O nome de usuário deve ser informado"
+            placeholder="Digite seu e-mail ou nome de usuário"
             placeholderTextColor={colors.subtitle}
             value={userName}
             onChangeText={(text) => {
               setUserName(text);
               if (text.trim() === "") {
-                setUserNameError("O nome de usuário deve ser informado");
+                setUserNameError("Informe e-mail ou nome de usuário");
               } else if (text.length < 4) {
-                setUserNameError("O nome de usuário deve ter pelo menos 4 caracteres");
+                setUserNameError("Mínimo de 4 caracteres");
               } else {
                 setUserNameError("");
               }
             }}
-            onBlur={() => validateFields()}
-            accessibilityLabel="Campo para digitar o nome de usuário"
+            onBlur={validateFields}
+            accessibilityLabel="Campo para digitar e-mail ou nome de usuário"
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="next"
           />
           {userNameError ? (
-            <Text style={[styles.errorText, { color: colors.button }]} accessibilityLiveRegion="polite">{userNameError}</Text>
+            <Text style={[styles.errorText, { color: colors.button }]} accessibilityLiveRegion="polite">
+              {userNameError}
+            </Text>
           ) : null}
 
-          <Text style={[styles.label, { color: colors.title }]} accessibilityLabel="Senha obrigatória">Senha*</Text>
+          <Text style={[styles.label, { color: colors.title }]} accessibilityLabel="Senha obrigatória">
+            Senha*
+          </Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={[
@@ -123,7 +229,7 @@ function LoginScreen() {
                   setPasswordError("");
                 }
               }}
-              onBlur={() => validateFields()}
+              onBlur={validateFields}
               accessibilityLabel="Campo para digitar a senha"
               autoCapitalize="none"
               autoCorrect={false}
@@ -131,51 +237,35 @@ function LoginScreen() {
             />
             <TouchableOpacity
               style={styles.eyeIcon}
-              onPress={() => setShowPassword(!showPassword)}
+              onPress={() => setShowPassword((v) => !v)}
               accessibilityLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
-              <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
-                size={24}
-                color={colors.title}
-              />
+              <Ionicons name={showPassword ? "eye-off" : "eye"} size={moderateScale(20)} color={colors.title} />
             </TouchableOpacity>
           </View>
           {passwordError ? (
-            <Text style={[styles.errorText, { color: colors.button }]} accessibilityLiveRegion="polite">{passwordError}</Text>
+            <Text style={[styles.errorText, { color: colors.button }]} accessibilityLiveRegion="polite">
+              {passwordError}
+            </Text>
           ) : null}
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: (!userName || !password || userNameError !== "" || passwordError !== "") ? colors.border : colors.button },
-          ]}
+          style={[styles.button, { backgroundColor: disabled ? colors.border : colors.button }]}
           onPress={handleLogin}
-          disabled={
-            !userName ||
-            !password ||
-            userNameError !== "" ||
-            passwordError !== ""
-          }
+          disabled={disabled}
         >
           <Text style={[styles.buttonText, { color: colors.buttonText }]}>Entrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/auth/CadastroScreen")}> 
+        <TouchableOpacity onPress={() => router.push("/auth/CadastroScreen")}>
           <Text style={[styles.createAccountText, { color: colors.title }]}>Não tem uma conta ainda? Criar Conta</Text>
         </TouchableOpacity>
 
-        {/* Modal de erro customizado */}
-        <Modal
-          visible={showErrorModal}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShowErrorModal(false)}
-        >
+        <Modal visible={showErrorModal} transparent animationType="fade" onRequestClose={() => setShowErrorModal(false)}>
           <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.background }] }>
-              <Ionicons name="close-circle" size={60} color={colors.button} style={{ marginBottom: 10 }} />
+            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+              <Ionicons name="close-circle" size={moderateScale(50)} color={colors.button} style={{ marginBottom: spacing(1) }} />
               <Text style={[styles.modalTitle, { color: colors.button }]}>Erro</Text>
               <Text style={[styles.modalMessage, { color: colors.title }]}>{errorMessage}</Text>
               <Pressable
@@ -194,133 +284,109 @@ function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  btnBackPage: {
-    alignSelf: "flex-start",
-    backgroundColor: "#FFFFFF",
-    marginLeft: 0,
-  },
   container: {
     flex: 1,
-    padding: 20,
-    // backgroundColor: "#FFFFFF", // agora controlado pelo hook
+    padding: spacing(2),
+  },
+  btnBackPage: {
+    alignSelf: "flex-start",
+    marginBottom: spacing(1),
   },
   titulo: {
-    fontSize: 28,
-    // color: "#003F88", // agora controlado pelo hook
+    fontSize: moderateScale(24),
     fontWeight: "bold",
-    marginBottom: 10,
     textAlign: "center",
+    marginBottom: spacing(2),
   },
   form: {
-    marginBottom: 20,
+    marginBottom: spacing(2),
   },
   label: {
-    fontSize: 16,
-    // color: "#003F88", // agora controlado pelo hook
-    marginBottom: 5,
+    fontSize: moderateScale(14),
+    marginBottom: spacing(0.5),
   },
   input: {
-    // backgroundColor: "#f0f0f0", // agora controlado pelo hook
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 5,
-    fontSize: 16,
-    // color: "#003F88", // agora controlado pelo hook
     borderWidth: 1,
-    // borderColor: "#003F88", // agora controlado pelo hook
-  },
-  inputError: {
-    // borderColor: "red", // agora controlado pelo hook
-  },
-  inputSuccess: {
-    // borderColor: "green", // agora controlado pelo hook
+    borderRadius: moderateScale(8),
+    padding: spacing(1.5),
+    marginBottom: spacing(1),
+    fontSize: moderateScale(14),
   },
   passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     position: "relative",
   },
   passwordInput: {
-    flex: 1,
-    paddingRight: 40,
+    paddingRight: spacing(4),
   },
   eyeIcon: {
     position: "absolute",
-    right: 10,
-    padding: 10,
+    right: spacing(1),
+    top: spacing(1),
+    padding: spacing(0.75),
   },
   errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
+    fontSize: moderateScale(12),
+    marginBottom: spacing(1),
   },
   button: {
-    // backgroundColor: "#003F88", // agora controlado pelo hook
-    borderRadius: 5,
-    padding: 15,
+    borderRadius: moderateScale(8),
+    paddingVertical: spacing(1.5),
+    paddingHorizontal: spacing(2),
     alignItems: "center",
-    marginTop: 20,
-  },
-  buttonDisabled: {
-    // backgroundColor: "#ccc", // agora controlado pelo hook
+    marginTop: spacing(1),
+    marginBottom: spacing(1),
   },
   buttonText: {
-    // color: "#fff", // agora controlado pelo hook
-    fontSize: 18,
+    fontSize: moderateScale(16),
     fontWeight: "bold",
   },
   createAccountText: {
-    // color: "#003F88", // agora controlado pelo hook
-    fontSize: 16,
+    fontSize: moderateScale(14),
     textAlign: "center",
-    marginTop: 20,
     textDecorationLine: "underline",
+    marginTop: spacing(1),
   },
-  // Modal customizado
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing(2),
   },
   modalContent: {
-    // backgroundColor: '#fff', // agora controlado pelo hook
-    borderRadius: 16,
-    padding: 30,
-    alignItems: 'center',
-    shadowColor: '#000',
+    borderRadius: moderateScale(12),
+    paddingVertical: spacing(2),
+    paddingHorizontal: spacing(2),
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     minWidth: 280,
-    maxWidth: 340,
+    maxWidth: 360,
   },
   modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    // color: '#D7263D', // agora controlado pelo hook
-    marginBottom: 8,
-    textAlign: 'center',
+    fontSize: moderateScale(18),
+    fontWeight: "bold",
+    marginBottom: spacing(0.5),
+    textAlign: "center",
   },
   modalMessage: {
-    fontSize: 16,
-    // color: '#333', // agora controlado pelo hook
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: moderateScale(14),
+    marginBottom: spacing(1.5),
+    textAlign: "center",
   },
   modalButton: {
-    // backgroundColor: '#D7263D', // agora controlado pelo hook
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    alignItems: 'center',
-    marginTop: 5,
+    borderRadius: moderateScale(8),
+    paddingVertical: spacing(1),
+    paddingHorizontal: spacing(2),
+    alignItems: "center",
+    marginTop: spacing(0.5),
   },
   modalButtonText: {
-    // color: '#fff', // agora controlado pelo hook
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: moderateScale(14),
+    fontWeight: "bold",
   },
 });
 

@@ -7,6 +7,51 @@ O IFence é um aplicativo de monitoramento de crianças em ambientes abertos.
 - AsyncStorage 
 - React Native Maps
 
+# Configuração da API (backend)
+O app lê a URL base da API a partir de `app.json` em `expo.extra.IFENCE_API_URL`.
+
+- Emulador Android (AVD): use `http://10.0.2.2:8080/api`
+- Simulador iOS (Mac): use `http://localhost:8080/api`
+- Dispositivo físico (Expo Go): use `http://SEU_IP_LOCAL:8080/api` (ex.: `http://192.168.0.10:8080/api`)
+
+Após alterar `app.json`, reinicie o servidor do Expo para aplicar a configuração.
+
+## Mapas (Google e fallback por tiles)
+
+Este app usa `react-native-maps`. Você tem duas opções:
+
+1) Google Maps (recomendado se tiver chave)
+
+- Android: adicione no `app.json`:
+  ```json
+  {
+    "expo": {
+      "android": { "config": { "googleMaps": { "apiKey": "SUA_CHAVE" } } }
+    }
+  }
+  ```
+- iOS: adicione no `app.json`:
+  ```json
+  { "expo": { "ios": { "config": { "googleMapsApiKey": "SUA_CHAVE" } } } }
+  ```
+
+2) Tiles customizados (quando não houver Google Maps)
+
+- Configure um provedor permitido (ex.: MapTiler). Crie uma chave e adicione em `app.json`:
+  ```json
+  {
+    "expo": {
+      "extra": {
+        "MAPTILER_KEY": "SUA_CHAVE_MAPTILER",
+        "MAP_TILES_URL": "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=SUA_CHAVE_MAPTILER",
+        "MAP_TILES_ATTRIBUTION": "© Map data © OpenStreetMap contributors, Tiles by MapTiler"
+      }
+    }
+  }
+  ```
+
+Importante: não aponte para `tile.openstreetmap.org` diretamente em produção, pois pode violar a política de uso e causar bloqueio.
+
 # Pré-Requisitos
 - Node.js
 - Expo CLI (se estiver usando Expo)
@@ -31,6 +76,10 @@ npx expo start # Caso esteja usando Expo
 npx react-native run-android # Para Android
 npx react-native run-ios # Para iOS
 ```
+
+Observação:
+- Certifique-se de que o backend esteja em execução (padrão: porta 8080). Com perfil de desenvolvimento H2, a aplicação expõe a documentação em `/swagger-ui/index.html`.
+
 # Funcionalidades 
 - Criação de pulseiras.
 - Criação de cercas.

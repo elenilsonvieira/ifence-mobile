@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { spacing, moderateScale } from '../../../utils/responsive';
 
 interface CercaModalProps {
   visible: boolean;
@@ -22,7 +23,6 @@ interface CercaModalProps {
     horarioFim: string;
   } | null;
 }
-
 
 export const CercaModal: React.FC<CercaModalProps> = ({ visible, onClose, onSave, cercaParaEditar }) => {
   const [formData, setFormData] = useState({
@@ -150,21 +150,22 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: spacing(2),
     borderRadius: 10,
-    width: 300,
+  width: '90%',
+  maxWidth: 380,
   },
   title: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: spacing(1.25),
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 8,
-    marginBottom: 10,
+    padding: spacing(1),
+    marginBottom: spacing(1.25),
   },
   buttonRow: {
     flexDirection: 'row',

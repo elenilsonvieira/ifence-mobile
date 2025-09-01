@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { initAuthTokenFromStorage } from "@/utils/api";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -23,7 +24,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      // Carrega o token salvo antes de esconder a splash
+      initAuthTokenFromStorage().finally(() => SplashScreen.hideAsync());
     }
   }, [loaded]);
 
@@ -41,6 +43,7 @@ export default function RootLayout() {
         <Stack.Screen name="Screens/EditarUsuario" options={{ headerShown: false }} />
         <Stack.Screen name="Screens/ListarRotasPulseiras" options={{ headerShown: false }} />
         <Stack.Screen name="Screens/Map" options={{ headerShown: false }} />
+        <Stack.Screen name="Screens/Notifications" options={{ headerShown: false }} />
         {/* <Stack.Screen name="(auth)/LoginScreen" /> */}
         <Stack.Screen
           name="auth/CadastroScreen"
